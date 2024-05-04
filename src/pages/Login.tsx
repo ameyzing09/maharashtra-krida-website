@@ -13,7 +13,7 @@ const Login = () => {
         try {
             await login(email, password);
             toast.success("Logged in successfully");
-            navigate('/event-form'); 
+            navigate('/event-operation'); 
         } catch (error: any) {
             toast.error(error.message);
         }
