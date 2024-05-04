@@ -2,6 +2,7 @@ import React from 'react';
 import { EventProps } from '../types';
 
 const EventCard: React.FC<EventProps> = ({ name, sport, date, location, imageUrl, flyerUrl, description }) => {
+  console.log('Events ', { name, sport, date, location, imageUrl, flyerUrl, description })
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg">
       <img className="w-full" src={imageUrl} alt={`Flyer for ${name}`} />
@@ -14,8 +15,8 @@ const EventCard: React.FC<EventProps> = ({ name, sport, date, location, imageUrl
           <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">{location}</span>
         </div>
       </div>
-      <div className="px-6 pt-4 pb-2">
-        <a href={flyerUrl} target="_blank" rel="noopener noreferrer" className="bg-sport-blue-500 hover:bg-sport-blue-700 text-white font-bold py-2 px-4 rounded">View Flyer</a>
+      <div className="px-6 pb-4">
+        <a href={flyerUrl} target="_blank" rel="noopener noreferrer" className="bg-lime-400 hover:bg-sport-blue-700 text-white font-bold py-2 px-4 rounded">View Flyer</a>
       </div>
     </div>
   );

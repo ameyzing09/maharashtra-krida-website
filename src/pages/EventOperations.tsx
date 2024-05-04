@@ -23,20 +23,20 @@ const EventOperation = () => {
     }
   };
 
-  if (loading) return <TailSpin color="#00BFFF" height={80} width={80} />;
+  if (loading) return <TailSpin color="#a3e635" height={80} width={80} />;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold">Sports Management</h1>
         <button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="bg-lime-400 hover:bg-lime-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           onClick={handleSignOut}
         >
           Sign Out
         </button>
       </div>
-      <h1 className="text-3xl font-bold mb-8">Event Management</h1>
       <p className="text-lg mb-6">
         Welcome to the event management page. Here you can add new events and
         view existing events.
