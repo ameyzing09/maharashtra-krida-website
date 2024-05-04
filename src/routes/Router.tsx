@@ -1,14 +1,14 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "../component/Header";
+import PrivateRoute from "../component/PrivateRoute";
 import Home from "../pages/Home";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import NotFound from "../pages/NotFound";
 import Event from "../pages/Event";
-import EventForm from "../component/EventForm";
-import PrivateRoute from "../component/PrivateRoute";
 import Login from "../pages/Login";
+import EventOperation from "../pages/EventOperations";
 
 const Router: React.FC = () => {
   return (
@@ -23,7 +23,7 @@ const Router: React.FC = () => {
             <Route path="contact" element={<Contact />} />
             <Route path="upcoming-events" element={<Event />} />
             <Route path="/" element={<PrivateRoute />}>
-              <Route path="event-form" element={<EventForm />} />
+              <Route path="event-operation" element={<EventOperation />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
