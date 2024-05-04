@@ -6,11 +6,11 @@ export function calculateEventsPerPage(): number {
     } else if (width >= 640 && width < 768) { // Small devices (landscape phones)
       return 2;
     } else if (width >= 768 && width < 1024) { // Tablets
-      return 2;
-    } else if (width >= 1024 && width < 1280) { // Laptops/small screens
       return 3;
+    } else if (width >= 1024 && width < 1280) { // Laptops/small screens
+      return 5;
     } else { // Larger desktops
-      return 4;
+      return 8;
     }
   }
   

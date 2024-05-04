@@ -7,8 +7,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        'deep-blue': {
-          500: '#003366'  // A dark blue shade
+        'lime': {
+          400: '#a3e635' 
         },
         'vivid-orange': {
           500: '#ff6600'  // A bright, vivid orange

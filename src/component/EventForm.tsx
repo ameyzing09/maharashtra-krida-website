@@ -4,6 +4,8 @@ import { db } from "../services/firebaseConfig";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { collections } from "../constants";
+import { TailSpin } from "react-loader-spinner";
+import useEvents from "../hook/useEvents";
 
 const EventForm = () => {
   const [formData, setFormData] = useState({
@@ -16,59 +18,74 @@ const EventForm = () => {
     description: "",
   });
   // const [error, setError] = useState('')
-  const [file, setFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [flyerFile, setFlyerFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { handleEventChange } = useEvents();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.name === "imageFile") {
-      if (e.target.files && e.target.files[0]) {
-        setFile(e.target.files[0]);
+    const { name, files } = e.target;
+    if (name === "imageFile" || name === "flyerFile") {
+      if (files && files[0]) {
+        name === "imageFile" ? setImageFile(files[0]) : setFlyerFile(files[0]);
       }
     } else {
       setFormData({ ...formData, [e.target.name]: e.target.value });
     }
   };
 
+  const uploadFiles = async (file: File, folder: string) => {
+    const storage = getStorage();
+    const timeStamp = new Date().getTime();
+    const storageRef = ref(storage, `${folder}/${formData.name}_${timeStamp}_${file.name}`);
+    const snapshot = await uploadBytes(storageRef, file);
+    const fileDownloadURL = await getDownloadURL(snapshot.ref);
+    return fileDownloadURL;
+  }
+
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // if (!file) {
-    //   setError("Please upload an image file.");
-    //   return;
-    // }
-    // TODO: Support multiple file upload
-    if (file) {
-      const storage = getStorage();
-      const storageRef = ref(storage, `images/${file.name}`);
-      await uploadBytes(storageRef, file)
-        .then((snapshot) => {
-          return getDownloadURL(snapshot.ref);
-        })
-        .then((downloadURL) => {
-          setFormData((prev) => ({ ...prev, imageUrl: downloadURL }));
-          return addDoc(collection(db, collections.EVENTS), {
-            ...formData,
-            imageUrl: downloadURL,
-          });
-        })
-        .then(() => {
-          toast.success("Event added successfully!");
-          setFormData({
-            name: "",
-            sport: "",
-            date: "",
-            location: "",
-            imageUrl: "",
-            flyerUrl: "",
-            description: "",
-          });
-          setFile(null);
-        })
-        .catch((error) => {
-          toast.error("Error adding event: " + error.message);
+    if (imageFile && flyerFile) {
+      try {
+        setLoading(true);
+        const uploadFilesPromises = [uploadFiles(imageFile, "images"), uploadFiles(flyerFile, "flyers")];
+        const [imageUrl, flyerUrl] = await Promise.all(uploadFilesPromises);
+        await addDoc(collection(db, collections.EVENTS), {
+          ...formData,
+          imageUrl,
+          flyerUrl,
         });
+        toast.success("Event added successfully.");
+        setFormData({
+          name: "",
+          sport: "",
+          date: "",
+          location: "",
+          imageUrl: "",
+          flyerUrl: "",
+          description: "",
+        });
+        setImageFile(null);
+        setFlyerFile(null);
+        handleEventChange();
+      } catch (error) {
+        console.error("Error adding document: ", error);
+        toast.error("Failed to add event.");
+      } finally {
+        setLoading(false);
+      }
     } else {
       toast.error("Please upload an image file.");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TailSpin color="#a3e635" height={80} width={80} />
+      </div>
+    );
+  }
 
   return (
     <form
@@ -165,11 +182,9 @@ const EventForm = () => {
         Flyer URL
       </label>
       <input
-        type="text"
-        name="flyerUrl"
-        value={formData.flyerUrl}
+        type="file"
+        name="flyerFile"
         onChange={handleChange}
-        placeholder="Flyer URL"
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
     </div>
@@ -192,7 +207,7 @@ const EventForm = () => {
     <div className="flex items-center justify-between">
       <button
         type="submit"
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        className="bg-lime-400 hover:bg-lime-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
       >
         Add Event
       </button>

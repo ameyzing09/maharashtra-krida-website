@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { errorConstants } from "../constants/errorConstant";
 import { getEvents } from "../services/eventService";
 import { EventProps } from "../types";
@@ -11,24 +11,29 @@ const useEvents = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setLoading(true);
-        const eventsDetails = await getEvents();
-        setEventsList(eventsDetails);
-        setError("");
-      } catch (error) {
-        setError(errorConstants.FAILED_TO_FETCH_EVENTS_DETAILS);
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEvents();
+  const fetchEvents = useCallback(async () => {
+    try {
+      setLoading(true);
+      const eventsDetails = await getEvents();
+      setEventsList(eventsDetails);
+      setError("");
+    } catch (error) {
+      setError(errorConstants.FAILED_TO_FETCH_EVENTS_DETAILS);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const handleDelete = async (eventId: string) => {
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+
+  const handleEventChange = () => {
+    fetchEvents();
+  }
+
+  const handleEventDelete = async (eventId: string) => {
     try {
       setLoading(true);
       await deleteDoc(doc(db, collections.EVENTS, eventId));
@@ -45,7 +50,7 @@ const useEvents = () => {
     }
   };
 
-  return { eventsList, loading, error, handleDelete };
+  return { eventsList, loading, error, handleEventDelete, handleEventChange };
 };
 
 export default useEvents;
