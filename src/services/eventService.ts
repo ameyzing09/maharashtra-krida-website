@@ -38,3 +38,5 @@ export const getEvents = async () => {
   })
   return events
 };
+
+// code to add event to the database
