@@ -11,6 +11,16 @@ export interface EventProps {
   description: string;
 }
 
+export interface SliderImageInput {
+  imageUrl: string;
+  alt: string;
+  title: string;
+  description: string;
+}
+
+export interface SliderImage extends SliderImageInput {
+  id: string;
+}
 export interface AuthContextType {
   user: User | null;
   status: "loading" | "signedIn" | "notSignedIn";

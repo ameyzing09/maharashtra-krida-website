@@ -6,7 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { TailSpin } from "react-loader-spinner";
 
-const EventOperation = () => {
+// 11th May 2024
+// Seperate out signout logic from here
+// check for imageslider not going back and forth
+
+const EventManagement = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -55,4 +59,4 @@ const EventOperation = () => {
   );
 };
 
-export default EventOperation;
+export default EventManagement;

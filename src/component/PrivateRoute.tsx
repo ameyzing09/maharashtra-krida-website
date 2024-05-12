@@ -1,5 +1,3 @@
-// src/components/PrivateRoute.js
-
 import { useEffect } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hook/useAuth';
