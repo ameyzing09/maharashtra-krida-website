@@ -24,8 +24,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('onAuthStateChanged - ')
-      if (user) {
+     if (user) {
         setUser(user);
         setStatus("signedIn");
       } else {
