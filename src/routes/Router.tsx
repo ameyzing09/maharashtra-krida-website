@@ -27,10 +27,10 @@ const Router: React.FC = () => {
             <Route element={<PrivateRoute />}>
               <Route path="menu" element={<Menu />} />
               <Route
-                path="content-management"
+                path="/menu/content-management"
                 element={<HomepageManagement />}
               />
-              <Route path="event-management" element={<EventManagement />} />
+              <Route path="/menu/event-management" element={<EventManagement />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

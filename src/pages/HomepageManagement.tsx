@@ -1,41 +1,12 @@
-import { toast } from "react-toastify";
-import { logout } from "../services/authService";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { TailSpin } from "react-loader-spinner";
 import HomepageForm from "../component/HomepageForm";
 import HomepageList from "../component/HomepageList";
 
 const HomepageManagement = () => {
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-  const handleSignOut = async () => {
-    try {
-      setLoading(true);
-      await logout();
-      navigate("/login");
-    } catch (error) {
-      console.error("Sign out failed:", error);
-      toast.error("Sign out failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) return <TailSpin color="#a3e635" height={80} width={80} />;
-
+  
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold">Sports Management</h1>
-        <button
-          type="submit"
-          className="bg-lime-400 hover:bg-lime-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          onClick={handleSignOut}
-        >
-          Sign Out
-        </button>
       </div>
       <p className="text-lg mb-6">
         Welcome to the event management page. Here you can add new events and

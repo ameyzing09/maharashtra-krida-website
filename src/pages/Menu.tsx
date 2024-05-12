@@ -5,8 +5,8 @@ const Menu: React.FC = () => {
   return (
     <div className="bg-gray-800 text-white p-4 flex flex-col items-center justify-center h-screen">
       <div className="space-y-4 text-lg">
-        <Link to="/content-management" className="block px-6 py-2 hover:bg-gray-700 rounded">Content Management</Link>
-        <Link to="/event-management" className="block px-6 py-2 hover:bg-gray-700 rounded">Event Management</Link>
+        <Link to="/menu/content-management" className="block px-6 py-2 hover:bg-gray-700 rounded">Content Management</Link>
+        <Link to="/menu/event-management" className="block px-6 py-2 hover:bg-gray-700 rounded">Event Management</Link>
         {/* <ul className="flex space-x-4">
           <li>
 
