@@ -2,6 +2,8 @@ import React from "react";
 import ImageSlider from "../component/ImageSlider";
 import useHomepageContent from "../hook/useHomepage";
 import { TailSpin } from "react-loader-spinner";
+import About from "./About";
+import Contact from "./Contact";
 
 const Home: React.FC = () => {
   const { content, loading, error } = useHomepageContent();
@@ -17,6 +19,8 @@ const Home: React.FC = () => {
   return (
     <div className="w-full">
       <ImageSlider sliderImages={content} />
+      <About />
+      <Contact />
     </div>
   );
 };
