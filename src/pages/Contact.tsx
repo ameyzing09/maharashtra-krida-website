@@ -2,10 +2,18 @@ import React from "react";
 
 const Contact: React.FC = () => {
   return (
-    <div>
-      <h1>Contact</h1>
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="max-w-4xl mx-auto p-8">
+        <h1 className="text-3xl font-bold text-center mb-6">Contact Us</h1>
+        <div className="text-gray-700 text-lg mb-4">
+          <p><strong>Address:</strong> OM SAI Palace, Narhe, Sinhagad Road, Pune 411 041</p>
+          <p><strong>Contact Person:</strong> Ashwin Panhalkar</p>
+          <p><strong>Phone:</strong> +91 – 9890 171 195</p>
+          <p><strong>Email:</strong> maharashtrakrida@gmail.com</p>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Contact
+export default Contact;

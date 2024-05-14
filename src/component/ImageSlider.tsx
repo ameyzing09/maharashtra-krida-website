@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { SliderImage } from "../types";
 
 interface ImageSliderProps {
@@ -8,13 +8,28 @@ interface ImageSliderProps {
 const ImageSlider: React.FC<ImageSliderProps> = ({ sliderImages }) => {
   const [current, setCurrent] = useState(0);
   const slideLength = sliderImages.length;
+  const imageRef = useRef([]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrent(current => (current === slideLength - 1 ? 0 : current + 1));
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [slideLength]);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const lazyImage = entry.target as HTMLImageElement;
+            lazyImage.src = lazyImage.dataset.src!;
+            observer.unobserve(lazyImage);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    const currentImageRef = imageRef.current;
+    currentImageRef.forEach((image) => observer.observe(image));
+
+    return () => {
+      currentImageRef.forEach((image) => observer.unobserve(image));
+    };
+  });
 
   const nextSlide = () => {
     setCurrent(current === slideLength - 1 ? 0 : current + 1);
@@ -29,10 +44,17 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ sliderImages }) => {
   }
 
   return (
-    <section className="relative w-full h-screen overflow-hidden" style={{ height: "calc(100vh - 60px)" }} >
+    <section
+      className="relative w-full h-screen overflow-hidden"
+      style={{ height: "calc(100vh - 60px)" }}
+    >
       {sliderImages.map((slideImage, index) => (
         <div
-          className={index === current ? "slide active flex justify-center items-center" : "slide hidden"}
+          className={
+            index === current
+              ? "slide active flex justify-center items-center"
+              : "slide hidden"
+          }
           key={index}
           style={{ height: "100%" }}
         >
