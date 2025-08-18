@@ -1,3 +1,7 @@
+[build]
+  publish = "dist"         # or "build" etc.
+  functions = "netlify/functions"
+  
 [[redirects]]
   from = "/*"
   to = "/index.html"
