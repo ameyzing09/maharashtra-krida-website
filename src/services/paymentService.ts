@@ -5,8 +5,7 @@ export async function createOrder(amount: number, eventCode: string, customer: {
     body: JSON.stringify({
       eventCode,
       qty: 1,
-      customer,
-      amountOverride: amount, // optional anti-tamper
+      customer
     }),
   });
   if (!res.ok) throw new Error(await res.text());
