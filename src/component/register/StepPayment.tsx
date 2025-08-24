@@ -25,21 +25,21 @@ function useRazorpayScript() {
 
 const StepPayment = () => {
   const { state, dispatch } = useRegistrationContext()
-  console.log('Payment state:', state);
+  
   const ready = useRazorpayScript()
   const [loading, setLoading] = useState(false)
   const amountDisplay = (state.priceBreakup.registrationFee)/100
   const pay = async () => {
     if (!ready) return
     setLoading(true)
-    console.log('Creating order with amount:', amountDisplay, 'for event code: registration_price')
+    
     const { orderId, amount, currency, keyId } = await createOrder(
       amountDisplay,
       "registration_price",
       { email: state.attendee?.companyEmail, contact: state.attendee?.phone }
     )
     dispatch({ type: "SET_ORDER", payload: orderId });
-    console.log('Payment details to sent ', { orderId, keyId, amount });
+    
     const contact = String(state.attendee?.phone ?? "")
       .replace(/\D/g, "")    // keep digits only
       .slice(-10);           // last 10 digits
