@@ -15,51 +15,60 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function StepAttendee() {
-    const { dispatch } = useRegistrationContext();
+    const { dispatch, state } = useRegistrationContext();
     const { register, handleSubmit, formState: { errors, isValid } } = useForm<FormData>({
         resolver: zodResolver(schema),
         mode: "onChange",
+        defaultValues: state.attendee || { name: '', phone: '', companyEmail: '', other: '' }
     })
     const onSubmit = (data: FormData) => {
+        console.log('Attendee data submitted:', data);
         dispatch({ type: 'SET_ATTENDEE', payload: data })
-        const registrationFee = 1100
+        const registrationFee = 110000
         dispatch({ type: 'SET_PRICE_BREAKUP', payload: { registrationFee } })
         dispatch({ type: 'NEXT' })
     }
-    const input = "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline";
+  const input = "w-full rounded border px-3 py-2 text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-lime-300";
 
-    return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-                <label className="block text-gray-700 text-sm font-bold mb-1">Full Name</label>
-                <input className={input} placeholder="Jane Doe" {...register("name")} />
-                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
-            </div>
+     return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Name */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">Full Name</label>
+        <input className={input} placeholder="Jane Doe" {...register("name")} />
+        {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name.message}</p>}
+      </div>
 
-            <div>
-                <label className="block text-gray-700 text-sm font-bold mb-1">Mobile Number</label>
-                <input className={input} placeholder="9XXXXXXXXX" {...register("phone")} />
-                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
-            </div>
+      {/* Phone + Other side by side on desktop */}
+      <div className="flex flex-col sm:flex-row sm:gap-4">
+        <div className="flex-1 flex flex-col mb-4 sm:mb-0">
+          <label className="text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+          <input className={input} inputMode="numeric" placeholder="9876543210" {...register("phone")} />
+          {errors.phone && <p className="text-xs text-red-600 mt-1">{errors.phone.message}</p>}
+        </div>
+        <div className="flex-1 flex flex-col">
+          <label className="text-sm font-medium text-gray-700 mb-1">Other (optional)</label>
+          <input className={input} placeholder="Employee ID / Designation" {...register("other")} />
+        </div>
+      </div>
 
-            <div>
-                <label className="block text-gray-700 text-sm font-bold mb-1">Company Email</label>
-                <input className={input} placeholder="you@company.com" {...register("companyEmail")} />
-                {errors.companyEmail && <p className="text-red-500 text-xs mt-1">{errors.companyEmail.message}</p>}
-            </div>
+      {/* Company Email */}
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">Company Email</label>
+        <input className={input} type="email" placeholder="you@company.com" {...register("companyEmail")} />
+        {errors.companyEmail && <p className="text-xs text-red-600 mt-1">{errors.companyEmail.message}</p>}
+      </div>
 
-            <div>
-                <label className="block text-gray-700 text-sm font-bold mb-1">Other (optional)</label>
-                <input className={input} placeholder="Employee ID / Designation" {...register("other")} />
-            </div>
-
-            <div className="flex justify-between">
-                <span />
-                <button disabled={!isValid} className="bg-lime-400 hover:bg-lime-600 disabled:opacity-50 text-white font-bold py-2 px-4 rounded focus:outline-none">
-                    Continue
-                </button>
-            </div>
-        </form>
-    )
-
+      {/* Buttons */}
+      <div className="flex flex-col sm:flex-row gap-3 sm:justify-end pt-2">
+        <button
+          type="submit"
+          disabled={!isValid}
+          className="w-full sm:w-auto bg-lime-500 hover:bg-lime-600 disabled:opacity-50 text-white font-semibold px-5 py-2.5 rounded"
+        >
+          Continue
+        </button>
+      </div>
+    </form>
+  );
 }

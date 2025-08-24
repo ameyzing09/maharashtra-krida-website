@@ -25,19 +25,38 @@ function useRazorpayScript() {
 
 const StepPayment = () => {
   const { state, dispatch } = useRegistrationContext()
+  console.log('Payment state:', state);
   const ready = useRazorpayScript()
   const [loading, setLoading] = useState(false)
-  const amountDisplay = state.priceBreakup.registrationFee
+  const amountDisplay = (state.priceBreakup.registrationFee)/100
   const pay = async () => {
     if (!ready) return
     setLoading(true)
-
+    console.log('Creating order with amount:', amountDisplay, 'for event code: registration_price')
     const { orderId, amount, currency, keyId } = await createOrder(
       amountDisplay,
-      "event_code",
-      { email: state.attendee?.companyEmail }
+      "registration_price",
+      { email: state.attendee?.companyEmail, contact: state.attendee?.phone }
     )
     dispatch({ type: "SET_ORDER", payload: orderId });
+    console.log('Payment details to sent ', { orderId, keyId, amount });
+    const contact = String(state.attendee?.phone ?? "")
+      .replace(/\D/g, "")    // keep digits only
+      .slice(-10);           // last 10 digits
+
+    if (contact.length !== 10) {
+      // guard just in case
+      alert("Invalid mobile number");
+      return;
+    }
+
+    const payloadForSuccess = {
+      amount,
+      currency,
+      name: state.attendee?.name || "",
+      email: state.attendee?.companyEmail || "",
+      phone: contact,
+    }
 
     const rzp = new window.Razorpay({
       key: keyId,
@@ -46,29 +65,33 @@ const StepPayment = () => {
       description: "Register for the event",
       order_id: orderId,
       prefill: {
-        name: state.attendee?.name,
-        email: state.attendee?.companyEmail,
-        contact: state.attendee?.phone,
+        name: payloadForSuccess.name,
+        email: payloadForSuccess.email,
+        contact: payloadForSuccess.phone,
       },
       notes: {
-        name: state.attendee?.name,
-        email: state.attendee?.companyEmail,
-        contact: state.attendee?.phone,
-        other: state.attendee?.other
+        eventCode: state.eventId,
+        ...payloadForSuccess
       },
       theme: { color: "#84cc16" }, // lime-400
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       handler: function (_resp: any) {
         // Client success callback (optimistic). Real source of truth = webhook.
-        window.location.href = "/success";
+        sessionStorage.setItem("rzp_success", JSON.stringify({ ..._resp, ...payloadForSuccess }))
+        window.location.href = "/payment/success";
       },
+      //dont cache previous mobile number
+      remember_customer: false,
       modal: {
         ondismiss: function () {
           setLoading(false);
         },
       },
     });
-
+    rzp.on("payment.failed", function(resp: any){
+      sessionStorage.setItem("rzp_failed", JSON.stringify({ ...resp, ts: Date.now() }))
+      window.location.href = "/payment/failure";
+    })
     rzp.open();
   }
   return (
@@ -81,7 +104,7 @@ const StepPayment = () => {
         disabled={!ready || loading}
         className="bg-lime-400 hover:bg-lime-600 disabled:opacity-50 text-white font-bold py-2 px-6 rounded"
       >
-        {loading ? "Processing..." : `Pay ₹${amountDisplay}`}
+        {loading ? "Processing..." : `Pay ₹${amountDisplay.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`}
       </button>
 
       <div className="flex justify-between mt-6">

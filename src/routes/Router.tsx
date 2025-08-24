@@ -11,6 +11,9 @@ import Login from "../pages/Login";
 import EventManagement from "../pages/EventManagement";
 import HomepageManagement from "../pages/HomepageManagement";
 import Menu from "../pages/Menu";
+import Register from "../pages/Register";
+import Success from "../pages/Payment/Success";
+import Failure from "../pages/Payment/Failure";
 
 const Router: React.FC = () => {
   return (
@@ -24,6 +27,7 @@ const Router: React.FC = () => {
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
             <Route path="upcoming-events" element={<Event />} />
+            <Route path="register" element={<Register />} />
             <Route element={<PrivateRoute />}>
               <Route path="menu" element={<Menu />} />
               <Route
@@ -32,6 +36,8 @@ const Router: React.FC = () => {
               />
               <Route path="/menu/event-management" element={<EventManagement />} />
             </Route>
+            <Route path="/payment/success" element={<Success />} />
+            <Route path="/payment/failure" element={<Failure />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
