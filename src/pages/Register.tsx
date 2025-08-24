@@ -14,6 +14,7 @@ const Register = () => {
   return (
     <RegistrationProvider>
       <div className="mx-auto mt-6 w-full max-w-md sm:max-w-lg md:max-w-2xl px-4">
+        <h1 className="text-2xl font-bold mb-4">Registration for Nyati Chess Tournament 2025</h1>
         <div className="mb-6 overflow-x-auto"><Progress /></div>
         <div className="bg-white rounded-xl shadow p-4 sm:p-6">
           <Steps />

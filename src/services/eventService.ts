@@ -13,7 +13,9 @@ const toEvent = (docData : any): EventProps | undefined => {
     typeof docData.location === 'string' &&
     typeof docData.imageUrl === 'string' &&
     typeof docData.flyerUrl === 'string' &&
-    typeof docData.description === 'string') {
+    typeof docData.registrationUrl === 'string' &&
+    typeof docData.description === 'string'
+  ) {
   return {
     id: docData.id,
     name: docData.name,
@@ -22,6 +24,7 @@ const toEvent = (docData : any): EventProps | undefined => {
     location: docData.location,
     imageUrl: docData.imageUrl,
     flyerUrl: docData.flyerUrl,
+    registrationUrl: docData.registrationUrl,
     description: docData.description
   };
 }

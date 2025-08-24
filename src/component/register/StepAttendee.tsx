@@ -22,7 +22,6 @@ export default function StepAttendee() {
         defaultValues: state.attendee || { name: '', phone: '', companyEmail: '', other: '' }
     })
     const onSubmit = (data: FormData) => {
-        console.log('Attendee data submitted:', data);
         dispatch({ type: 'SET_ATTENDEE', payload: data })
         const registrationFee = 110000
         dispatch({ type: 'SET_PRICE_BREAKUP', payload: { registrationFee } })
