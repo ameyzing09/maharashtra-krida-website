@@ -33,7 +33,6 @@ const usePagination = <T>(data: T[], itemsPerPage: number): UsePaginationReturnT
             setCurrentPage(pageNumber);
         }
     }
-
     return { nextPage, prevPage, jumpPage, currentData, currentPage, maxPage };
 
 }

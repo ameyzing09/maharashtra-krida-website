@@ -6,6 +6,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
   ],
+  files: ["netlify/functions/**/*.{js,ts}"],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh'],

@@ -8,6 +8,7 @@ export interface EventProps {
   location: string;
   imageUrl: string;
   flyerUrl?: string;
+  registrationUrl?: string;
   description: string;
 }
 

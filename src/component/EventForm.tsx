@@ -15,6 +15,7 @@ const EventForm = () => {
     location: "",
     imageUrl: "",
     flyerUrl: "",
+    registrationUrl: "",
     description: "",
   });
   // const [error, setError] = useState('')
@@ -63,6 +64,7 @@ const EventForm = () => {
           location: "",
           imageUrl: "",
           flyerUrl: "",
+          registrationUrl: "",
           description: "",
         });
         setImageFile(null);
@@ -185,6 +187,22 @@ const EventForm = () => {
         type="file"
         name="flyerFile"
         onChange={handleChange}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+    </div>
+    <div className="mb-4">
+      <label
+        className="block text-gray-700 text-sm font-bold mb-2"
+        htmlFor="registrationUrl"
+      >
+        Registration URL
+      </label>
+      <input
+        type="text"
+        name="registrationUrl"
+        value={formData.registrationUrl}
+        onChange={handleChange}
+        placeholder="Registration URL"
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
     </div>

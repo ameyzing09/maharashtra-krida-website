@@ -20,7 +20,6 @@ export default function Event() {
     currentData,
     maxPage
   } = usePagination(eventsList, eventsPerPage)
-
   if (loading) {
     return (
       <div className="container mx-auto px-4">
