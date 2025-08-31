@@ -9,6 +9,7 @@ export async function createOrder(amount: number, eventCode: string, customer: {
       amount
     }),
   });
+  console.log('payment request -> ',  res)
   if (!res.ok) throw new Error(await res.text());
   // return res.json() as Promise<{ orderId: string; amount: number; currency: string; keyId: string }>;
   const data = await res.json();

@@ -39,7 +39,11 @@ export default function Progress() {
               <li key={s.id} className="flex items-center min-w-fit">
                 <div className={[
                   "flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full",
-                  done ? "bg-lime-500 text-white" : now ? "bg-lime-100 text-lime-700 ring-2 ring-lime-400" : "bg-gray-200 text-gray-600"
+                  done
+                    ? "bg-brand-lime text-white"
+                    : now
+                    ? "bg-brand-lime/15 text-brand-lime ring-2 ring-brand-lime/60"
+                    : "bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300"
                 ].join(" ")}
                   aria-current={now ? "step" : undefined}
                 >
@@ -54,7 +58,7 @@ export default function Progress() {
                 </div>
                 <span className={[
                   "ml-2 sm:ml-3 text-xs sm:text-sm font-medium whitespace-nowrap",
-                  done ? "text-gray-700" : now ? "text-lime-700" : "text-gray-500",
+                  done ? "text-gray-700 dark:text-gray-200" : now ? "text-brand-lime" : "text-gray-500 dark:text-gray-400",
                 ].join(" ")}
                 >
                   {s.label}
@@ -63,7 +67,7 @@ export default function Progress() {
                   idx < stepsMetaData.length - 1 && (
                     <span className={[
                       "mx-3 sm:mx-4 h-[2px] w-10 sm:w-16 rounded",
-                      idx < currentStep ? "bg-lime-400" : "bg-gray-200",
+                      idx < currentStep ? "bg-brand-lime" : "bg-black/10 dark:bg-white/10",
                     ].join(" ")}
                       aria-hidden="true"
                     />
