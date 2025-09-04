@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 
 const Menu: React.FC = () => {
   return (
-    <div className="bg-gray-800 text-white p-4 flex flex-col items-center justify-center h-screen">
+    <div className="h-screen p-4 flex flex-col items-center justify-center bg-brand-paper dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200">
       <div className="space-y-4 text-lg">
-        <Link to="/menu/content-management" className="block px-6 py-2 hover:bg-gray-700 rounded">Content Management</Link>
-        <Link to="/menu/event-management" className="block px-6 py-2 hover:bg-gray-700 rounded">Event Management</Link>
-        {/* <ul className="flex space-x-4">
+        <Link to="/menu/content-management" className="block px-6 py-2 rounded hover:bg-black/5 dark:hover:bg-white/10">Content Management</Link>
+        <Link to="/menu/event-management" className="block px-6 py-2 rounded hover:bg-black/5 dark:hover:bg-white/10">Event Management</Link>
+      {/* <ul className="flex space-x-4">
           <li>
 
             <a

@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Toast from "./common/Toast";
 import { TailSpin } from "react-loader-spinner";
 import { logout } from "../services/authService";
 import useToast from "../hook/useToast";
+import useTheme from "../hook/useTheme";
 
 type Theme = "light" | "dark";
 
@@ -13,12 +14,7 @@ const Header: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem("theme") as Theme | null;
-    if (stored === "dark" || stored === "light") return stored;
-    const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return prefersDark ? "dark" : "light";
-  });
+  const { theme, setTheme } = useTheme();
   const { toast, showToast } = useToast();
   const navigate = useNavigate();
 
@@ -35,12 +31,7 @@ const Header: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") root.classList.add("dark");
-    else root.classList.remove("dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+  // theme class toggling handled by ThemeProvider
 
   const linkBase =
     "block px-3 py-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime/70 transition-colors";
