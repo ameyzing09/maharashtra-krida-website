@@ -22,8 +22,9 @@ export default function Event() {
   } = usePagination(eventsList, eventsPerPage)
   if (loading) {
     return (
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white mb-4">Upcoming Events</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {Array.from({ length: eventsPerPage }).map((_, idx) => (
             <SkeletonLoader key={idx} />
           ))}
@@ -33,21 +34,23 @@ export default function Event() {
   }
 
   if(error) return (
-    <div className="container mx-auto px-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <h1>{error}</h1>
-      </div>
+    <div className="mx-auto max-w-6xl px-4 py-10">
+      <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white mb-2">Upcoming Events</h1>
+      <p className="text-red-600">{error}</p>
     </div>
   )
 
   return (
-    <div className="container mt-8 px-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="mx-auto max-w-6xl px-4 py-8">
+      <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white mb-4">Upcoming Events</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {currentData().map((event) => (
           <EventCard key={event.id} {...event} />
         ))}
       </div>
-      <Pagination currentPage={currentPage} nextPage={nextPage} prevPage={prevPage} jumpPage={jumpPage} maxPage={maxPage} />
+      <div className="mt-6">
+        <Pagination currentPage={currentPage} nextPage={nextPage} prevPage={prevPage} jumpPage={jumpPage} maxPage={maxPage} />
+      </div>
     </div>
   );
 }

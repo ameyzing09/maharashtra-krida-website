@@ -28,12 +28,12 @@ const MenuHeader: React.FC = () => {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} />}
-      <div className="bg-gray-200 text-black px-4 py-3 shadow-md">
+      <div className="px-4 py-3 shadow-md bg-white dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200 border-b border-black/5 dark:border-white/10">
         <div className="container mx-auto flex justify-between items-center">
           {/* <h2 className="text-lg font-bold">{title}</h2> */}
           <button
             onClick={handleSignOut}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            className="rounded-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4"
           >
             Sign Out
           </button>

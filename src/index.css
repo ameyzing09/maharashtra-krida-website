@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Light theme defaults */
+  body, #root {
+    min-height: 100vh;
+    background-color: theme('colors.brand.paper');
+    color: theme('colors.brand.charcoal');
+  }
+
+  /* Dark theme overrides when html has .dark */
+  .dark body, .dark #root {
+    background-color: theme('colors.brand.charcoal');
+    color: theme('colors.gray.200');
+  }
+}

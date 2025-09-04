@@ -26,16 +26,16 @@ const HomepageList: React.FC = () => {
     return (
         <>
         {toast && <Toast message={toast.message} type={toast.type} />}
-        <div className="container mx-auto">
+        <div className="container mx-auto text-brand-charcoal dark:text-gray-200">
           <h2 className="text-2xl font-semibold mb-4">Event List</h2>
           {currentData().length === 0 ? (
-            <p className="text-gray-600">No events added yet.</p>
+            <p className="text-gray-600 dark:text-gray-300">No events added yet.</p>
           ) : (
             <ul className="grid gap-4">
               {currentData().map((item) => (
-                <li key={item.id} className="p-4 bg-white shadow rounded-lg">
-                <div className="font-bold">{item.title}</div>
-                <div className="text-gray-600">{item.description}</div>
+                <li key={item.id} className="p-4 bg-white dark:bg-brand-slate border border-black/5 dark:border-white/10 shadow rounded-lg">
+                <div className="font-bold text-brand-charcoal dark:text-gray-100">{item.title}</div>
+                <div className="text-gray-600 dark:text-gray-300">{item.description}</div>
                 <div className="mt-2 flex justify-end space-x-2">
                   <button
                     onClick={handleDelete(item.id)}

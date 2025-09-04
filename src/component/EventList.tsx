@@ -40,17 +40,17 @@ const EventsList = () => {
 
   return (
     <div className="container mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">Event List</h2>
+      <h2 className="text-2xl font-semibold mb-4 text-brand-charcoal dark:text-gray-100">Event List</h2>
       {currentData().length === 0 ? (
-        <p className="text-gray-600">No events added yet.</p>
+        <p className="text-gray-600 dark:text-gray-300">No events added yet.</p>
       ) : (
         <ul className="grid gap-4">
           {currentData().map((event) => (
-            <li key={event.id} className="p-4 bg-white shadow rounded-lg">
-              <div className="font-bold">{event.name}</div>
-              <div className="text-gray-600">{event.sport}</div>
-              <div className="text-gray-600">{event.date}</div>
-              <div className="text-gray-600">{event.location}</div>
+            <li key={event.id} className="p-4 bg-white dark:bg-brand-slate border border-black/5 dark:border-white/10 shadow rounded-lg">
+              <div className="font-bold text-brand-charcoal dark:text-gray-100">{event.name}</div>
+              <div className="text-gray-600 dark:text-gray-300">{event.sport}</div>
+              <div className="text-gray-600 dark:text-gray-300">{event.date}</div>
+              <div className="text-gray-600 dark:text-gray-300">{event.location}</div>
               <div className="mt-2 flex justify-end space-x-2">
                 <button
                   onClick={() => handleEventDelete(event.id)}
