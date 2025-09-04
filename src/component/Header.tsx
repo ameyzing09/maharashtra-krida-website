@@ -13,7 +13,12 @@ const Header: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem("theme") as Theme) || "light");
+  const [theme, setTheme] = useState<Theme>(() => {
+    const stored = localStorage.getItem("theme") as Theme | null;
+    if (stored === "dark" || stored === "light") return stored;
+    const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return prefersDark ? "dark" : "light";
+  });
   const { toast, showToast } = useToast();
   const navigate = useNavigate();
 
@@ -67,7 +72,7 @@ const Header: React.FC = () => {
       {navLinks}
       <Link
         to="/register"
-        className="ml-1 inline-flex items-center justify-center rounded-full bg-brand-lime hover:bg-brand-limeDark text-white px-4 py-2 font-semibold shadow-soft"
+        className="ml-1 inline-flex items-center justify-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal px-4 py-2 font-semibold shadow-soft"
       >
         Register
       </Link>
@@ -142,7 +147,7 @@ const Header: React.FC = () => {
                   {navLinks}
                   <Link
                     to="/register"
-                    className="mt-1 inline-flex items-center justify-center rounded-full bg-brand-lime hover:bg-brand-limeDark text-white px-4 py-2 font-semibold shadow-soft"
+                    className="mt-1 inline-flex items-center justify-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal px-4 py-2 font-semibold shadow-soft"
                   >
                     Register
                   </Link>

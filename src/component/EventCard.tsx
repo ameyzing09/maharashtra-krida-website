@@ -74,14 +74,14 @@ const EventCard: React.FC<CardProps> = ({
                 href={registrationUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto text-center rounded-full bg-brand-lime hover:bg-brand-limeDark text-white font-semibold py-2.5 px-5"
+                className="w-full sm:w-auto text-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold py-2.5 px-5 shadow-soft"
               >
                 Register Now
               </a>
             ) : (
               <Link
                 to={registrationUrl}
-                className="w-full sm:w-auto text-center rounded-full bg-brand-lime hover:bg-brand-limeDark text-white font-semibold py-2.5 px-5"
+                className="w-full sm:w-auto text-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold py-2.5 px-5 shadow-soft"
               >
                 Register Now
               </Link>
@@ -89,7 +89,7 @@ const EventCard: React.FC<CardProps> = ({
           ) : (
             <Link
               to="/register"
-              className="w-full sm:w-auto text-center rounded-full bg-brand-lime hover:bg-brand-limeDark text-white font-semibold py-2.5 px-5"
+              className="w-full sm:w-auto text-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold py-2.5 px-5 shadow-soft"
             >
               Register Now
             </Link>

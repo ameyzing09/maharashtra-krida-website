@@ -102,7 +102,7 @@ const HomepageForm: React.FC = () => {
         <input type="file" name="imageFile" onChange={handleFileChange} className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
       </div>
       <div className="flex items-center justify-between">
-        <button type="submit" className="bg-lime-400 hover:bg-lime-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        <button type="submit" className="bg-lime-400 hover:bg-lime-600 text-brand-charcoal font-bold py-2 px-4 rounded border border-black/10 focus:outline-none focus:shadow-outline">
           Add Content
         </button>
       </div>

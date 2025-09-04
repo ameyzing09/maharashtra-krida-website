@@ -72,7 +72,7 @@ export default function Failure() {
           </Link>
           <button
             onClick={() => window.history.back()}
-            className="w-full sm:w-auto rounded-full bg-brand-lime hover:bg-brand-limeDark text-white font-medium px-4 py-2.5"
+            className="w-full sm:w-auto rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-medium px-4 py-2.5"
           >
             Try Again
           </button>

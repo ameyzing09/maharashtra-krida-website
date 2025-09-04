@@ -4,6 +4,7 @@ import useHomepageContent from "../hook/useHomepage";
 import { TailSpin } from "react-loader-spinner";
 import About from "./About";
 import Contact from "./Contact";
+import Hero from "../component/Hero";
 
 const Home: React.FC = () => {
   const { content, loading, error } = useHomepageContent();
@@ -18,6 +19,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="w-full">
+      <Hero />
       <ImageSlider sliderImages={content} />
       <About />
       <Contact />

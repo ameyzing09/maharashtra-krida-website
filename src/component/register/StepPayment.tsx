@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRegistrationContext } from "../../hook/useRegistration";
 import { createOrder } from "../../services/paymentService";
+import useToast from "../../hook/useToast";
+import Toast from "../common/Toast";
 
 type RazorpaySuccess = {
   razorpay_payment_id: string;
@@ -25,7 +27,7 @@ type RazorpayOptions = {
 
 type RazorpayInstance = {
   open: () => void;
-  on: (event: "payment.failed", handler: (resp: unknown) => void) => void;
+  on: (event: string, handler: (resp: unknown) => void) => void;
 };
 
 declare global {
@@ -54,83 +56,116 @@ function useRazorpayScript() {
 
 const StepPayment = () => {
   const { state, dispatch } = useRegistrationContext();
+  const { toast, showToast } = useToast();
 
   const ready = useRazorpayScript();
   const [loading, setLoading] = useState(false);
   const amountDisplay = state.priceBreakup.registrationFee / 100;
   const pay = async () => {
-    if (!ready) return;
+    if (!ready || loading) return;
     setLoading(true);
+    try {
+      // Validate contact BEFORE creating order
+      const contact = String(state.attendee?.phone ?? "")
+        .replace(/\D/g, "")
+        .slice(-10);
+      if (contact.length !== 10) {
+        showToast("Invalid mobile number", "error");
+        setLoading(false);
+        return;
+      }
 
-    const { orderId, amount, currency, keyId } = await createOrder(
-      amountDisplay,
-      "registration_price",
-      { email: state.attendee?.companyEmail, contact: state.attendee?.phone }
-    );
-    dispatch({ type: "SET_ORDER", payload: orderId });
+      const { orderId, amount, currency, keyId } = await createOrder(
+        amountDisplay,
+        "registration_price",
+        { email: state.attendee?.companyEmail, contact: state.attendee?.phone }
+      );
+      dispatch({ type: "SET_ORDER", payload: orderId });
 
-    const contact = String(state.attendee?.phone ?? "")
-      .replace(/\D/g, "")
-      .slice(-10);
+      const payloadForSuccess = {
+        amount,
+        currency,
+        name: state.attendee?.name || "",
+        email: state.attendee?.companyEmail || "",
+        phone: contact,
+      };
 
-    if (contact.length !== 10) {
-      alert("Invalid mobile number");
-      return;
-    }
-
-    const payloadForSuccess = {
-      amount,
-      currency,
-      name: state.attendee?.name || "",
-      email: state.attendee?.companyEmail || "",
-      phone: contact,
-    };
-
-    const rzp = new window.Razorpay({
-      key: keyId,
-      amount,
-      currency,
-      name: "Event Registration",
-      description: "Register for the event",
-      order_id: orderId,
-      prefill: {
-        name: payloadForSuccess.name,
-        email: payloadForSuccess.email,
-        contact: payloadForSuccess.phone,
-      },
-      notes: {
-        eventCode: state.eventId,
-        ...payloadForSuccess,
-      },
-      theme: { color: "#84cc16" },
-      handler: function (_resp: RazorpaySuccess) {
-        sessionStorage.setItem("rzp_success", JSON.stringify({ ..._resp, ...payloadForSuccess }));
-        window.location.href = "/payment/success";
-      },
-      remember_customer: false,
-      modal: {
-        ondismiss: function () {
-          setLoading(false);
+      let safety: number | undefined;
+      const rzp = new window.Razorpay({
+        key: keyId,
+        amount,
+        currency,
+        name: "Event Registration",
+        description: "Register for the event",
+        order_id: orderId,
+        prefill: {
+          name: payloadForSuccess.name,
+          email: payloadForSuccess.email,
+          contact: payloadForSuccess.phone,
         },
-      },
-    });
-    rzp.on("payment.failed", function (resp: unknown) {
-      const base = typeof resp === "object" && resp !== null ? (resp as Record<string, unknown>) : {};
-      const payload = { ...base, ts: Date.now() };
-      sessionStorage.setItem("rzp_failed", JSON.stringify(payload));
-      window.location.href = "/payment/failure";
-    });
-    rzp.open();
+        notes: {
+          eventCode: state.eventId,
+          ...payloadForSuccess,
+        },
+        theme: { color: "#84cc16" },
+        handler: function (_resp: RazorpaySuccess) {
+          sessionStorage.setItem("rzp_success", JSON.stringify({ ..._resp, ...payloadForSuccess }));
+          // No need to reset loading as we navigate away
+          window.location.href = "/payment/success";
+        },
+        remember_customer: false,
+        modal: {
+          ondismiss: function () {
+            // User closed the modal without success
+            setLoading(false);
+            if (safety) window.clearTimeout(safety);
+          },
+        },
+      });
+
+      // safety timer in case neither failed nor dismiss fires (edge errors)
+      safety = window.setTimeout(() => {
+        setLoading(false);
+        showToast("Payment window did not respond. Please try again.", "error");
+      }, 20000);
+
+      rzp.on("payment.failed", function (resp: unknown) {
+        // Ensure button returns to normal state on failure
+        setLoading(false);
+        if (safety !== undefined) window.clearTimeout(safety);
+        const base = typeof resp === "object" && resp !== null ? (resp as Record<string, unknown>) : {};
+        const payload = { ...base, ts: Date.now() };
+        sessionStorage.setItem("rzp_failed", JSON.stringify(payload));
+        window.location.href = "/payment/failure";
+      });
+
+      // try to catch configuration/initialization errors too
+      rzp.on("payment.error", function (resp: unknown) {
+        setLoading(false);
+        if (safety !== undefined) window.clearTimeout(safety);
+        const base = typeof resp === "object" && resp !== null ? (resp as Record<string, unknown>) : {};
+        const payload = { ...base, ts: Date.now() };
+        sessionStorage.setItem("rzp_failed", JSON.stringify(payload));
+        showToast("Payment could not be initialized.", "error");
+      });
+
+      rzp.open();
+    } catch (err) {
+      console.error("Failed to initialize payment:", err);
+      showToast("Could not start payment. Please try again.", "error");
+      setLoading(false);
+    }
   };
   return (
     <div className="text-center space-y-4">
+      {toast && <Toast message={toast.message} type={toast.type} />}
       <p className="text-gray-700 dark:text-gray-300">
         You'll be redirected to the secure Razorpay Checkout to complete the payment.
       </p>
       <button
         onClick={pay}
         disabled={!ready || loading}
-        className="rounded-full bg-brand-lime hover:bg-brand-limeDark disabled:opacity-50 text-white font-semibold py-2.5 px-6"
+        className="rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark disabled:bg-brand-lime/50 disabled:text-brand-charcoal/70 disabled:cursor-not-allowed text-brand-charcoal font-semibold py-2.5 px-6 shadow-soft"
       >
         {loading
           ? "Processing..."

@@ -64,7 +64,7 @@ export default function StepAttendee() {
         <button
           type="submit"
           disabled={!isValid}
-          className="w-full sm:w-auto rounded-full bg-brand-lime hover:bg-brand-limeDark disabled:opacity-50 text-white font-semibold px-6 py-2.5"
+          className="w-full sm:w-auto rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark disabled:bg-brand-lime/50 disabled:text-brand-charcoal/70 disabled:cursor-not-allowed text-brand-charcoal font-semibold px-6 py-2.5 shadow-soft"
         >
           Continue
         </button>

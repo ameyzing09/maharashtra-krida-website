@@ -7,6 +7,18 @@
     <link rel="icon" type="image/jpg" href="./public/favico.jpg" />
     <link rel="icon" type="image/x-icon" href="./public/favico.ico" />
     <title>Maharashtra Krida</title>
+    <script>
+      (function () {
+        try {
+          var ls = localStorage.getItem('theme');
+          var isDark = ls ? ls === 'dark' : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var root = document.documentElement;
+          if (isDark) root.classList.add('dark'); else root.classList.remove('dark');
+        } catch (e) {
+          // no-op
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

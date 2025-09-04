@@ -36,7 +36,7 @@ export default function Success() {
         <div className="w-full max-w-md rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate shadow-soft p-6 text-center">
           <h2 className="text-lg sm:text-xl font-semibold text-brand-charcoal dark:text-white mb-1">No payment found</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-5 text-sm">If you just paid, refresh this page.</p>
-          <Link to="/" className="inline-flex justify-center rounded-full bg-brand-lime hover:bg-brand-limeDark text-white px-4 py-2 font-semibold">Go Home</Link>
+          <Link to="/" className="inline-flex justify-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal px-4 py-2 font-semibold">Go Home</Link>
         </div>
       </div>
     );
@@ -101,7 +101,7 @@ export default function Success() {
             </button>
             <Link
               to="/"
-              className="w-full sm:w-auto rounded-full bg-brand-lime hover:bg-brand-limeDark text-white font-medium px-4 py-2.5 text-center"
+              className="w-full sm:w-auto rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-medium px-4 py-2.5 text-center"
             >
               Go Home
             </Link>
