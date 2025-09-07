@@ -2,23 +2,56 @@ import React from "react";
 
 const About: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-paper dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200">
-      <div className="max-w-4xl mx-auto p-8">
-        <h1 className="text-3xl font-bold text-center mb-6">About MAHARASHTRA KRIDA</h1>
-        <p className="text-gray-700 dark:text-gray-300 text-lg mb-4">
-          Incorporated in 2001, MAHARASHTRA KRIDA aims to promote a sports culture and competition among employees in the ever-growing Corporate and IT sector of Pune.
-        </p>
-        <p className="text-gray-700 dark:text-gray-300 text-lg mb-4">
-          Over the past 21 years, we've become a registered vendor for over 200+ Fortune 500 and startup IT companies, as well as businesses in the banking, manufacturing, real estate, and hospitality sectors across Pune and its vicinity.
-        </p>
-        <p className="text-gray-700 dark:text-gray-300 text-lg mb-4">
-          Recognizing the potential for sports expansion in Pune and other districts in Maharashtra, we ventured into the development and consultancy of sports infrastructure & facilities, providing end-to-end logistical support from setup to business development planning.
-        </p>
-        <p className="text-gray-700 dark:text-gray-300 text-lg">
-          Additionally, we promote social welfare programs focusing on safety, health awareness, road safety, traffic awareness, food waste management, water management, environmental responsibility, and plastic management in the corporate sector.
-        </p>
+    <section className="bg-brand-paper dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+        {/* Heading */}
+        <div className="max-w-3xl">
+          <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">About Maharashtra Krida</h1>
+          <p className="mt-3 text-gray-400 dark:text-gray-300 text-base sm:text-lg">
+            Since 2001, we’ve built a vibrant, inclusive sporting ecosystem for corporate and IT communities across Maharashtra — enabling people to play, compete and celebrate together.
+          </p>
+        </div>
+
+        {/* Cards */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+            <h2 className="text-lg font-semibold">Our Mission</h2>
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+              Promote a strong sports culture in workplaces by organizing fair, well-managed tournaments and creating pathways for lifelong participation.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+            <h2 className="text-lg font-semibold">What We Do</h2>
+            <ul className="mt-2 text-sm text-gray-700 dark:text-gray-300 list-disc pl-5 space-y-1">
+              <li>End-to-end sports tournament management</li>
+              <li>Facility consulting and operations support</li>
+              <li>Community-first engagement and recognition</li>
+            </ul>
+          </div>
+
+          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+            <h2 className="text-lg font-semibold">Impact</h2>
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+              Partnered with 200+ organizations across IT, banking, manufacturing and more. From local leagues to statewide events, our tournaments put people and fair play first.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+            <h2 className="text-lg font-semibold">Beyond Sports</h2>
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+              We support initiatives in health and safety, environmental responsibility and civic awareness through the power of sporting communities.
+            </p>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="mt-10 flex flex-wrap gap-3">
+          <a href="/upcoming-events" className="inline-flex items-center justify-center rounded-full bg-brand-lime hover:bg-brand-limeDark text-white px-6 py-3 font-semibold shadow-soft">View Upcoming Events</a>
+          <a href="/contact" className="inline-flex items-center justify-center rounded-full border border-brand-lime/60 text-brand-charcoal dark:text-white hover:bg-brand-lime/10 px-6 py-3 font-semibold">Contact Us</a>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 
