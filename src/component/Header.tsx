@@ -44,15 +44,12 @@ const Header: React.FC = () => {
         <Link to="/" className={`${linkBase} ${hover} ${isActive("/")}`} aria-current={location.pathname === "/" ? "page" : undefined}>
           Home
         </Link>
-        <Link to="/about" className={`${linkBase} ${hover} ${isActive("/about")}`} aria-current={location.pathname === "/about" ? "page" : undefined}>
-          About
+        <Link to="/gallery" className={`${linkBase} ${hover} ${isActive("/gallery")}`} aria-current={location.pathname === "/gallery" ? "page" : undefined}>
+          Gallery
         </Link>
-        <Link to="/contact" className={`${linkBase} ${hover} ${isActive("/contact")}`} aria-current={location.pathname === "/contact" ? "page" : undefined}>
-          Contact
+        <Link to="/news" className={`${linkBase} ${hover} ${isActive("/news")}`} aria-current={location.pathname === "/news" ? "page" : undefined}>
+          News
         </Link>
-        <Link to="/upcoming-events" className={`${linkBase} ${hover} ${isActive("/upcoming-events")}`} aria-current={location.pathname === "/upcoming-events" ? "page" : undefined}>
-          Events
-        </Link> 
       </>
     ), [location.pathname]
   );

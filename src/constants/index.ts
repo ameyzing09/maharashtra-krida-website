@@ -3,5 +3,7 @@ export const collections = {
     EVENTS: 'events',
     TEAMS: 'teams',
     EVENT_TEAMS: 'eventTeams',
-    MATCHES: 'matches'
+    MATCHES: 'matches',
+    GALLERY: 'gallery',
+    NEWS: 'news'
 }
