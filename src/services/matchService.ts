@@ -65,17 +65,26 @@ export async function listMatchesByEvent(eventId: ID): Promise<Match[]> {
 }
 
 export async function listMatchesByStatus(status: MatchStatus, max = 30): Promise<Match[]> {
+  const byUpcomingAsc = status === "upcoming";
   try {
-    const q = query(matchesRef, where("status", "==", status), orderBy("scheduledAt", "desc"), limit(max));
+    const q = query(
+      matchesRef,
+      where("status", "==", status),
+      orderBy("scheduledAt", byUpcomingAsc ? "asc" : "desc"),
+      limit(max)
+    );
     const snap = await getDocs(q);
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Match, "id">) }));
   } catch (e: unknown) {
     // Fallback if composite index not yet created
     const q = query(matchesRef, where("status", "==", status), limit(max));
     const snap = await getDocs(q);
-    return snap.docs
-      .map((d) => ({ id: d.id, ...(d.data() as Omit<Match, "id">) }))
-      .sort((a, b) => (b.scheduledAt ?? 0) - (a.scheduledAt ?? 0));
+    const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Match, "id">) }));
+    return rows.sort((a, b) =>
+      byUpcomingAsc
+        ? (a.scheduledAt ?? 0) - (b.scheduledAt ?? 0)
+        : (b.scheduledAt ?? 0) - (a.scheduledAt ?? 0)
+    );
   }
 }
 

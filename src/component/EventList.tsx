@@ -7,6 +7,7 @@ import useEvents from "../hook/useEvents";
 import usePagination from "../hook/usePagination";
 import Pagination from "./Pagination";
 import { calculateEventsPerPage } from "..";
+import { formatDateLong } from "../utils/date";
 
 const EventsList = () => {
   const [eventsPerPage] = useState(calculateEventsPerPage());
@@ -49,7 +50,7 @@ const EventsList = () => {
             <li key={event.id} className="p-4 bg-white dark:bg-brand-slate border border-black/5 dark:border-white/10 shadow rounded-lg">
               <div className="font-bold text-brand-charcoal dark:text-gray-100">{event.name}</div>
               <div className="text-gray-600 dark:text-gray-300">{event.sport}</div>
-              <div className="text-gray-600 dark:text-gray-300">{event.date}</div>
+              <div className="text-gray-600 dark:text-gray-300">{formatDateLong(event.date)}</div>
               <div className="text-gray-600 dark:text-gray-300">{event.location}</div>
               <div className="mt-2 flex justify-end space-x-2">
                 <button

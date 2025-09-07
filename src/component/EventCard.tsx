@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { EventProps } from "../types";
+import { formatDateLong } from "../utils/date";
 
 type CardProps = EventProps & { registrationUrl?: string };
 
@@ -24,7 +25,7 @@ const EventCard: React.FC<CardProps> = ({
   return (
     <article className="w-full rounded-2xl overflow-hidden bg-white dark:bg-brand-slate shadow-soft transition hover:shadow-lift">
       <img
-        className="w-full h-44 sm:h-52 md:h-56 object-cover"
+        className="w-full h-44 sm:h-52 md:h-56 object-fit"
         src={imageUrl}
         alt={name}
         loading="lazy"
@@ -50,7 +51,7 @@ const EventCard: React.FC<CardProps> = ({
           )}
           {date && (
             <span className="inline-flex items-center rounded-full bg-black/5 dark:bg-white/10 text-brand-charcoal dark:text-gray-200 px-3 py-1 text-xs sm:text-sm">
-              {date}
+              {formatDateLong(date)}
             </span>
           )}
           {location && (

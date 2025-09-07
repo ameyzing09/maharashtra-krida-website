@@ -61,12 +61,6 @@ const Header: React.FC = () => {
   const CommonLinks = (
     <>
       {navLinks}
-      <Link
-        to="/register"
-        className="ml-1 inline-flex items-center justify-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal px-4 py-2 font-semibold shadow-soft"
-      >
-        Register
-      </Link>
     </>
   );
 
@@ -145,17 +139,7 @@ const Header: React.FC = () => {
         <div className={`md:hidden transition-[max-height] duration-300 overflow-hidden ${open ? "max-h-96" : "max-h-0"}`}>
           <div className="mx-auto max-w-6xl px-4 pb-3">
             <nav className="flex flex-col py-2 gap-1 text-brand-charcoal dark:text-gray-200">
-              {isMenuPage ? MenuLinks : (
-                <>
-                  {navLinks}
-                  <Link
-                    to="/register"
-                    className="mt-1 inline-flex items-center justify-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal px-4 py-2 font-semibold shadow-soft"
-                  >
-                    Register
-                  </Link>
-                </>
-              )}
+              {isMenuPage ? MenuLinks : navLinks}
             </nav>
           </div>
         </div>
