@@ -7,6 +7,7 @@ const Menu: React.FC = () => {
       <div className="space-y-4 text-lg">
         <Link to="/menu/content-management" className="block px-6 py-2 rounded hover:bg-black/5 dark:hover:bg-white/10">Content Management</Link>
         <Link to="/menu/event-management" className="block px-6 py-2 rounded hover:bg-black/5 dark:hover:bg-white/10">Event Management</Link>
+        <Link to="/menu/tournaments" className="block px-6 py-2 rounded hover:bg-black/5 dark:hover:bg-white/10">Tournament Manager</Link>
       {/* <ul className="flex space-x-4">
           <li>
 

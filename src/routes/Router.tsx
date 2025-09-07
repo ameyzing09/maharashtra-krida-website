@@ -14,6 +14,8 @@ import Menu from "../pages/Menu";
 import Register from "../pages/Register";
 import Success from "../pages/Payment/Success";
 import Failure from "../pages/Payment/Failure";
+import TournamentsPage from "../pages/Tournaments";
+import TournamentAdmin from "../pages/TournamentAdmin";
 
 const Router: React.FC = () => {
   return (
@@ -27,6 +29,7 @@ const Router: React.FC = () => {
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
             <Route path="upcoming-events" element={<Event />} />
+            <Route path="tournaments" element={<TournamentsPage />} />
             <Route path="register" element={<Register />} />
             <Route element={<PrivateRoute />}>
               <Route path="menu" element={<Menu />} />
@@ -35,6 +38,7 @@ const Router: React.FC = () => {
                 element={<HomepageManagement />}
               />
               <Route path="/menu/event-management" element={<EventManagement />} />
+              <Route path="/menu/tournaments" element={<TournamentAdmin />} />
             </Route>
             <Route path="/payment/success" element={<Success />} />
             <Route path="/payment/failure" element={<Failure />} />

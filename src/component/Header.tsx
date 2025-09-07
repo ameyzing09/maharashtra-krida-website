@@ -52,7 +52,7 @@ const Header: React.FC = () => {
         </Link>
         <Link to="/upcoming-events" className={`${linkBase} ${hover} ${isActive("/upcoming-events")}`} aria-current={location.pathname === "/upcoming-events" ? "page" : undefined}>
           Events
-        </Link>
+        </Link> 
       </>
     ), [location.pathname]
   );
@@ -71,13 +71,25 @@ const Header: React.FC = () => {
   );
 
   const MenuLinks = (
-    <button
-      onClick={handleSignOut}
-      className={`${linkBase} inline-flex items-center gap-2`}
-    >
-      {loading && <TailSpin color="#fff" height={16} width={16} />}
-      <span>Sign Out</span>
-    </button>
+    <div className="flex items-center gap-2">
+      <button
+        onClick={() => navigate(-1)}
+        className={`inline-flex items-center gap-2 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 px-4 py-2 font-medium text-brand-charcoal dark:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime/70`}
+      >
+        {/* left chevron */}
+        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M15 6l-6 6 6 6" />
+        </svg>
+        <span>Back</span>
+      </button>
+      <button
+        onClick={handleSignOut}
+        className={`${linkBase} inline-flex items-center gap-2`}
+      >
+        {loading && <TailSpin color="#fff" height={16} width={16} />}
+        <span>Sign Out</span>
+      </button>
+    </div>
   );
 
   return (

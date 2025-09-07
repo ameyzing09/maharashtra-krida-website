@@ -14,3 +14,18 @@ export function calculateEventsPerPage(): number {
     }
   }
   
+export function calculateScoreCardsOnHome(): number {
+  const width = window.innerWidth;
+  // Conservative counts optimized for mobile-first visibility
+  if (width < 640) { // mobile
+    return 2;
+  } else if (width < 768) { // sm
+    return 4;
+  } else if (width < 1024) { // md
+    return 6;
+  } else if (width < 1280) { // lg
+    return 8;
+  } else { // xl+
+    return 12;
+  }
+}

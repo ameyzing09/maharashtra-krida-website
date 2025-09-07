@@ -3,6 +3,7 @@ import { collections } from '../constants';
 import { EventProps } from '../types';
 import { db } from './firebaseConfig';
 import { collection, getDocs, query } from 'firebase/firestore';
+import { wrapService } from './error';
 
 const eventsCollectionRef = collection(db, collections.EVENTS);
 
@@ -31,15 +32,18 @@ const toEvent = (docData : any): EventProps | undefined => {
 return undefined;
 }
 
-export const getEvents = async () => {
-  const q = query(eventsCollectionRef); 
-  const querySnapshot = await getDocs(q);
-  const events: EventProps[] = []
-  querySnapshot.forEach(doc => {
-    const event = toEvent({id: doc.id, ...doc.data()})
-    if(event) events.push(event)
-  })
-  return events
-};
+export const getEvents = async () => wrapService<EventProps[]>(
+  (async () => {
+    const q = query(eventsCollectionRef);
+    const querySnapshot = await getDocs(q);
+    const events: EventProps[] = [];
+    querySnapshot.forEach(doc => {
+      const event = toEvent({ id: doc.id, ...doc.data() });
+      if (event) events.push(event);
+    });
+    return events;
+  })(),
+  'Failed to fetch events'
+);
 
 // code to add event to the database
