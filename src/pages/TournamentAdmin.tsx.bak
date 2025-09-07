@@ -1,0 +1,641 @@
+﻿import { useEffect, useMemo, useState } from "react";
+import { getEvents } from "../services/eventService";
+import { listTeams } from "../services/teamService";
+import { listMatchesByEvent } from "../services/matchService";
+import { listEventTeams } from "../services/eventTeamService";
+import type { EventProps } from "../types";
+import type { EventTeam, ID, Match, Team } from "../types/tournament";
+import TeamsTab from "../component/tournament/admin/TeamsTab";
+import ScheduleTab from "../component/tournament/admin/ScheduleTab";
+import MatchesTab from "../component/tournament/admin/MatchesTab";
+
+type AdminTab = "teams" | "schedule" | "matches";
+
+export default function TournamentAdmin() {
+  const [tab, setTab] = useState<AdminTab>("teams");
+  const [events, setEvents] = useState<EventProps[]>([]);
+  const [eventId, setEventId] = useState<string>("");
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [eventTeams, setEventTeams] = useState<EventTeam[]>([]);
+  const [matches, setMatches] = useState<Match[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const [ev, tm] = await Promise.all([getEvents(), listTeams()]);
+      setEvents(ev);
+      setTeams(tm);
+      if (ev[0]) setEventId(ev[0].id);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!eventId) return;
+    (async () => {
+      const [ets, ms] = await Promise.all([listEventTeams(eventId), listMatchesByEvent(eventId)]);
+      setEventTeams(ets);
+      setMatches(ms);
+    })();
+  }, [eventId]);
+
+  const event = useMemo(() => events.find((e) => e.id === eventId), [events, eventId]);
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-6">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white">Tournament Admin</h1>
+        <select
+          value={eventId}
+          onChange={(e) => setEventId(e.target.value)}
+          className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate text-brand-charcoal dark:text-gray-100 px-3 py-2"
+        >
+          {events.map((ev) => (
+            <option key={ev.id} value={ev.id}>
+              {ev.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="inline-flex rounded-full bg-black/5 dark:bg-white/10 p-1 mb-4">
+        {([
+          ["teams", "Teams"],
+          ["schedule", "Schedule"],
+          ["matches", "Matches"],
+        ] as [AdminTab, string][]).map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            className={`px-3 py-1.5 text-sm rounded-full ${
+              tab === key ? "bg-white dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-100 shadow" : "text-gray-700 dark:text-gray-300"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "teams" && (
+        <TeamsTab
+          teams={teams}
+          refreshTeams={async () => setTeams(await listTeams())}
+          eventId={eventId}
+          eventTeams={eventTeams}
+          refreshEventTeams={async () => setEventTeams(await listEventTeams(eventId))}
+        />
+      )}
+
+      {tab === "schedule" && event && (
+        <ScheduleTab
+          eventId={eventId}
+          teams={teams}
+          eventTeams={eventTeams}
+          refreshMatches={async () => setMatches(await listMatchesByEvent(eventId))}
+        />
+      )}
+
+      {tab === "matches" && event && (
+        <MatchesTab
+          event={event}
+          matches={matches}
+          teams={teams}
+          eventTeams={eventTeams}
+          refreshMatches={async () => setMatches(await listMatchesByEvent(eventId))}
+        />
+      )}
+    </div>
+  );
+}
+
+function TeamsTab({
+  teams,
+  refreshTeams,
+  eventId,
+  eventTeams,
+  refreshEventTeams,
+}: {
+  teams: Team[];
+  refreshTeams: () => Promise<void>;
+  eventId: ID;
+  eventTeams: EventTeam[];
+  refreshEventTeams: () => Promise<void>;
+}) {
+  const [name, setName] = useState("");
+  const [short, setShort] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [selectedTeamId, setSelectedTeamId] = useState<string>("");
+  const [ovShort, setOvShort] = useState("");
+  const [ovLogo, setOvLogo] = useState("");
+  const [seed, setSeed] = useState<string>("");
+  const [group, setGroup] = useState("");
+  const [importTeamRows, setImportTeamRows] = useState<ParsedTeamRow[] | null>(null);
+  const [alsoAddToEvent, setAlsoAddToEvent] = useState(true);
+
+  const { toast, showToast } = useToast();
+  const [creating, setCreating] = useState(false);
+  const [teamActionId, setTeamActionId] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {toast && <Toast message={toast.message} type={toast.type} />}
+      <div className="rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-4">
+        <h2 className="font-semibold mb-3">Create Team</h2>
+        <div className="grid gap-2">
+          <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Team name" value={name} onChange={(e) => setName(e.target.value)} />
+          <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Short (optional)" value={short} onChange={(e) => setShort(e.target.value)} />
+          <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Logo URL (optional)" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
+          <div className="flex gap-2">
+            <button disabled={creating} className="rounded-full bg-brand-lime hover:bg-brand-limeDark disabled:bg-brand-lime/60 text-brand-charcoal font-semibold px-4 py-2 inline-flex items-center gap-2" onClick={async () => {
+              if (!name.trim()) return;
+              try {
+                setCreating(true);
+                await createTeam({ name, short: short || undefined, logoUrl: logoUrl || undefined });
+                showToast("Team created", "success");
+                setName(""); setShort(""); setLogoUrl("");
+                await refreshTeams();
+              } catch (e) {
+                showToast("Failed to create team", "error");
+              } finally {
+                setCreating(false);
+              }
+            }}>{creating && <TailSpin color="#84cc16" height={16} width={16} />}Create</button>
+          </div>
+        </div>
+
+        <h3 className="font-semibold mt-6 mb-2">All Teams</h3>
+        <ul className="divide-y divide-black/5 dark:divide-white/10">
+          {teams.map((t) => (
+            <li key={t.id} className="py-2 flex items-center justify-between">
+              <span className="text-sm">{t.name}</span>
+              <div className="flex gap-2">
+                <button disabled={teamActionId === t.id} className="text-xs rounded bg-black/5 dark:bg-white/10 px-2 py-1 inline-flex items-center gap-1" onClick={async () => {
+                  try {
+                    setTeamActionId(t.id);
+                    await updateTeam(t.id, { name: t.name });
+                    showToast("Team updated", "success");
+                    await refreshTeams();
+                  } catch (e) {
+                    showToast("Failed to update team", "error");
+                  } finally {
+                    setTeamActionId(null);
+                  }
+                }}>{teamActionId === t.id && <TailSpin color="#84cc16" height={14} width={14} />}Save</button>
+                <button disabled={teamActionId === t.id} className="text-xs rounded bg-red-500 text-white px-2 py-1 inline-flex items-center gap-1" onClick={async () => {
+                  try {
+                    setTeamActionId(t.id);
+                    await deleteTeam(t.id);
+                    showToast("Team deleted", "success");
+                    await refreshTeams();
+                  } catch (e) {
+                    showToast("Failed to delete team", "error");
+                  } finally {
+                    setTeamActionId(null);
+                  }
+                }}>{teamActionId === t.id && <TailSpin color="#fff" height={14} width={14} />}Delete</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <h3 className="font-semibold mt-6 mb-2">Import Teams from Excel (.xlsx)</h3>
+        <input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          try {
+            setImporting(true);
+            const rows = await parseTeamsXlsx(file);
+            console.log('Parsed team rows:', rows);
+            setImportTeamRows(rows);
+            showToast(`Parsed ${rows.length} rows`, "success");
+          } catch (err) {
+            console.log('Error parsing Excel:', err);
+            showToast("Failed to parse Excel", "error");
+          } finally {
+            setImporting(false);
+          }
+        }} />
+        {importTeamRows && (
+          <div className="mt-2">
+            <label className="inline-flex items-center gap-2 text-sm">
+              <input type="checkbox" className="rounded" checked={alsoAddToEvent} onChange={(e) => setAlsoAddToEvent(e.target.checked)} />
+              Also add to this event (use Short/Logo as overrides, apply Group/Seed)
+            </label>
+            <div className="mt-2 flex gap-2">
+              <button disabled={importing} className="rounded-full bg-brand-lime hover:bg-brand-limeDark disabled:bg-brand-lime/60 text-brand-charcoal font-semibold px-4 py-1.5 text-sm inline-flex items-center gap-2" onClick={async () => {
+                if (!importTeamRows) return;
+                try {
+                  setImporting(true);
+                  // Build lookup for existing teams
+                  const byKey = new Map<string, Team>();
+                  for (const t of teams) {
+                    byKey.set(t.name.toLowerCase(), t);
+                    if (t.short) byKey.set(t.short.toLowerCase(), t);
+                  }
+                  for (const row of importTeamRows) {
+                    const keyName = row.name.toLowerCase();
+                    const keyShort = row.short?.toLowerCase();
+                    let t = byKey.get(keyName) || (keyShort ? byKey.get(keyShort) : undefined);
+                    if (!t) {
+                      const id = await createTeam({ name: row.name, short: row.short, logoUrl: row.logoUrl });
+                      t = { id, name: row.name, short: row.short, logoUrl: row.logoUrl };
+                      byKey.set(keyName, t);
+                      if (keyShort) byKey.set(keyShort, t);
+                    } else {
+                      // update short/logo if provided (optional)
+                      const patch: Partial<{ name: string; short?: string; logoUrl?: string }> = {};
+                      if (row.short && row.short !== t.short) patch.short = row.short;
+                      if (row.logoUrl && row.logoUrl !== t.logoUrl) patch.logoUrl = row.logoUrl;
+                      if (Object.keys(patch).length) await updateTeam(t.id, patch);
+                    }
+                    if (alsoAddToEvent && t) {
+                      await upsertEventTeam({ eventId, teamId: t.id, short: row.short, logoOverride: row.logoUrl, group: row.group, seed: row.seed });
+                    }
+                  }
+                  setImportTeamRows(null);
+                  showToast("Teams imported", "success");
+                  await refreshTeams();
+                  if (alsoAddToEvent) await refreshEventTeams();
+                } catch (e) {
+                  console.log('Error importing teams:', e);
+                  showToast("Failed to import teams", "error");
+                } finally {
+                  setImporting(false);
+                }
+              }}>{importing && <TailSpin color="#84cc16" height={16} width={16} />}Create/Upsert Teams ({importTeamRows.length})</button>
+              <button className="rounded-full bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-brand-charcoal dark:text-gray-100 px-4 py-1.5 text-sm" onClick={() => setImportTeamRows(null)}>Clear</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-4">
+        <h2 className="font-semibold mb-3">Add Override to Event</h2>
+        <select className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 mb-2 w-full" value={selectedTeamId} onChange={(e) => setSelectedTeamId(e.target.value)}>
+          <option value="">Select teamâ€¦</option>
+          {teams.map((t) => (
+            <option key={t.id} value={t.id}>{t.name}</option>
+          ))}
+        </select>
+        <div className="grid gap-2">
+          <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Override short (optional)" value={ovShort} onChange={(e) => setOvShort(e.target.value)} />
+          <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Logo override URL (optional)" value={ovLogo} onChange={(e) => setOvLogo(e.target.value)} />
+          <div className="grid grid-cols-2 gap-2">
+            <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Seed" value={seed} onChange={(e) => setSeed(e.target.value)} />
+            <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Group" value={group} onChange={(e) => setGroup(e.target.value)} />
+          </div>
+          <div className="flex gap-2">
+            <button className="rounded-full bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold px-4 py-2" onClick={async () => {
+              if (!selectedTeamId) return;
+              await upsertEventTeam({ eventId, teamId: selectedTeamId, short: ovShort || undefined, logoOverride: ovLogo || undefined, seed: seed ? Number(seed) : undefined, group: group || undefined });
+              setSelectedTeamId(""); setOvShort(""); setOvLogo(""); setSeed(""); setGroup("");
+              await refreshEventTeams();
+            }}>Add / Update</button>
+          </div>
+        </div>
+
+        <h3 className="font-semibold mt-6 mb-2">Event Teams</h3>
+        <ul className="divide-y divide-black/5 dark:divide-white/10">
+          {eventTeams.map((et) => (
+            <li key={et.id} className="py-2 flex items-center justify-between">
+              <span className="text-sm">{teams.find((t) => t.id === et.teamId)?.name ?? et.teamId} {et.short ? `(${et.short})` : ""}</span>
+              <button className="text-xs rounded bg-red-500 text-white px-2 py-1" onClick={async () => { await deleteEventTeam(et.eventId, et.teamId); await refreshEventTeams(); }}>Remove</button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function ScheduleTab({ eventId, teams, eventTeams, refreshMatches }: { eventId: ID; teams: Team[]; eventTeams: EventTeam[]; refreshMatches: () => Promise<void> }) {
+  const [teamAId, setTeamAId] = useState("");
+  const [teamBId, setTeamBId] = useState("");
+  const [scheduledAt, setScheduledAt] = useState("");
+  const [venue, setVenue] = useState("");
+  const [importRows, setImportRows] = useState<ParsedSchedule[] | null>(null);
+  const [missingNames, setMissingNames] = useState<string[]>([]);
+  const [creatingMatch, setCreatingMatch] = useState(false);
+  const [creatingMissing, setCreatingMissing] = useState(false);
+  const [creatingBulk, setCreatingBulk] = useState(false);
+  const { toast, showToast } = useToast();
+
+  const allowedTeams = useMemo(() => eventTeams.map((et) => teams.find((t) => t.id === et.teamId)).filter((t): t is Team => !!t), [eventTeams, teams]);
+
+  const toEpoch = (val: string) => (val ? new Date(val).getTime() : Date.now());
+
+  return (
+    <div className="rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-4 max-w-2xl">
+      {toast && <Toast message={toast.message} type={toast.type} />}
+      <h2 className="font-semibold mb-3">Create Fixture</h2>
+      <div className="grid gap-2">
+        <select className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" value={teamAId} onChange={(e) => setTeamAId(e.target.value)}>
+          <option value="">Team A</option>
+          {allowedTeams.map((t) => (
+            <option key={t.id} value={t.id}>{t.name}</option>
+          ))}
+        </select>
+        <select className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" value={teamBId} onChange={(e) => setTeamBId(e.target.value)}>
+          <option value="">Team B</option>
+          {allowedTeams.map((t) => (
+            <option key={t.id} value={t.id}>{t.name}</option>
+          ))}
+        </select>
+        <input type="datetime-local" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} />
+        <input type="text" placeholder="Venue" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" value={venue} onChange={(e) => setVenue(e.target.value)} />
+        <button disabled={creatingMatch} className="rounded-full bg-brand-lime hover:bg-brand-limeDark disabled:bg-brand-lime/60 text-brand-charcoal font-semibold px-4 py-2 inline-flex items-center gap-2" onClick={async () => {
+          if (!teamAId || !teamBId) return;
+          try {
+            setCreatingMatch(true);
+            const payload: NewMatch = { eventId, teamAId, teamBId, scheduledAt: toEpoch(scheduledAt), venue: venue || undefined, status: "upcoming" };
+            await createMatch(payload);
+            showToast("Match created", "success");
+            setTeamAId(""); setTeamBId(""); setScheduledAt(""); setVenue("");
+            await refreshMatches();
+          } catch (e) {
+            showToast("Failed to create match", "error");
+          } finally {
+            setCreatingMatch(false);
+          }
+        }}>{creatingMatch && <TailSpin color="#84cc16" height={16} width={16} />}Create Match</button>
+      </div>
+
+      <h3 className="font-semibold mt-6 mb-2">Import from Excel (.xlsx)</h3>
+      <input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        let parsed: ParsedSchedule[] = [];
+        try {
+          parsed = await parseScheduleXlsx(file);
+          setImportRows(parsed);
+          showToast(`Parsed ${parsed.length} rows`, "success");
+        } catch (err) {
+          showToast("Failed to parse Excel", "error");
+        }
+        // compute missing names vs allowedTeams (by name or short)
+        const names = new Set<string>();
+        const allowedNames = new Map<string, string>(); // nameLower -> teamId
+        for (const t of allowedTeams) {
+          allowedNames.set(t.name.toLowerCase(), t.id);
+          if (t.short) allowedNames.set(t.short.toLowerCase(), t.id);
+        }
+        for (const r of parsed) {
+          if (!allowedNames.has(r.teamA.toLowerCase())) names.add(r.teamA);
+          if (!allowedNames.has(r.teamB.toLowerCase())) names.add(r.teamB);
+        }
+        setMissingNames(Array.from(names));
+      }} />
+
+      {importRows && (
+        <div className="mt-3">
+          <p className="text-sm text-gray-700 dark:text-gray-300">Parsed {importRows.length} rows. Missing teams in this event: {missingNames.length}.</p>
+          {missingNames.length > 0 && (
+            <button disabled={creatingMissing} className="mt-2 rounded-full bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-brand-charcoal dark:text-gray-100 px-4 py-1.5 text-sm inline-flex items-center gap-2" onClick={async () => {
+              // Try to resolve missing by global teams, else create
+              try {
+                setCreatingMissing(true);
+                const nameToId = new Map<string, string>();
+                for (const t of teams) {
+                  nameToId.set(t.name.toLowerCase(), t.id);
+                  if (t.short) nameToId.set(t.short.toLowerCase(), t.id);
+                }
+                for (const name of missingNames) {
+                  const key = name.toLowerCase();
+                  let id = nameToId.get(key);
+                  if (!id) {
+                    id = await createTeam({ name });
+                  }
+                  await upsertEventTeam({ eventId, teamId: id });
+                }
+                // refresh event teams and recompute missing
+                await refreshMatches(); // keep UI updated later
+                const ets = await listEventTeams(eventId);
+                const allowedNow = ets.map((et) => teams.find((t) => t.id === et.teamId)).filter((t): t is Team => !!t);
+                const newMissing = new Set<string>();
+                const allowedMap = new Map<string, string>();
+                for (const t of allowedNow) {
+                  allowedMap.set(t.name.toLowerCase(), t.id);
+                  if (t.short) allowedMap.set(t.short.toLowerCase(), t.id);
+                }
+                for (const r of importRows!) {
+                  if (!allowedMap.has(r.teamA.toLowerCase())) newMissing.add(r.teamA);
+                  if (!allowedMap.has(r.teamB.toLowerCase())) newMissing.add(r.teamB);
+                }
+                setMissingNames(Array.from(newMissing));
+                showToast("Missing teams resolved", "success");
+              } catch (e) {
+                showToast("Failed to resolve missing teams", "error");
+              } finally {
+                setCreatingMissing(false);
+              }
+            }}>{creatingMissing && <TailSpin color="#84cc16" height={16} width={16} />}Create missing teams and add to event</button>
+          )}
+
+          <button className="mt-2 ml-2 rounded-full bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold px-4 py-1.5 text-sm disabled:opacity-60 inline-flex items-center gap-2" disabled={missingNames.length > 0 || creatingBulk} onClick={async () => {
+            // Build a map of allowed names -> teamId
+            try {
+              setCreatingBulk(true);
+              const ets = await listEventTeams(eventId);
+              const allowedNow = ets.map((et) => teams.find((t) => t.id === et.teamId)).filter((t): t is Team => !!t);
+              const allowedMap = new Map<string, string>();
+              for (const t of allowedNow) {
+                allowedMap.set(t.name.toLowerCase(), t.id);
+                if (t.short) allowedMap.set(t.short.toLowerCase(), t.id);
+              }
+              for (const r of importRows!) {
+                const aId = allowedMap.get(r.teamA.toLowerCase());
+                const bId = allowedMap.get(r.teamB.toLowerCase());
+                if (!aId || !bId) continue; // skip unresolved
+                const payload: NewMatch = { eventId, teamAId: aId, teamBId: bId, scheduledAt: r.scheduledAt, venue: r.venue, status: r.status };
+                await createMatch(payload);
+              }
+              setImportRows(null);
+              setMissingNames([]);
+              showToast("Matches created", "success");
+              await refreshMatches();
+            } catch (e) {
+              showToast("Failed to create matches", "error");
+            } finally {
+              setCreatingBulk(false);
+            }
+          }}>{creatingBulk && <TailSpin color="#84cc16" height={16} width={16} />}Create Matches ({importRows?.length ?? 0})</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MatchesTab({ event, matches, teams, eventTeams, refreshMatches }: { event: EventProps; matches: Match[]; teams: Team[]; eventTeams: EventTeam[]; refreshMatches: () => Promise<void> }) {
+  const [editing, setEditing] = useState<Record<ID, Match>>(Object.create(null));
+  const [savingIds, setSavingIds] = useState<Set<ID>>(new Set());
+  const { toast, showToast } = useToast();
+
+  const setField = (id: ID, patch: Partial<Match>) => setEditing((prev) => ({ ...prev, [id]: { ...(prev[id] ?? matches.find((m) => m.id === id)!), ...patch } }));
+
+  const kind = event.sport.toLowerCase().includes("cricket") ? "cricket" : event.sport.toLowerCase().includes("football") ? "football" : event.sport.toLowerCase().includes("volley") ? "volleyball" : "other";
+
+  const getCricket = (m: Match): CricketScore => {
+    const base = editing[m.id] ?? m;
+    const sc = base.score;
+    if (sc?.kind === "cricket") return sc.data;
+    return { a: { runs: 0, wickets: 0, overs: 0 }, b: { runs: 0, wickets: 0, overs: 0 } };
+  };
+  const setCricket = (m: Match, next: Partial<CricketScore>) => {
+    const curr = getCricket(m);
+    setField(m.id, { score: { kind: "cricket", data: { ...curr, ...next } } });
+  };
+  const setCricketA = (m: Match, next: Partial<CricketScore["a"]>) => setCricket(m, { a: { ...getCricket(m).a, ...next } });
+  const setCricketB = (m: Match, next: Partial<CricketScore["b"]>) => setCricket(m, { b: { ...getCricket(m).b, ...next } });
+
+  const getFootball = (m: Match) => {
+    const base = editing[m.id] ?? m;
+    const sc = base.score;
+    return sc?.kind === "football" ? sc.data : { aGoals: 0, bGoals: 0 };
+  };
+  const setFootball = (m: Match, next: Partial<ReturnType<typeof getFootball>>) => {
+    const curr = getFootball(m);
+    setField(m.id, { score: { kind: "football", data: { ...curr, ...next } } });
+  };
+
+  const getVolleyball = (m: Match) => {
+    const base = editing[m.id] ?? m;
+    const sc = base.score;
+    return sc?.kind === "volleyball" ? sc.data : { sets: [] };
+  };
+  const setVolleyball = (m: Match, next: Partial<ReturnType<typeof getVolleyball>>) => {
+    const curr = getVolleyball(m);
+    setField(m.id, { score: { kind: "volleyball", data: { ...curr, ...next } } });
+  };
+  const getOther = (m: Match) => {
+    const base = editing[m.id] ?? m;
+    const sc = base.score;
+    return sc?.kind === "other" ? sc.data : {};
+  };
+
+  return (
+    <div className="grid gap-4">
+      {toast && <Toast message={toast.message} type={toast.type} />}
+      {matches
+        .slice()
+        .sort((a, b) => (a.scheduledAt ?? 0) - (b.scheduledAt ?? 0))
+        .map((m) => {
+        const e = editing[m.id] ?? m;
+        const resolved = resolveTeamsForMatch(m, teams, eventTeams);
+        const statusVal = (e.status ?? m.status ?? "upcoming") as MatchStatus;
+        return (
+          <div key={m.id} className="rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 text-sm text-brand-charcoal dark:text-gray-100">
+                <span className="font-semibold">{resolved.teamA.name}</span>
+                <span className="opacity-60">vs</span>
+                <span className="font-semibold">{resolved.teamB.name}</span>
+                <span className="mx-2 text-gray-600 dark:text-gray-300">Â·</span>
+                <span className="text-gray-600 dark:text-gray-300">{new Date(m.scheduledAt).toLocaleString()}</span>
+              </div>
+              <select value={statusVal} onChange={(ev) => setField(m.id, { status: ev.target.value as MatchStatus })} className="ml-auto rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-2 py-1 text-sm">
+                {(["upcoming", "live", "completed", "cancelled"] as MatchStatus[]).map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            {kind === "cricket" && (
+              <div className="grid gap-2">
+                <input placeholder="A runs/wkts/overs (e.g., 120/3/18.2)" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                  const [runs, wk, ov] = ev.target.value.split("/");
+                  setCricketA(m, { runs: Number(runs) || 0, wickets: Number(wk) || 0, overs: Number(ov) || 0 });
+                }} />
+                <input placeholder="B runs/wkts/overs" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                  const [runs, wk, ov] = ev.target.value.split("/");
+                  setCricketB(m, { runs: Number(runs) || 0, wickets: Number(wk) || 0, overs: Number(ov) || 0 });
+                }} />
+                <input placeholder="A top batters (Name:Runs,Name:Runs)" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                  const top = ev.target.value.split(",").map(s => s.trim()).filter(Boolean).map(s => { const [name, runs] = s.split(":"); return { name: name?.trim() || "", runs: Number(runs) || 0 }; });
+                  setCricketA(m, { topBatters: top.slice(0,2) });
+                }} />
+                <input placeholder="B top batters (Name:Runs,Name:Runs)" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                  const top = ev.target.value.split(",").map(s => s.trim()).filter(Boolean).map(s => { const [name, runs] = s.split(":"); return { name: name?.trim() || "", runs: Number(runs) || 0 }; });
+                  setCricketB(m, { topBatters: top.slice(0,2) });
+                }} />
+                <div className="grid grid-cols-2 gap-2">
+                  <input placeholder="Best bowler A (Name:Wkts)" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                    const [name, wk] = ev.target.value.split(":");
+                    setCricketA(m, { bestBowler: { name: (name || "").trim(), wickets: Number(wk) || 0 } });
+                  }} />
+                  <input placeholder="Best bowler B (Name:Wkts)" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                    const [name, wk] = ev.target.value.split(":");
+                    setCricketB(m, { bestBowler: { name: (name || "").trim(), wickets: Number(wk) || 0 } });
+                  }} />
+                </div>
+                <input placeholder="External live URL (optional)" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                  setCricket(m, { externalLiveUrl: ev.target.value || undefined });
+                }} />
+              </div>
+            )}
+
+            {kind === "football" && (
+              <div className="grid gap-2">
+                <input placeholder="A goals" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                  const a = Number(ev.target.value) || 0;
+                  setFootball(m, { aGoals: a });
+                }} />
+                <input placeholder="B goals" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                  const b = Number(ev.target.value) || 0;
+                  setFootball(m, { bGoals: b });
+                }} />
+                <input placeholder="Timeline comma-separated (min-team-scorer[-assist]) e.g., 12-A-John,45-B-Ram-Vik" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-xs" onChange={(ev) => {
+                  const timeline: FootballGoal[] = ev.target.value.split(",").map(s => s.trim()).filter(Boolean).map(s => {
+                    const [min, team, scorer, assist] = s.split("-");
+                    const t = team === "A" ? "A" : "B" as const;
+                    return { minute: Number(min) || 0, team: t, scorer: (scorer||"").trim(), assist: assist ? assist.trim() : undefined };
+                  });
+                  setFootball(m, { timeline });
+                }} />
+              </div>
+            )}
+
+            {kind === "volleyball" && (
+              <div className="grid gap-2">
+                <input placeholder="Sets (e.g., 25-22,22-25,15-13)" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                  const sets: VolleyballSet[] = ev.target.value.split(",").map((s) => s.trim()).filter(Boolean).map((s) => { const [a, b] = s.split("-").map((x) => Number(x) || 0); return { a, b }; });
+                  setVolleyball(m, { sets });
+                }} />
+              </div>
+            )}
+
+            {kind === "other" && (
+              <div className="grid grid-cols-2 gap-2">
+                <input placeholder="A score" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                  const aScore = Number(ev.target.value) || 0;
+                  const curr = getOther(m) as { aScore?: number; bScore?: number; note?: string };
+                  setField(m.id, { score: { kind: "other", data: { ...curr, aScore } } });
+                }} />
+                <input placeholder="B score" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" onChange={(ev) => {
+                  const bScore = Number(ev.target.value) || 0;
+                  const curr = getOther(m) as { aScore?: number; bScore?: number; note?: string };
+                  setField(m.id, { score: { kind: "other", data: { ...curr, bScore } } });
+                }} />
+              </div>
+            )}
+
+            <div className="mt-3 flex gap-2">
+              <button disabled={savingIds.has(m.id)} className="rounded-full bg-brand-lime hover:bg-brand-limeDark disabled:bg-brand-lime/60 text-brand-charcoal font-semibold px-4 py-1.5 text-sm inline-flex items-center gap-2" onClick={async () => {
+                const e = editing[m.id]; if (!e) return;
+                try {
+                  setSavingIds((s) => new Set(s).add(m.id));
+                  await updateMatch(m.id, { status: e.status, score: e.score });
+                  showToast("Match updated", "success");
+                  await refreshMatches();
+                } catch (err) {
+                  showToast("Failed to update match", "error");
+                } finally {
+                  setSavingIds((s) => { const n = new Set(s); n.delete(m.id); return n; });
+                }
+              }}>{savingIds.has(m.id) && <TailSpin color="#84cc16" height={16} width={16} />}Save</button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+

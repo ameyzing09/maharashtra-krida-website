@@ -5,6 +5,11 @@ import { EventProps } from "../types";
 type CardProps = EventProps & { registrationUrl?: string };
 
 const isExternal = (url?: string) => !!url && /^https?:\/\//i.test(url);
+const isNA = (v?: string) => {
+  if (!v) return false;
+  const s = v.trim().toLowerCase();
+  return s === "na" || s === "n/a";
+};
 
 const EventCard: React.FC<CardProps> = ({
   name,
@@ -68,32 +73,36 @@ const EventCard: React.FC<CardProps> = ({
             </a>
           )}
 
-          {registrationUrl ? (
-            isExternal(registrationUrl) ? (
-              <a
-                href={registrationUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto text-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold py-2.5 px-5 shadow-soft"
-              >
-                Register Now
-              </a>
-            ) : (
+          {registrationUrl
+            ? isNA(registrationUrl)
+              ? null
+              : isExternal(registrationUrl)
+                ? (
+                  <a
+                    href={registrationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto text-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold py-2.5 px-5 shadow-soft"
+                  >
+                    Register Now
+                  </a>
+                )
+                : (
+                  <Link
+                    to={registrationUrl}
+                    className="w-full sm:w-auto text-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold py-2.5 px-5 shadow-soft"
+                  >
+                    Register Now
+                  </Link>
+                )
+            : (
               <Link
-                to={registrationUrl}
+                to="/register"
                 className="w-full sm:w-auto text-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold py-2.5 px-5 shadow-soft"
               >
                 Register Now
               </Link>
-            )
-          ) : (
-            <Link
-              to="/register"
-              className="w-full sm:w-auto text-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold py-2.5 px-5 shadow-soft"
-            >
-              Register Now
-            </Link>
-          )}
+            )}
         </div>
       </div>
     </article>

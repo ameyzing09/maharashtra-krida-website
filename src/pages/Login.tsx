@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Toast from "../component/common/Toast";
 import { login } from "../services/authService";
@@ -12,7 +12,11 @@ const Login = () => {
   const { status } = useAuth();
   const { toast, showToast } = useToast();
 
-  if (status === "signedIn") navigate("/menu");
+  useEffect(() => {
+    if (status === "signedIn") {
+      navigate("/menu", { replace: true });
+    }
+  }, [status, navigate]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
