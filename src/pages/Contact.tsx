@@ -5,7 +5,7 @@ const Contact: React.FC = () => {
     <section className="bg-brand-paper dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
         <div className="max-w-3xl mb-8">
-          <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">Contact Us</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-brand-charcoal dark:text-white">Contact Us</h1>
           <p className="mt-3 text-gray-700 dark:text-gray-300 text-base sm:text-lg">We’d love to hear from you. Reach out for partnerships, event participation or general queries.</p>
         </div>
 
@@ -42,10 +42,11 @@ const Contact: React.FC = () => {
             onSubmit={(e) => {
               e.preventDefault();
               const fd = new FormData(e.currentTarget as HTMLFormElement);
-              const name = encodeURIComponent(String(fd.get("name") || ""));
+              const rawName = String(fd.get("name") || "");
               const subj = encodeURIComponent(String(fd.get("subject") || "Inquiry"));
               const body = encodeURIComponent(String(fd.get("message") || ""));
-              window.location.href = `mailto:maharashtrakrida@gmail.com?subject=${subj}&body=${body}%0D%0A%0D%0A— ${name}`;
+              const footer = rawName ? `%0D%0A%0D%0ARegards,%20${encodeURIComponent(rawName)}` : "";
+              window.location.href = `mailto:maharashtrakrida@gmail.com?subject=${subj}&body=${body}${footer}`;
               (e.currentTarget as HTMLFormElement).reset();
             }}
           >
@@ -64,3 +65,4 @@ const Contact: React.FC = () => {
 };
 
 export default Contact;
+

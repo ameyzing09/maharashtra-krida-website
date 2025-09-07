@@ -6,7 +6,7 @@ const About: React.FC = () => {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
         {/* Heading */}
         <div className="max-w-3xl">
-          <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight">About Maharashtra Krida</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-brand-charcoal dark:text-white">About Maharashtra Krida</h1>
           <p className="mt-3 text-gray-400 dark:text-gray-300 text-base sm:text-lg">
             Since 2001, we’ve built a vibrant, inclusive sporting ecosystem for corporate and IT communities across Maharashtra — enabling people to play, compete and celebrate together.
           </p>
@@ -56,3 +56,4 @@ const About: React.FC = () => {
 };
 
 export default About;
+
