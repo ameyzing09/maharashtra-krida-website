@@ -47,8 +47,8 @@ const About: React.FC = () => {
 
         {/* CTA */}
         <div className="mt-10 flex flex-wrap gap-3">
-          <a href="/upcoming-events" className="inline-flex items-center justify-center rounded-full bg-brand-lime hover:bg-brand-limeDark text-white px-6 py-3 font-semibold shadow-soft">View Upcoming Events</a>
-          <a href="/contact" className="inline-flex items-center justify-center rounded-full border border-brand-lime/60 text-brand-charcoal dark:text-white hover:bg-brand-lime/10 px-6 py-3 font-semibold">Contact Us</a>
+          <a href="/upcoming-events" className="inline-flex items-center justify-center rounded-full ring-1 ring-white/20 bg-white/10 dark:bg-white/10 backdrop-blur-xl text-white px-6 py-3 font-semibold shadow-[0_10px_30px_rgba(0,0,0,0.15)] hover:bg-white/15">View Upcoming Events</a>
+          <a href="/contact" className="inline-flex items-center justify-center rounded-full ring-1 ring-white/20 bg-white/10 dark:bg-white/10 backdrop-blur-xl text-white px-6 py-3 font-semibold shadow-[0_10px_30px_rgba(0,0,0,0.15)] hover:bg-white/15">Contact Us</a>
         </div>
       </div>
     </section>

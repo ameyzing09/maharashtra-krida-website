@@ -14,7 +14,7 @@ const Header: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const { toast, showToast } = useToast();
   const navigate = useNavigate();
 
@@ -100,19 +100,16 @@ const Header: React.FC = () => {
               {isMenuPage ? (
                 <div className="flex items-center gap-2">
                   {MenuLinks}
-                  <ThemeToggle theme={theme} setTheme={setTheme} />
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
                   {CommonLinks}
-                  <ThemeToggle theme={theme} setTheme={setTheme} />
                 </div>
               )}
             </nav>
 
             {/* Mobile controls */}
             <div className="md:hidden flex items-center gap-1">
-              <ThemeToggle theme={theme} setTheme={setTheme} />
               <button
                 type="button"
                 aria-label="Toggle menu"
@@ -149,28 +146,4 @@ const Header: React.FC = () => {
 export default Header;
 
 // lightweight theme toggle button to support dark mode (class-based)
-const ThemeToggle: React.FC<{ theme: Theme; setTheme: (t: Theme) => void }> = ({ theme, setTheme }) => {
-  const title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
-  return (
-    <button
-      type="button"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      title={title}
-      aria-label={title}
-      className="inline-flex items-center justify-center p-2 rounded-md text-brand-charcoal dark:text-gray-200 hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime/70"
-    >
-      {theme === "dark" ? (
-        // Sun icon
-        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v2m0 16v2M4 12H2m20 0h-2M5.6 5.6l-1.4-1.4M19.8 19.8l-1.4-1.4M5.6 18.4l-1.4 1.4M19.8 4.2l-1.4 1.4" />
-        </svg>
-      ) : (
-        // Moon icon
-        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z" />
-        </svg>
-      )}
-    </button>
-  );
-};
+// Theme toggle removed (always dark)

@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
+import GlassButton from "./ui/GlassButton";
 import useEvents from "../hook/useEvents";
 import { parseFlexibleDate, formatDateLong } from "../utils/date";
 
@@ -40,22 +41,12 @@ const Hero: React.FC = () => {
               Join high-energy sports events across Maharashtra with pro-grade management, fair play, and recognition. Register now and be part of the community.
             </p>
 
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              {nextEvent && nextEvent.registrationUrl && !/^https?:\/\//i.test(nextEvent.registrationUrl) && !/^\s*(na|n\/a)\s*$/i.test(nextEvent.registrationUrl) && (
-                <Link
-                  to={nextEvent.registrationUrl}
-                  className="inline-flex items-center justify-center rounded-full bg-brand-lime hover:bg-brand-limeDark text-white px-6 py-3 font-semibold shadow-lift"
-                >
-                  Register
-                </Link>
-              )}
-              <Link
-                to="/upcoming-events"
-                className="inline-flex items-center justify-center rounded-full border border-brand-lime/60 text-brand-charcoal dark:text-white hover:bg-brand-lime/10 px-6 py-3 font-semibold"
-              >
-                View Events
-              </Link>
-            </div>
+              <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                {nextEvent && nextEvent.registrationUrl && !/^https?:\/\//i.test(nextEvent.registrationUrl) && !/^\s*(na|n\/a)\s*$/i.test(nextEvent.registrationUrl) && (
+                  <GlassButton to={nextEvent.registrationUrl} size="lg">Register</GlassButton>
+                )}
+                <GlassButton to="/upcoming-events" size="lg" className="ring-white/30">View Events</GlassButton>
+              </div>
           </div>
 
           <div className="relative hidden md:block">

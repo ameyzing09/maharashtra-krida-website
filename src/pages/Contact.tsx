@@ -54,8 +54,8 @@ const Contact: React.FC = () => {
             <input name="subject" placeholder="Subject" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" />
             <textarea name="message" placeholder="Message" className="sm:col-span-2 min-h-[120px] rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" />
             <div className="sm:col-span-2 flex justify-end gap-2">
-              <button type="submit" className="rounded-full bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold px-5 py-2">Open Email</button>
-              <a href="/upcoming-events" className="rounded-full border border-brand-lime/60 px-5 py-2 text-brand-charcoal dark:text-white hover:bg-brand-lime/10">View Events</a>
+              <button type="submit" className="rounded-full ring-1 ring-white/20 bg-white/10 dark:bg-white/10 backdrop-blur-xl text-white font-semibold px-5 py-2 hover:bg-white/15">Open Email</button>
+              <a href="/upcoming-events" className="rounded-full ring-1 ring-white/20 bg-white/10 dark:bg-white/10 backdrop-blur-xl text-white font-semibold px-5 py-2 hover:bg-white/15">View Events</a>
             </div>
           </form>
         </div>
