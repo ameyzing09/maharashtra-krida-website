@@ -86,7 +86,7 @@ const Header: React.FC = () => {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} />}
-      <header className="w-full sticky top-0 z-40 border-b border-black/5 bg-white/90 dark:bg-brand-charcoal/90 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-brand-charcoal/60">
+      <header className="w-full sticky top-0 z-40 glass glass-shine border-b-0">
         <div className="mx-auto max-w-6xl px-4">
           <div className="flex h-16 items-center justify-between">
             {/* Brand */}

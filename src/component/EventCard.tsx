@@ -23,7 +23,7 @@ const EventCard: React.FC<CardProps> = ({
   registrationUrl,
 }) => {
   return (
-    <article className="w-full rounded-2xl overflow-hidden border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition hover:shadow-[0_12px_36px_rgba(0,0,0,0.18)]">
+    <article className="w-full overflow-hidden glass glass-shine transition hover:shadow-[0_14px_44px_rgba(0,0,0,0.22)]">
       <img
         className="w-full h-44 sm:h-52 md:h-56 object-fit"
         src={imageUrl}

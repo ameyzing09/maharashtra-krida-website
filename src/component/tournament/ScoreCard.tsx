@@ -1,4 +1,5 @@
-﻿import type { ScoreCardData } from "../../types/tournament";
+import type { ScoreCardData } from "../../types/tournament";
+import { formatDateTimePretty } from "../../utils/date";
 
 type Props = { data: ScoreCardData };
 
@@ -40,7 +41,7 @@ export default function ScoreCard({ data }: Props) {
     return letters || name.slice(0, 3).toUpperCase();
   };
   return (
-    <article className="rounded-xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] p-4">
+    <article className="glass glass-shine p-4 h-full flex flex-col">
       <header className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold text-brand-charcoal dark:text-gray-100 line-clamp-1">{data.tournamentTitle}</h3>
         <StatusPill status={data.status} />
@@ -77,10 +78,10 @@ export default function ScoreCard({ data }: Props) {
           {data.kind === "cricket" && (
             <div className="text-sm text-brand-charcoal dark:text-gray-100">
               <div className="font-semibold">
-                {data.score ? `${data.score.a.runs}/${data.score.a.wickets} â€¢ ${data.score.a.overs} ov` : "-"}
+                {data.score ? `${data.score.a.runs}/${data.score.a.wickets} �?� ${data.score.a.overs} ov` : "-"}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-300">
-                {data.score ? `${data.score.b.runs}/${data.score.b.wickets} â€¢ ${data.score.b.overs} ov` : "-"}
+                {data.score ? `${data.score.b.runs}/${data.score.b.wickets} �?� ${data.score.b.overs} ov` : "-"}
               </div>
             </div>
           )}
@@ -99,8 +100,8 @@ export default function ScoreCard({ data }: Props) {
       </div>
       )}
 
-      <footer className="mt-3 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-        <span>{new Date(data.scheduledAt).toLocaleString()}</span>
+      <footer className="mt-3 flex items-center justify-between text-xs text-gray-400">
+        <span>{formatDateTimePretty(data.scheduledAt)}</span>
         {data.venue && <span className="truncate max-w-[50%] text-right">{data.venue}</span>}
       </footer>
 
@@ -135,8 +136,6 @@ export default function ScoreCard({ data }: Props) {
         </div>
       )}
 
-      {/* Football goal-by-goal details hidden on compact cards for readability */}
-
       {data.kind === "volleyball" && data.score && (
         <div className="mt-3 text-xs text-gray-700 dark:text-gray-300 flex flex-wrap gap-1">
           {data.score.sets.map((s, i) => (
@@ -147,4 +146,3 @@ export default function ScoreCard({ data }: Props) {
     </article>
   );
 }
-

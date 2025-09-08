@@ -60,3 +60,35 @@ export function formatDateLong(input: FlexibleDateInput): string {
   return `${day} ${month} ${year}`;
 }
 
+export function formatDateTime(input: FlexibleDateInput, opts: Intl.DateTimeFormatOptions = {}): string {
+  const d = parseFlexibleDate(input);
+  if (!d) return String(input ?? "");
+  const base: Intl.DateTimeFormatOptions = {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  };
+  return d.toLocaleString("en-GB", { ...base, ...opts });
+}
+
+// Example: 31st August 2025 09:00 AM
+export function formatDateTimePretty(input: FlexibleDateInput): string {
+  const d = parseFlexibleDate(input);
+  if (!d) return String(input ?? "");
+  const dayPart = toOrdinal(d.getDate());
+  const month = d.toLocaleString("en-GB", { month: "long" });
+  const year = d.getFullYear();
+  let hours = d.getHours();
+  const minutes = d.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  if (hours === 0) hours = 12;
+  const hh = String(hours).padStart(2, "0");
+  const mm = String(minutes).padStart(2, "0");
+  return `${dayPart} ${month} ${year} ${hh}:${mm} ${ampm}`;
+}
+

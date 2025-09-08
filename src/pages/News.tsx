@@ -35,7 +35,7 @@ export default function NewsPage() {
       ) : items.length === 0 ? (
         <p className="text-gray-600 dark:text-gray-300">No news yet.</p>
       ) : (
-        <div className="divide-y divide-white/10 bg-white/5 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
+        <div className="divide-y divide-white/10 glass glass-shine">
           {items.map((n) => {
             const href = `/news/${n.id}`;
             return (

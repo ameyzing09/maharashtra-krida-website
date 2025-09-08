@@ -126,7 +126,7 @@ export default function LiveRecentWidget() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {cards.map((c) => (
-            <Link key={c.matchId} to="/tournaments" className="block">
+            <Link key={c.matchId} to="/tournaments" className="block h-full">
               <ScoreCard data={c} />
             </Link>
           ))}

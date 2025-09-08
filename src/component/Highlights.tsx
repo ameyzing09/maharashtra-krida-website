@@ -52,7 +52,7 @@ export default function Highlights() {
           <div className="relative group">
             <div ref={featuredRef} className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2">
               {content.map((item) => (
-                <article key={item.id} className="snap-center shrink-0 w-80 sm:w-96 md:w-[28rem] relative rounded-2xl overflow-hidden border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+                <article key={item.id} className="snap-center shrink-0 w-80 sm:w-96 md:w-[28rem] relative overflow-hidden glass glass-shine">
                   <div className="aspect-[16/9] w-full relative">
                     <img src={item.imageUrl} alt={item.alt} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -93,7 +93,7 @@ export default function Highlights() {
               {news.map((n) => {
                 const href = `/news/${n.id}`;
                 return (
-                  <article key={n.id} className="relative snap-start shrink-0 w-72 sm:w-80 rounded-2xl overflow-hidden border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+                  <article key={n.id} className="relative snap-start shrink-0 w-72 sm:w-80 overflow-hidden glass glass-shine">
                     {n.imageUrl && (
                       <div className="aspect-[4/3] w-full relative">
                         <img src={n.imageUrl} alt={n.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
@@ -119,4 +119,3 @@ export default function Highlights() {
     </section>
   );
 }
-
