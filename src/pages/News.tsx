@@ -35,11 +35,11 @@ export default function NewsPage() {
       ) : items.length === 0 ? (
         <p className="text-gray-600 dark:text-gray-300">No news yet.</p>
       ) : (
-        <div className="divide-y divide-black/5 dark:divide-white/10">
+        <div className="divide-y divide-white/10 bg-white/5 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
           {items.map((n) => {
             const href = `/news/${n.id}`;
             return (
-              <article key={n.id} className="relative py-4 flex gap-4">
+              <article key={n.id} className="relative py-4 px-4 flex gap-4">
                 {n.imageUrl && (
                   <img src={n.imageUrl} alt={n.title} className="h-24 w-32 object-cover rounded-md flex-shrink-0" loading="lazy" />
                 )}

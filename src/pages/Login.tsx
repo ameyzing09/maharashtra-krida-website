@@ -32,16 +32,16 @@ const Login = () => {
   return (
     <>
         {toast && <Toast message={toast.message} type={toast.type} />}
-      <div className="min-h-screen flex items-center justify-center bg-brand-paper dark:bg-brand-charcoal py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-transparent py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-brand-charcoal dark:text-white">
+            <h2 className="mt-6 text-center text-3xl font-bold text-brand-charcoal dark:text-white">
               Sign in to your account
             </h2>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <input type="hidden" name="remember" defaultValue="true" />
-            <div className="rounded-md shadow-sm -space-y-px">
+            <div className="rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl p-4 shadow-[0_8px_30px_rgba(0,0,0,0.12)] -space-y-px">
               <div>
                 <label htmlFor="email-address" className="sr-only">
                   Email address
@@ -79,7 +79,7 @@ const Login = () => {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-black/10 text-sm font-medium rounded-md text-brand-charcoal dark:text-brand-charcoal bg-lime-400 hover:bg-lime-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="group relative w-full flex justify-center py-2.5 px-4 border border-white/10 rounded-full text-sm font-semibold text-brand-charcoal bg-brand-lime hover:bg-brand-limeDark shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
               >
                 Sign in
               </button>

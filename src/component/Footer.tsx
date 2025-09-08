@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="mt-12 border-t border-black/5 dark:border-white/10 bg-brand-paper dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200">
+    <footer className="mt-12 border-t border-white/10 bg-white/5 dark:bg-black/20 backdrop-blur-xl text-brand-charcoal dark:text-gray-200">
       <div className="mx-auto max-w-6xl px-4 py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Brand */}
@@ -58,7 +58,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-black/5 dark:border-white/10 pt-6">
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/10 pt-6">
           <p className="text-xs text-gray-500 dark:text-gray-400">© {new Date().getFullYear()} Maharashtra Krida. All rights reserved.</p>
           <div className="text-xs text-gray-500 dark:text-gray-400">Built with love in Maharashtra.</div>
         </div>

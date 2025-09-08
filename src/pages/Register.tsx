@@ -20,7 +20,7 @@ const Register = () => {
         </h1>
         <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Secure checkout powered by Razorpay.</p>
         <div className="mb-4 overflow-x-auto"><Progress /></div>
-        <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate shadow-soft p-4 sm:p-6">
+        <div className="rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] p-4 sm:p-6">
           <Steps />
         </div>
       </div>

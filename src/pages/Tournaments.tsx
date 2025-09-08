@@ -53,7 +53,7 @@ export default function TournamentsPage() {
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="flex items-center justify-between mb-4">
         <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white">Tournaments</h1>
-        <div className="inline-flex rounded-full bg-black/5 dark:bg-white/10 p-1">
+        <div className="inline-flex rounded-full bg-white/10 dark:bg-white/10 border border-white/10 backdrop-blur-xl p-1">
           {([
             ["live", "Live"],
             ["upcoming", "Upcoming"],

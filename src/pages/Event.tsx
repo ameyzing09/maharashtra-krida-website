@@ -48,7 +48,7 @@ export default function Event() {
           <EventCard key={event.id} {...event} />
         ))}
       </div>
-      <div className="mt-6">
+      <div className="mt-6 rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl p-3">
         <Pagination currentPage={currentPage} nextPage={nextPage} prevPage={prevPage} jumpPage={jumpPage} maxPage={maxPage} />
       </div>
     </div>

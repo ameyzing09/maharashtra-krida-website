@@ -33,7 +33,7 @@ export default function Success() {
   if (!data?.razorpay_payment_id) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center px-4">
-        <div className="w-full max-w-md rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate shadow-soft p-6 text-center">
+        <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] p-6 text-center">
           <h2 className="text-lg sm:text-xl font-semibold text-brand-charcoal dark:text-white mb-1">No payment found</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-5 text-sm">If you just paid, refresh this page.</p>
           <Link to="/" className="inline-flex justify-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal px-4 py-2 font-semibold">Go Home</Link>
@@ -44,7 +44,7 @@ export default function Success() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-8">
-      <div className="relative w-full max-w-lg rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate shadow-lift p-6 sm:p-8 overflow-hidden">
+      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] p-6 sm:p-8 overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0 opacity-40"
           aria-hidden

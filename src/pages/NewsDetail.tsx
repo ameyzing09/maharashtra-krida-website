@@ -58,12 +58,14 @@ export default function NewsDetail() {
   return (
     <section className="mx-auto max-w-3xl px-4 py-8">
       <Link to="/news" className="text-sm text-brand-lime hover:underline">← Back to News</Link>
-      <h1 className="mt-2 font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white">{item.title}</h1>
-      {item.eventId && eventsById[item.eventId] && (
-        <div className="mt-2 text-sm text-gray-700 dark:text-gray-300">
-          Related event: <span className="font-medium">{eventsById[item.eventId].name}</span>
-        </div>
-      )}
+      <div className="mt-3 rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] p-5">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white">{item.title}</h1>
+        {item.eventId && eventsById[item.eventId] && (
+          <div className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+            Related event: <span className="font-medium">{eventsById[item.eventId].name}</span>
+          </div>
+        )}
+      </div>
       {item.imageUrl && (
         <div className="mt-4 aspect-[4/3] w-full relative rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate">
           <img src={item.imageUrl} alt={item.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
@@ -73,7 +75,7 @@ export default function NewsDetail() {
         <p className="mt-4 text-base text-gray-700 dark:text-gray-300 whitespace-pre-line">{item.summary}</p>
       )}
       {item.content && (
-        <div className="prose dark:prose-invert max-w-none mt-4">
+        <div className="prose dark:prose-invert max-w-none mt-4 rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] p-5">
           <p className="whitespace-pre-line">{item.content}</p>
         </div>
       )}

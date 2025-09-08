@@ -2,7 +2,7 @@ import React from "react";
 
 const About: React.FC = () => {
   return (
-    <section className="bg-brand-paper dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200">
+    <section className="bg-transparent text-brand-charcoal dark:text-gray-200">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
         {/* Heading */}
         <div className="max-w-3xl">
@@ -14,14 +14,14 @@ const About: React.FC = () => {
 
         {/* Cards */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+          <div className="rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
             <h2 className="text-lg font-semibold">Our Mission</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
               Promote a strong sports culture in workplaces by organizing fair, well-managed tournaments and creating pathways for lifelong participation.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+          <div className="rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
             <h2 className="text-lg font-semibold">What We Do</h2>
             <ul className="mt-2 text-sm text-gray-700 dark:text-gray-300 list-disc pl-5 space-y-1">
               <li>End-to-end sports tournament management</li>
@@ -30,14 +30,14 @@ const About: React.FC = () => {
             </ul>
           </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+          <div className="rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
             <h2 className="text-lg font-semibold">Impact</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
               Partnered with 200+ organizations across IT, banking, manufacturing and more. From local leagues to statewide events, our tournaments put people and fair play first.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+          <div className="rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
             <h2 className="text-lg font-semibold">Beyond Sports</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
               We support initiatives in health and safety, environmental responsibility and civic awareness through the power of sporting communities.
@@ -56,4 +56,3 @@ const About: React.FC = () => {
 };
 
 export default About;
-

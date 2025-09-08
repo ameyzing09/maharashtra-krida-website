@@ -2,7 +2,7 @@ import React from "react";
 
 const Contact: React.FC = () => {
   return (
-    <section className="bg-brand-paper dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200">
+    <section className="bg-transparent text-brand-charcoal dark:text-gray-200">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
         <div className="max-w-3xl mb-8">
           <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-brand-charcoal dark:text-white">Contact Us</h1>
@@ -10,7 +10,7 @@ const Contact: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+          <div className="rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
             <h2 className="text-lg font-semibold">Address</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
               OM SAI Palace,
@@ -19,7 +19,7 @@ const Contact: React.FC = () => {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+          <div className="rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
             <h2 className="text-lg font-semibold">Call</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
               Contact Person: <span className="font-medium">Ashwin Panhalkar</span>
@@ -27,14 +27,14 @@ const Contact: React.FC = () => {
             <a href="tel:+919890171195" className="mt-1 inline-block text-sm text-brand-lime hover:underline">+91 9890 171 195</a>
           </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+          <div className="rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
             <h2 className="text-lg font-semibold">Email</h2>
             <a href="mailto:maharashtrakrida@gmail.com" className="mt-2 inline-block text-sm text-brand-lime hover:underline">maharashtrakrida@gmail.com</a>
             <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">We usually respond within 1–2 business days.</p>
           </div>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
+        <div className="mt-8 rounded-2xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
           <h2 className="text-lg font-semibold">Send us a message</h2>
           <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">Prefer email? Fill this out and your mail client will open with pre-filled details.</p>
           <form
@@ -65,4 +65,3 @@ const Contact: React.FC = () => {
 };
 
 export default Contact;
-

@@ -24,7 +24,7 @@ export default function GalleryPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {items.map((it) => (
-            <article key={it.id} className="rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate shadow-soft">
+            <article key={it.id} className="rounded-2xl overflow-hidden border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
               <div className="aspect-[4/3] w-full relative">
                 <img src={it.imageUrl} alt={it.alt || it.title || 'Gallery'} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
               </div>
@@ -41,4 +41,3 @@ export default function GalleryPage() {
     </section>
   );
 }
-

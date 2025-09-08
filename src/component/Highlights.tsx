@@ -1,6 +1,6 @@
-import useHomepageContent from "../hook/useHomepage";
 import { useEffect, useRef, useState } from "react";
-import { listNews, NewsItem } from "../services/newsService";
+import useHomepageContent from "../hook/useHomepage";
+import { listNews, type NewsItem } from "../services/newsService";
 import { TailSpin } from "react-loader-spinner";
 import { Link } from "react-router-dom";
 
@@ -9,13 +9,15 @@ export default function Highlights() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const featuredRef = useRef<HTMLDivElement>(null);
   const newsRef = useRef<HTMLDivElement>(null);
-  useEffect(() => { (async () => { try { setNews(await listNews(8)); } catch { /* ignore */ } })(); }, []);
+
+  useEffect(() => {
+    (async () => {
+      try { setNews(await listNews(8)); } catch { /* ignore */ }
+    })();
+  }, []);
 
   const scrollByRef = (ref: { current: HTMLDivElement | null }, dir: -1 | 1) => () => {
-    const el = ref.current;
-    if (!el) return;
-    const delta = Math.round(el.clientWidth * 0.8) * dir;
-    el.scrollBy({ left: delta, behavior: 'smooth' });
+    const el = ref.current; if (!el) return; el.scrollBy({ left: Math.round(el.clientWidth * 0.8) * dir, behavior: 'smooth' });
   };
 
   if (loading) {
@@ -39,14 +41,18 @@ export default function Highlights() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-brand-charcoal dark:text-white">Highlights</h2>
             <div className="hidden sm:flex gap-2">
-              <button aria-label="Previous" onClick={scrollByRef(featuredRef, -1)} className="h-8 w-8 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-brand-charcoal dark:text-gray-100">⟵</button>
-              <button aria-label="Next" onClick={scrollByRef(featuredRef, 1)} className="h-8 w-8 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-brand-charcoal dark:text-gray-100">⟶</button>
+              <button aria-label="Previous" onClick={scrollByRef(featuredRef, -1)} className="h-8 w-8 rounded-full border border-white/10 hover:bg-white/10 text-brand-charcoal dark:text-gray-100">
+                <svg className="h-4 w-4 m-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 6l-6 6 6 6"/></svg>
+              </button>
+              <button aria-label="Next" onClick={scrollByRef(featuredRef, 1)} className="h-8 w-8 rounded-full border border-white/10 hover:bg-white/10 text-brand-charcoal dark:text-gray-100">
+                <svg className="h-4 w-4 m-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 6l6 6-6 6"/></svg>
+              </button>
             </div>
           </div>
           <div className="relative group">
             <div ref={featuredRef} className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2">
               {content.map((item) => (
-                <article key={item.id} className="snap-center shrink-0 w-80 sm:w-96 md:w-[28rem] relative rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate shadow-soft">
+                <article key={item.id} className="snap-center shrink-0 w-80 sm:w-96 md:w-[28rem] relative rounded-2xl overflow-hidden border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
                   <div className="aspect-[16/9] w-full relative">
                     <img src={item.imageUrl} alt={item.alt} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -73,8 +79,12 @@ export default function Highlights() {
             <div className="flex items-center gap-3">
               <Link to="/news" className="text-sm text-brand-lime hover:underline">See all</Link>
               <div className="hidden sm:flex gap-2">
-                <button aria-label="Previous news" onClick={scrollByRef(newsRef, -1)} className="h-8 w-8 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-brand-charcoal dark:text-gray-100">⟵</button>
-                <button aria-label="Next news" onClick={scrollByRef(newsRef, 1)} className="h-8 w-8 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-brand-charcoal dark:text-gray-100">⟶</button>
+                <button aria-label="Previous news" onClick={scrollByRef(newsRef, -1)} className="h-8 w-8 rounded-full border border-white/10 hover:bg-white/10 text-brand-charcoal dark:text-gray-100">
+                  <svg className="h-4 w-4 m-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 6l-6 6 6 6"/></svg>
+                </button>
+                <button aria-label="Next news" onClick={scrollByRef(newsRef, 1)} className="h-8 w-8 rounded-full border border-white/10 hover:bg-white/10 text-brand-charcoal dark:text-gray-100">
+                  <svg className="h-4 w-4 m-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 6l6 6-6 6"/></svg>
+                </button>
               </div>
             </div>
           </div>
@@ -83,7 +93,7 @@ export default function Highlights() {
               {news.map((n) => {
                 const href = `/news/${n.id}`;
                 return (
-                  <article key={n.id} className="relative snap-start shrink-0 w-72 sm:w-80 rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate shadow-soft">
+                  <article key={n.id} className="relative snap-start shrink-0 w-72 sm:w-80 rounded-2xl overflow-hidden border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
                     {n.imageUrl && (
                       <div className="aspect-[4/3] w-full relative">
                         <img src={n.imageUrl} alt={n.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
@@ -109,3 +119,4 @@ export default function Highlights() {
     </section>
   );
 }
+

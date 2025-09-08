@@ -23,7 +23,7 @@ const EventCard: React.FC<CardProps> = ({
   registrationUrl,
 }) => {
   return (
-    <article className="w-full rounded-2xl overflow-hidden bg-white dark:bg-brand-slate shadow-soft transition hover:shadow-lift">
+    <article className="w-full rounded-2xl overflow-hidden border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition hover:shadow-[0_12px_36px_rgba(0,0,0,0.18)]">
       <img
         className="w-full h-44 sm:h-52 md:h-56 object-fit"
         src={imageUrl}
@@ -45,17 +45,17 @@ const EventCard: React.FC<CardProps> = ({
         {/* chips */}
         <div className="flex flex-wrap gap-2">
           {sport && (
-            <span className="inline-flex items-center rounded-full bg-black/5 dark:bg-white/10 text-brand-charcoal dark:text-gray-200 px-3 py-1 text-xs sm:text-sm">
+            <span className="inline-flex items-center rounded-full bg-white/10 dark:bg-white/10 border border-white/10 backdrop-blur px-3 py-1 text-xs sm:text-sm text-brand-charcoal dark:text-gray-200">
               {sport}
             </span>
           )}
           {date && (
-            <span className="inline-flex items-center rounded-full bg-black/5 dark:bg-white/10 text-brand-charcoal dark:text-gray-200 px-3 py-1 text-xs sm:text-sm">
+            <span className="inline-flex items-center rounded-full bg-white/10 dark:bg-white/10 border border-white/10 backdrop-blur px-3 py-1 text-xs sm:text-sm text-brand-charcoal dark:text-gray-200">
               {formatDateLong(date)}
             </span>
           )}
           {location && (
-            <span className="inline-flex items-center rounded-full bg-black/5 dark:bg-white/10 text-brand-charcoal dark:text-gray-200 px-3 py-1 text-xs sm:text-sm">
+            <span className="inline-flex items-center rounded-full bg-white/10 dark:bg-white/10 border border-white/10 backdrop-blur px-3 py-1 text-xs sm:text-sm text-brand-charcoal dark:text-gray-200">
               {location}
             </span>
           )}

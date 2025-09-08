@@ -40,7 +40,7 @@ export default function ScoreCard({ data }: Props) {
     return letters || name.slice(0, 3).toUpperCase();
   };
   return (
-    <article className="rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate shadow-soft p-4">
+    <article className="rounded-xl border border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] p-4">
       <header className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold text-brand-charcoal dark:text-gray-100 line-clamp-1">{data.tournamentTitle}</h3>
         <StatusPill status={data.status} />
