@@ -1,4 +1,5 @@
 ﻿import type { ScoreCardData } from "../../types/tournament";
+import { formatDateTimePretty } from "../../utils/date";
 
 type Props = { data: ScoreCardData };
 
@@ -100,7 +101,7 @@ export default function ScoreCard({ data }: Props) {
       )}
 
       <footer className="mt-3 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-        <span>{new Date(data.scheduledAt).toLocaleString()}</span>
+        <span>{formatDateTimePretty(data.scheduledAt)}</span>
         {data.venue && <span className="truncate max-w-[50%] text-right">{data.venue}</span>}
       </footer>
 
