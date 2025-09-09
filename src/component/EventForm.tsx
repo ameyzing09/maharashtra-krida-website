@@ -169,7 +169,7 @@ const EventForm = () => {
         type="file"
         name="imageFile"
         onChange={handleChange}
-        className="shadow border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-100 dark:bg-brand-slate dark:border-white/10 leading-tight focus:outline-none focus:shadow-outline file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-black/5 dark:file:bg-white/10"
+        className="glass-file-input w-full"
       />
     </div>
     <div className="mb-4">
@@ -183,7 +183,7 @@ const EventForm = () => {
         type="file"
         name="flyerFile"
         onChange={handleChange}
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-100 dark:bg-brand-slate dark:border-white/10 leading-tight focus:outline-none focus:shadow-outline file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-black/5 dark:file:bg-white/10"
+        className="glass-file-input w-full"
       />
     </div>
     <div className="mb-4">

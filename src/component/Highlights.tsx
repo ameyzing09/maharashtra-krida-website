@@ -83,17 +83,17 @@ export default function Highlights() {
               {news.map((n) => {
                 const href = `/news/${n.id}`;
                 return (
-                  <article key={n.id} className="relative snap-start shrink-0 w-72 sm:w-80 rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate shadow-soft">
+                  <article key={n.id} className="relative snap-start shrink-0 w-72 sm:w-80 glass-panel overflow-hidden">
                     {n.imageUrl && (
                       <div className="aspect-[4/3] w-full relative">
                         <img src={n.imageUrl} alt={n.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
                       </div>
                     )}
                     <div className="p-3">
-                      <h3 className="text-sm font-semibold text-brand-charcoal dark:text-gray-100 line-clamp-2">{n.title}</h3>
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2">{n.title}</h3>
                       {n.summary && <p className="mt-1 text-xs text-gray-700 dark:text-gray-300 line-clamp-2">{n.summary}</p>}
                       <div className="mt-2">
-                        <Link to={href} className="inline-flex items-center text-xs text-brand-lime hover:underline">Read more</Link>
+                        <Link to={href} className="inline-flex items-center text-xs text-lime-600 dark:text-lime-400 hover:underline">Read more</Link>
                       </div>
                     </div>
                     <Link to={href} aria-label={n.title} className="absolute inset-0" />

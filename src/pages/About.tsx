@@ -14,15 +14,15 @@ const About: React.FC = () => {
 
         {/* Cards */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
-            <h2 className="text-lg font-semibold">Our Mission</h2>
+          <div className="glass-panel p-5">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Our Mission</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
               Promote a strong sports culture in workplaces by organizing fair, well-managed tournaments and creating pathways for lifelong participation.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
-            <h2 className="text-lg font-semibold">What We Do</h2>
+          <div className="glass-panel p-5">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">What We Do</h2>
             <ul className="mt-2 text-sm text-gray-700 dark:text-gray-300 list-disc pl-5 space-y-1">
               <li>End-to-end sports tournament management</li>
               <li>Facility consulting and operations support</li>
@@ -30,15 +30,15 @@ const About: React.FC = () => {
             </ul>
           </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
-            <h2 className="text-lg font-semibold">Impact</h2>
+          <div className="glass-panel p-5">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Impact</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
               Partnered with 200+ organizations across IT, banking, manufacturing and more. From local leagues to statewide events, our tournaments put people and fair play first.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
-            <h2 className="text-lg font-semibold">Beyond Sports</h2>
+          <div className="glass-panel p-5">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Beyond Sports</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
               We support initiatives in health and safety, environmental responsibility and civic awareness through the power of sporting communities.
             </p>
@@ -47,8 +47,8 @@ const About: React.FC = () => {
 
         {/* CTA */}
         <div className="mt-10 flex flex-wrap gap-3">
-          <a href="/upcoming-events" className="inline-flex items-center justify-center rounded-full bg-brand-lime hover:bg-brand-limeDark text-white px-6 py-3 font-semibold shadow-soft">View Upcoming Events</a>
-          <a href="/contact" className="inline-flex items-center justify-center rounded-full border border-brand-lime/60 text-brand-charcoal dark:text-white hover:bg-brand-lime/10 px-6 py-3 font-semibold">Contact Us</a>
+          <a href="/upcoming-events" className="glass-button-primary px-6 py-3">View Upcoming Events</a>
+          <a href="/contact" className="glass-button-outline px-6 py-3">Contact Us</a>
         </div>
       </div>
     </section>

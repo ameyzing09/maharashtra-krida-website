@@ -109,7 +109,7 @@ export default function NewsForm({ onAdded }: Props) {
         
         <div className="mb-4">
           <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="imageFile">Cover Image (optional)</label>
-          <input name="imageFile" type="file" accept="image/*" onChange={onChange} className="glass-input w-full py-2 px-3 file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-white/20 dark:file:bg-black/20" />
+          <input name="imageFile" type="file" accept="image/*" onChange={onChange} className="glass-file-input w-full" />
         </div>
         <div className="flex items-center justify-between">
           <button type="submit" className="glass-button-primary py-2 px-4 glass-glow-hover">Add</button>
