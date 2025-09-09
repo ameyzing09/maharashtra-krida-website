@@ -1,5 +1,3 @@
-import React from "react";
-
 type PageLoaderProps = {
   variant?: "center" | "overlay";
   label?: string;
