@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TailSpin } from "react-loader-spinner";
+import PageLoader from "./PageLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
@@ -25,7 +25,7 @@ const EventsList = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <TailSpin color="#a3e635" height={80} width={80} />
+        <PageLoader variant="center" label="Loading events..." />
       </div>
     );
   }

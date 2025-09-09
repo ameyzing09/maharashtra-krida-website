@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { NewsItem, listNews } from "../services/newsService";
 import { Link } from "react-router-dom";
 import { getEvents } from "../services/eventService";
@@ -29,17 +30,22 @@ export default function NewsPage() {
     <section className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white mb-4">News</h1>
       {loading ? (
-        <p className="text-gray-600 dark:text-gray-300">Loading…</p>
+        <div className="py-10 text-gray-600 dark:text-gray-300">Loading…</div>
       ) : error ? (
         <p className="text-red-600">{error}</p>
       ) : items.length === 0 ? (
         <p className="text-gray-600 dark:text-gray-300">No news yet.</p>
       ) : (
-        <div className="divide-y divide-black/5 dark:divide-white/10">
+        <motion.div
+          className="divide-y divide-black/5 dark:divide-white/10"
+          initial="hidden"
+          animate="show"
+          variants={{ hidden: { opacity: 1 }, show: { opacity: 1, transition: { staggerChildren: 0.05 } } }}
+        >
           {items.map((n) => {
             const href = `/news/${n.id}`;
             return (
-              <article key={n.id} className="relative py-4 flex gap-4">
+              <motion.article key={n.id} className="relative py-4 flex gap-4" variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}>
                 {n.imageUrl && (
                   <img src={n.imageUrl} alt={n.title} className="h-24 w-32 object-cover rounded-md flex-shrink-0" loading="lazy" />
                 )}
@@ -56,10 +62,10 @@ export default function NewsPage() {
                   </div>
                 </div>
                 <Link to={href} aria-label={n.title} className="absolute inset-0" />
-              </article>
+              </motion.article>
             );
           })}
-        </div>
+        </motion.div>
       )}
     </section>
   );

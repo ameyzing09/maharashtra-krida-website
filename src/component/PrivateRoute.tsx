@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hook/useAuth';
-import { TailSpin } from 'react-loader-spinner';
+import PageLoader from './PageLoader';
 
 function PrivateRoute() {
   const { status } = useAuth();
@@ -13,11 +13,7 @@ function PrivateRoute() {
   }, [status, navigate]);
 
   if (status === 'loading') {
-    return(
-        <div className="flex justify-center items-center h-screen">
-          <TailSpin color="#a3e635" height={80} width={80} />
-        </div>
-      );
+    return <PageLoader variant="center" label="Checking session..." />;
   }
 
   return status === 'signedIn' ? <Outlet /> : null;

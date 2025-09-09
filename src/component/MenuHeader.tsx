@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../services/authService";
 import useToast from "../hook/useToast";
-import { TailSpin } from "react-loader-spinner";
+import PageLoader from "./PageLoader";
 import Toast from "./common/Toast";
 
 const MenuHeader: React.FC = () => {
@@ -23,7 +23,7 @@ const MenuHeader: React.FC = () => {
     }
   };
 
-  if (loading) return <TailSpin color="#a3e635" height={80} width={80} />;
+  if (loading) return <PageLoader variant="overlay" label="Signing out..." />;
 
   return (
     <>
@@ -33,7 +33,7 @@ const MenuHeader: React.FC = () => {
           {/* <h2 className="text-lg font-bold">{title}</h2> */}
           <button
             onClick={handleSignOut}
-            className="rounded-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4"
+            className="rounded-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 transition-transform active:scale-95"
           >
             Sign Out
           </button>

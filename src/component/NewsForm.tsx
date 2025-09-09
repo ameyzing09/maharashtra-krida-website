@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TailSpin } from "react-loader-spinner";
+import PageLoader from "./PageLoader";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import useToast from "../hook/useToast";
 import Toast from "./common/Toast";
@@ -71,29 +71,25 @@ export default function NewsForm({ onAdded }: Props) {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <TailSpin color="#a3e635" height={40} width={40} />
-      </div>
-    );
+    return <PageLoader variant="overlay" label="Saving news..." />;
   }
 
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} />}
-      <form onSubmit={onSubmit} className="max-w-lg mx-auto bg-white dark:bg-brand-slate border border-black/5 dark:border-white/10 text-brand-charcoal dark:text-gray-100 p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold text-center mb-4">Add News</h2>
+      <form onSubmit={onSubmit} className="max-w-lg mx-auto glass-panel-strong text-gray-900 dark:text-white p-6">
+        <h2 className="text-xl font-semibold text-center mb-4 text-gray-900 dark:text-white drop-shadow-sm">Add News</h2>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1" htmlFor="title">Title</label>
-          <input name="title" value={form.title} onChange={onChange} placeholder="Title" className="shadow appearance-none border rounded w-full py-2 px-3 bg-transparent" required />
+          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="title">Title</label>
+          <input name="title" value={form.title} onChange={onChange} placeholder="Title" className="glass-input w-full py-2 px-3" required />
         </div>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1" htmlFor="eventId">Related Event (optional)</label>
+          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="eventId">Related Event (optional)</label>
           <select
             name="eventId"
             value={form.eventId || ""}
             onChange={onChange as any}
-            className="shadow appearance-none border rounded w-full py-2 px-3 bg-transparent"
+            className="glass-input w-full py-2 px-3"
             disabled={eventsLoading}
           >
             <option value="">None</option>
@@ -103,20 +99,20 @@ export default function NewsForm({ onAdded }: Props) {
           </select>
         </div>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1" htmlFor="summary">Summary (optional)</label>
-          <input name="summary" value={form.summary || ""} onChange={onChange} placeholder="Short summary" className="shadow appearance-none border rounded w-full py-2 px-3 bg-transparent" />
+          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="summary">Summary (optional)</label>
+          <input name="summary" value={form.summary || ""} onChange={onChange} placeholder="Short summary" className="glass-input w-full py-2 px-3" />
         </div>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1" htmlFor="content">Content</label>
-          <textarea name="content" value={form.content || ""} onChange={onChange} placeholder="Full content" rows={6} className="shadow appearance-none border rounded w-full py-2 px-3 bg-transparent" required />
+          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="content">Content</label>
+          <textarea name="content" value={form.content || ""} onChange={onChange} placeholder="Full content" rows={6} className="glass-input w-full py-2 px-3" required />
         </div>
         
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-1" htmlFor="imageFile">Cover Image (optional)</label>
-          <input name="imageFile" type="file" accept="image/*" onChange={onChange} className="shadow border rounded w-full py-2 px-3 bg-transparent file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-black/5 dark:file:bg-white/10" />
+          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="imageFile">Cover Image (optional)</label>
+          <input name="imageFile" type="file" accept="image/*" onChange={onChange} className="glass-input w-full py-2 px-3 file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-white/20 dark:file:bg-black/20" />
         </div>
         <div className="flex items-center justify-between">
-          <button type="submit" className="bg-lime-400 hover:bg-lime-600 text-brand-charcoal font-bold py-2 px-4 rounded border border-black/10">Add</button>
+          <button type="submit" className="glass-button-primary py-2 px-4 glass-glow-hover">Add</button>
         </div>
       </form>
     </>

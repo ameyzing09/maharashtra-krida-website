@@ -1,7 +1,7 @@
 import useHomepageContent from "../hook/useHomepage";
 import { useEffect, useRef, useState } from "react";
 import { listNews, NewsItem } from "../services/newsService";
-import { TailSpin } from "react-loader-spinner";
+import PageLoader from "./PageLoader";
 import { Link } from "react-router-dom";
 
 export default function Highlights() {
@@ -20,8 +20,8 @@ export default function Highlights() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-10 flex justify-center">
-        <TailSpin color="#84cc16" height={40} width={40} />
+      <div className="mx-auto max-w-6xl px-4">
+        <PageLoader variant="center" label="Loading highlights..." />
       </div>
     );
   }
@@ -37,23 +37,23 @@ export default function Highlights() {
       {content && content.length > 0 && (
         <div className="mb-10">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-brand-charcoal dark:text-white">Highlights</h2>
+            <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white drop-shadow-sm">Highlights</h2>
             <div className="hidden sm:flex gap-2">
-              <button aria-label="Previous" onClick={scrollByRef(featuredRef, -1)} className="h-8 w-8 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-brand-charcoal dark:text-gray-100">⟵</button>
-              <button aria-label="Next" onClick={scrollByRef(featuredRef, 1)} className="h-8 w-8 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-brand-charcoal dark:text-gray-100">⟶</button>
+              <button aria-label="Previous" onClick={scrollByRef(featuredRef, -1)} className="glass-button-secondary h-8 w-8 p-0 text-gray-800 dark:text-white">⟵</button>
+              <button aria-label="Next" onClick={scrollByRef(featuredRef, 1)} className="glass-button-secondary h-8 w-8 p-0 text-gray-800 dark:text-white">⟶</button>
             </div>
           </div>
           <div className="relative group">
             <div ref={featuredRef} className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2">
               {content.map((item) => (
-                <article key={item.id} className="snap-center shrink-0 w-80 sm:w-96 md:w-[28rem] relative rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate shadow-soft">
+                <article key={item.id} className="snap-center shrink-0 w-80 sm:w-96 md:w-[28rem] relative glass-panel">
                   <div className="aspect-[16/9] w-full relative">
                     <img src={item.imageUrl} alt={item.alt} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                      <h3 className="font-semibold text-base sm:text-lg line-clamp-2">{item.title}</h3>
+                      <h3 className="font-semibold text-base sm:text-lg line-clamp-2 drop-shadow-sm">{item.title}</h3>
                       {item.description && (
-                        <p className="mt-1 text-xs sm:text-sm text-gray-200 line-clamp-2">{item.description}</p>
+                        <p className="mt-1 text-xs sm:text-sm text-gray-200 line-clamp-2 drop-shadow-sm">{item.description}</p>
                       )}
                     </div>
                   </div>
@@ -69,12 +69,12 @@ export default function Highlights() {
       {news && news.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white">Latest News</h2>
+            <h2 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white drop-shadow-sm">Latest News</h2>
             <div className="flex items-center gap-3">
-              <Link to="/news" className="text-sm text-brand-lime hover:underline">See all</Link>
+              <Link to="/news" className="text-sm text-lime-600 dark:text-lime-400 hover:underline">See all</Link>
               <div className="hidden sm:flex gap-2">
-                <button aria-label="Previous news" onClick={scrollByRef(newsRef, -1)} className="h-8 w-8 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-brand-charcoal dark:text-gray-100">⟵</button>
-                <button aria-label="Next news" onClick={scrollByRef(newsRef, 1)} className="h-8 w-8 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-brand-charcoal dark:text-gray-100">⟶</button>
+                <button aria-label="Previous news" onClick={scrollByRef(newsRef, -1)} className="glass-button-secondary h-8 w-8 p-0 text-gray-800 dark:text-white">⟵</button>
+                <button aria-label="Next news" onClick={scrollByRef(newsRef, 1)} className="glass-button-secondary h-8 w-8 p-0 text-gray-800 dark:text-white">⟶</button>
               </div>
             </div>
           </div>

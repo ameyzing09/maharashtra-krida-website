@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { TailSpin } from "react-loader-spinner";
+import PageLoader from "./PageLoader";
 import useToast from "../hook/useToast";
 import Toast from "./common/Toast";
 import { addGalleryItem } from "../services/galleryService";
@@ -53,36 +53,32 @@ export default function GalleryForm({ onAdded }: Props) {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <TailSpin color="#a3e635" height={40} width={40} />
-      </div>
-    );
+    return <PageLoader variant="overlay" label="Uploading image..." />;
   }
 
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} />}
-      <form onSubmit={onSubmit} className="max-w-lg mx-auto bg-white dark:bg-brand-slate border border-black/5 dark:border-white/10 text-brand-charcoal dark:text-gray-100 p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold text-center mb-4">Add Gallery Item</h2>
+      <form onSubmit={onSubmit} className="max-w-lg mx-auto glass-panel-strong text-gray-900 dark:text-white p-6">
+        <h2 className="text-xl font-semibold text-center mb-4 text-gray-900 dark:text-white drop-shadow-sm">Add Gallery Item</h2>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1" htmlFor="title">Title (optional)</label>
-          <input name="title" value={form.title || ""} onChange={onChange} placeholder="Title" className="shadow appearance-none border rounded w-full py-2 px-3 bg-transparent" />
+          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="title">Title (optional)</label>
+          <input name="title" value={form.title || ""} onChange={onChange} placeholder="Title" className="glass-input w-full py-2 px-3" />
         </div>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1" htmlFor="description">Description (optional)</label>
-          <input name="description" value={form.description || ""} onChange={onChange} placeholder="Short description" className="shadow appearance-none border rounded w-full py-2 px-3 bg-transparent" />
+          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="description">Description (optional)</label>
+          <input name="description" value={form.description || ""} onChange={onChange} placeholder="Short description" className="glass-input w-full py-2 px-3" />
         </div>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1" htmlFor="alt">Alt text (accessibility)</label>
-          <input name="alt" value={form.alt || ""} onChange={onChange} placeholder="Image alt text" className="shadow appearance-none border rounded w-full py-2 px-3 bg-transparent" />
+          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="alt">Alt text (accessibility)</label>
+          <input name="alt" value={form.alt || ""} onChange={onChange} placeholder="Image alt text" className="glass-input w-full py-2 px-3" />
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-1" htmlFor="imageFile">Image</label>
-          <input name="imageFile" type="file" accept="image/*" onChange={onChange} className="shadow border rounded w-full py-2 px-3 bg-transparent file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-black/5 dark:file:bg-white/10" />
+          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="imageFile">Image</label>
+          <input name="imageFile" type="file" accept="image/*" onChange={onChange} className="glass-input w-full py-2 px-3 file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-white/20 dark:file:bg-black/20" />
         </div>
         <div className="flex items-center justify-between">
-          <button type="submit" className="bg-lime-400 hover:bg-lime-600 text-brand-charcoal font-bold py-2 px-4 rounded border border-black/10">Add</button>
+          <button type="submit" className="glass-button-primary py-2 px-4 glass-glow-hover">Add</button>
         </div>
       </form>
     </>

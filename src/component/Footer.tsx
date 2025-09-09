@@ -3,40 +3,40 @@ import { Link } from "react-router-dom";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="mt-12 border-t border-black/5 dark:border-white/10 bg-brand-paper dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200">
+    <footer className="mt-12 glass-panel-strong border-t border-white/20 dark:border-white/10">
       <div className="mx-auto max-w-6xl px-4 py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="h-8 w-8 rounded-full bg-brand-lime" aria-hidden="true" />
-              <span className="font-display text-lg font-bold">Maharashtra Krida</span>
+              <div className="h-8 w-8 rounded-full bg-lime-500 glass-glow" aria-hidden="true" />
+              <span className="font-display text-lg font-bold text-gray-900 dark:text-white drop-shadow-sm">Maharashtra Krida</span>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 max-w-sm">
+            <p className="text-sm text-gray-700 dark:text-gray-300 max-w-sm drop-shadow-sm">
               Energetic, community-first sports events across Maharashtra. Play, compete, and celebrate with us.
             </p>
           </div>
 
           {/* Quick Links */}
           <nav aria-label="Quick links" className="grid gap-2 content-start">
-            <h3 className="text-sm font-semibold text-brand-charcoal dark:text-gray-100 mb-2">Quick Links</h3>
-            <Link to="/upcoming-events" className="text-sm hover:text-brand-lime">Events</Link>
-            <Link to="/register" className="text-sm hover:text-brand-lime">Register</Link>
-            <Link to="/about" className="text-sm hover:text-brand-lime">About</Link>
-            <Link to="/contact" className="text-sm hover:text-brand-lime">Contact</Link>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 drop-shadow-sm">Quick Links</h3>
+            <Link to="/upcoming-events" className="text-sm text-gray-700 dark:text-gray-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors duration-200">Events</Link>
+            <Link to="/register" className="text-sm text-gray-700 dark:text-gray-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors duration-200">Register</Link>
+            <Link to="/about" className="text-sm text-gray-700 dark:text-gray-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors duration-200">About</Link>
+            <Link to="/contact" className="text-sm text-gray-700 dark:text-gray-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors duration-200">Contact</Link>
           </nav>
 
           {/* Contact */}
           <div className="grid gap-2 content-start">
-            <h3 className="text-sm font-semibold text-brand-charcoal dark:text-gray-100 mb-2">Contact</h3>
-            <a href="mailto:hello@maharashtrakrida.in" className="text-sm hover:text-brand-lime">hello@maharashtrakrida.in</a>
-            <a href="tel:+919999999999" className="text-sm hover:text-brand-lime">+91 99999 99999</a>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 drop-shadow-sm">Contact</h3>
+            <a href="mailto:hello@maharashtrakrida.in" className="text-sm text-gray-700 dark:text-gray-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors duration-200">hello@maharashtrakrida.in</a>
+            <a href="tel:+919999999999" className="text-sm text-gray-700 dark:text-gray-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors duration-200">+91 99999 99999</a>
             <div className="flex gap-3 mt-2" aria-label="Social links">
               <a
                 href="https://www.instagram.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-black/5 dark:bg-white/10 hover:bg-brand-lime/20"
+                className="glass-button-secondary h-9 w-9 p-0 hover:glass-glow-hover"
                 aria-label="Instagram"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -47,7 +47,7 @@ const Footer: React.FC = () => {
                 href="https://twitter.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-black/5 dark:bg-white/10 hover:bg-brand-lime/20"
+                className="glass-button-secondary h-9 w-9 p-0 hover:glass-glow-hover"
                 aria-label="Twitter"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -58,9 +58,9 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-black/5 dark:border-white/10 pt-6">
-          <p className="text-xs text-gray-500 dark:text-gray-400">© {new Date().getFullYear()} Maharashtra Krida. All rights reserved.</p>
-          <div className="text-xs text-gray-500 dark:text-gray-400">Built with love in Maharashtra.</div>
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/20 dark:border-white/10 pt-6">
+          <p className="text-xs text-gray-600 dark:text-gray-400 drop-shadow-sm">© {new Date().getFullYear()} Maharashtra Krida. All rights reserved.</p>
+          <div className="text-xs text-gray-600 dark:text-gray-400 drop-shadow-sm">Built with love in Maharashtra.</div>
         </div>
       </div>
     </footer>

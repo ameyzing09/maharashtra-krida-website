@@ -1,3 +1,6 @@
+/* Import glassmorphism styles */
+@import './styles/glassmorphism.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,13 +9,13 @@
   /* Light theme defaults */
   body, #root {
     min-height: 100vh;
-    background-color: theme('colors.brand.paper');
+    background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 50%, #f0fdf4 100%);
     color: theme('colors.brand.charcoal');
   }
 
   /* Dark theme overrides when html has .dark */
   .dark body, .dark #root {
-    background-color: theme('colors.brand.charcoal');
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c4a3e 100%);
     color: theme('colors.gray.200');
   }
 }
