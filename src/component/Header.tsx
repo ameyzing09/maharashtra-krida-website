@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Toast from "./common/Toast";
 import { TailSpin } from "react-loader-spinner";
+import { motion } from "framer-motion";
 import { logout } from "../services/authService";
 import useToast from "../hook/useToast";
 import useTheme from "../hook/useTheme";
@@ -34,9 +35,9 @@ const Header: React.FC = () => {
   // theme class toggling handled by ThemeProvider
 
   const linkBase =
-    "block px-3 py-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime/70 transition-colors";
-  const isActive = (path: string) => (location.pathname === path ? "text-brand-lime" : "text-gray-700 dark:text-gray-200");
-  const hover = "hover:text-brand-lime";
+    "block px-3 py-2 rounded-xl glass-button-secondary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-lime-300 focus:ring-offset-2";
+  const isActive = (path: string) => (location.pathname === path ? "text-lime-600 dark:text-lime-400" : "text-gray-800 dark:text-white");
+  const hover = "hover:text-lime-600 dark:hover:text-lime-400";
 
   const navLinks = useMemo(
     () => (
@@ -65,7 +66,7 @@ const Header: React.FC = () => {
     <div className="flex items-center gap-2">
       <button
         onClick={() => navigate(-1)}
-        className={`inline-flex items-center gap-2 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 px-4 py-2 font-medium text-brand-charcoal dark:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime/70`}
+        className="glass-button-secondary inline-flex items-center gap-2 px-4 py-2 font-medium text-gray-800 dark:text-white"
       >
         {/* left chevron */}
         <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -75,9 +76,9 @@ const Header: React.FC = () => {
       </button>
       <button
         onClick={handleSignOut}
-        className={`${linkBase} inline-flex items-center gap-2`}
+        className="glass-button-outline inline-flex items-center gap-2 px-4 py-2 font-medium"
       >
-        {loading && <TailSpin color="#fff" height={16} width={16} />}
+        {loading && <TailSpin color="#84cc16" height={16} width={16} />}
         <span>Sign Out</span>
       </button>
     </div>
@@ -86,14 +87,16 @@ const Header: React.FC = () => {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} />}
-      <header className="w-full sticky top-0 z-40 border-b border-black/5 bg-white/90 dark:bg-brand-charcoal/90 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-brand-charcoal/60">
+      <header className="w-full sticky top-0 z-40 glass-panel-strong border-b border-white/20 dark:border-white/10">
         <div className="mx-auto max-w-6xl px-4">
           <div className="flex h-16 items-center justify-between">
             {/* Brand */}
-            <Link to="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-brand-lime" aria-hidden="true" />
-              <span className="font-display text-lg font-bold tracking-tight text-brand-charcoal dark:text-white">Maharashtra Krida</span>
-            </Link>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="flex items-center gap-2">
+              <Link to="/" className="flex items-center gap-2 group">
+                <div className="h-8 w-8 rounded-full bg-lime-500 glass-glow group-hover:glass-glow-hover transition-all duration-300" aria-hidden="true" />
+                <span className="font-display text-lg font-bold tracking-tight text-gray-900 dark:text-white drop-shadow-sm">Maharashtra Krida</span>
+              </Link>
+            </motion.div>
 
             {/* Desktop nav */}
             <nav className="hidden md:flex items-center gap-2">
@@ -118,7 +121,7 @@ const Header: React.FC = () => {
                 aria-label="Toggle menu"
                 aria-expanded={open}
                 onClick={() => setOpen((v) => !v)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-brand-charcoal dark:text-gray-200 hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime/70"
+                className="glass-button-secondary p-2 text-gray-800 dark:text-white"
               >
                 <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none">
                   {open ? (
@@ -135,7 +138,7 @@ const Header: React.FC = () => {
         {/* Mobile drawer */}
         <div className={`md:hidden transition-[max-height] duration-300 overflow-hidden ${open ? "max-h-96" : "max-h-0"}`}>
           <div className="mx-auto max-w-6xl px-4 pb-3">
-            <nav className="flex flex-col py-2 gap-1 text-brand-charcoal dark:text-gray-200">
+            <nav className="flex flex-col py-2 gap-1 text-gray-800 dark:text-white">
               {isMenuPage ? MenuLinks : navLinks}
             </nav>
           </div>
@@ -157,7 +160,7 @@ const ThemeToggle: React.FC<{ theme: Theme; setTheme: (t: Theme) => void }> = ({
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       title={title}
       aria-label={title}
-      className="inline-flex items-center justify-center p-2 rounded-md text-brand-charcoal dark:text-gray-200 hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime/70"
+      className="glass-button-secondary p-2 text-gray-800 dark:text-white"
     >
       {theme === "dark" ? (
         // Sun icon

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { SliderImage } from "../types";
 
 interface ImageSliderProps {
@@ -48,8 +49,9 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ sliderImages }) => {
       className="relative w-full h-screen overflow-hidden"
       style={{ height: "calc(100vh - 60px)" }}
     >
+      <AnimatePresence initial={false}>
       {sliderImages.map((slideImage, index) => (
-        <div
+        <motion.div
           className={
             index === current
               ? "slide active flex justify-center items-center"
@@ -57,6 +59,10 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ sliderImages }) => {
           }
           key={index}
           style={{ height: "100%" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: index === current ? 1 : 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
         >
           {index === current && (
             <div className="relative w-full h-full">
@@ -66,27 +72,30 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ sliderImages }) => {
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
-              <div className="absolute bottom-0 w-full p-4 bg-gradient-to-t from-black to-transparent opacity-95">
-                <h2 className="text-lg md:text-2xl font-bold text-white">
-                  {slideImage.title}
-                </h2>
-                <p className="text-sm md:text-lg text-white">
-                  {slideImage.description}
-                </p>
+              <div className="absolute bottom-0 w-full p-4">
+                <div className="glass-panel-subtle p-4 backdrop-blur-md">
+                  <motion.h2 className="text-lg md:text-2xl font-bold text-white drop-shadow-sm" initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35 }}>
+                    {slideImage.title}
+                  </motion.h2>
+                  <motion.p className="text-sm md:text-lg text-white drop-shadow-sm" initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.45, delay: 0.05 }}>
+                    {slideImage.description}
+                  </motion.p>
+                </div>
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
       ))}
+      </AnimatePresence>
       <button
-        className="absolute top-1/2 left-10 transform -translate-y-1/2 text-white text-3xl z-10"
+        className="glass-button-secondary absolute top-1/2 left-10 transform -translate-y-1/2 text-white text-3xl z-10 w-12 h-12 p-0"
         onClick={prevSlide}
         aria-label="Previous slide"
       >
         &lt;
       </button>
       <button
-        className="absolute top-1/2 right-10 transform -translate-y-1/2 text-white text-3xl z-10"
+        className="glass-button-secondary absolute top-1/2 right-10 transform -translate-y-1/2 text-white text-3xl z-10 w-12 h-12 p-0"
         onClick={nextSlide}
         aria-label="Next slide"
       >

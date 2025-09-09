@@ -36,23 +36,23 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
       {toast && <Toast message={toast.message} type={toast.type} />}
       <h2 className="font-semibold mb-3">Create Fixture</h2>
       <div className="grid gap-2">
-        <select className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" value={teamAId} onChange={(e) => setTeamAId(e.target.value)}>
+        <select className="glass-input px-3 py-2" value={teamAId} onChange={(e) => setTeamAId(e.target.value)}>
           <option value="">Team A</option>
           {allowedTeams.map((t) => (
             <option key={t.id} value={t.id}>{t.name}</option>
           ))}
         </select>
-        <select className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" value={teamBId} onChange={(e) => setTeamBId(e.target.value)}>
+        <select className="glass-input px-3 py-2" value={teamBId} onChange={(e) => setTeamBId(e.target.value)}>
           <option value="">Team B</option>
           {allowedTeams.map((t) => (
             <option key={t.id} value={t.id}>{t.name}</option>
           ))}
         </select>
-        <input type="datetime-local" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} />
-        <input type="text" placeholder="Venue" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" value={venue} onChange={(e) => setVenue(e.target.value)} />
+        <input type="datetime-local" className="glass-input px-3 py-2" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} />
+        <input type="text" placeholder="Venue" className="glass-input px-3 py-2" value={venue} onChange={(e) => setVenue(e.target.value)} />
         <button
           disabled={creatingMatch}
-          className="rounded-full bg-brand-lime hover:bg-brand-limeDark disabled:bg-brand-lime/60 text-brand-charcoal font-semibold px-4 py-2 inline-flex items-center gap-2"
+          className="glass-button-primary w-full px-4 py-2 inline-flex items-center justify-center gap-2 disabled:opacity-60"
           onClick={async () => {
             if (!teamAId || !teamBId) return;
             try {
@@ -77,6 +77,7 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
       <input
         type="file"
         accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        className="glass-file-input w-full mb-4"
         onChange={async (e) => {
           const file = e.target.files?.[0];
           if (!file) return;
@@ -108,7 +109,7 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
           {missingNames.length > 0 && (
             <button
               disabled={creatingMissing}
-              className="mt-2 rounded-full bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-brand-charcoal dark:text-gray-100 px-4 py-1.5 text-sm inline-flex items-center gap-2"
+              className="mt-2 glass-button-secondary w-full px-4 py-1.5 text-sm inline-flex items-center justify-center gap-2"
               onClick={async () => {
                 try {
                   setCreatingMissing(true);
@@ -149,7 +150,7 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
           )}
 
           <button
-            className="mt-2 ml-2 rounded-full bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold px-4 py-1.5 text-sm disabled:opacity-60 inline-flex items-center gap-2"
+            className="mt-2 glass-button-primary w-full px-4 py-1.5 text-sm disabled:opacity-60 inline-flex items-center justify-center gap-2"
             disabled={missingNames.length > 0 || creatingBulk}
             onClick={async () => {
               try {

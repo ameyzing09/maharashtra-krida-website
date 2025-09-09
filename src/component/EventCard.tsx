@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { EventProps } from "../types";
 import { formatDateLong } from "../utils/date";
@@ -22,91 +23,118 @@ const EventCard: React.FC<CardProps> = ({
   description,
   registrationUrl,
 }) => {
+  const hasValidRegistration = registrationUrl && !isNA(registrationUrl);
+  
   return (
-    <article className="w-full rounded-2xl overflow-hidden bg-white dark:bg-brand-slate shadow-soft transition hover:shadow-lift">
-      <img
-        className="w-full h-44 sm:h-52 md:h-56 object-fit"
-        src={imageUrl}
-        alt={name}
-        loading="lazy"
-      />
+    <motion.article
+      whileHover={{ y: -4, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className="w-full h-full flex flex-col glass-panel glass-hover-strong group"
+    >
+      {/* Fixed aspect ratio image container with glass overlay */}
+      <div className="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden rounded-t-2xl">
+        <img
+          className="absolute inset-0 h-full w-full object-cover"
+          src={imageUrl}
+          alt={`${name} event image`}
+          loading="lazy"
+        />
+        {/* Glass gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        {/* Subtle glass effect on image */}
+        <div className="absolute inset-0 backdrop-blur-[0.5px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
 
-      <div className="p-4 sm:p-6 flex flex-col gap-4">
-        {/* title + desc */}
-        <header>
-          <h3 className="font-display font-bold text-lg sm:text-xl text-brand-charcoal dark:text-white mb-1 line-clamp-2">
-            {name}
-          </h3>
-          <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base line-clamp-3">
-            {description}
-          </p>
-        </header>
+      {/* Content area with glassmorphic styling */}
+      <div className="flex flex-col h-full p-4 sm:p-5 relative">
+        {/* Subtle background blur for content area */}
+        <div className="absolute inset-0 backdrop-blur-sm bg-white/5 dark:bg-black/5 rounded-b-2xl" />
+        
+        {/* Content with proper z-index */}
+        <div className="relative z-10 flex flex-col h-full">
+          {/* Title and description */}
+          <header className="mb-3">
+            <h3 className="font-display font-bold text-base sm:text-lg text-gray-900 dark:text-white mb-2 line-clamp-2 leading-tight drop-shadow-sm">
+              {name}
+            </h3>
+            {description && (
+              <p className="text-gray-700 dark:text-gray-200 text-sm line-clamp-2 leading-relaxed drop-shadow-sm">
+                {description}
+              </p>
+            )}
+          </header>
 
-        {/* chips */}
-        <div className="flex flex-wrap gap-2">
-          {sport && (
-            <span className="inline-flex items-center rounded-full bg-black/5 dark:bg-white/10 text-brand-charcoal dark:text-gray-200 px-3 py-1 text-xs sm:text-sm">
-              {sport}
-            </span>
-          )}
-          {date && (
-            <span className="inline-flex items-center rounded-full bg-black/5 dark:bg-white/10 text-brand-charcoal dark:text-gray-200 px-3 py-1 text-xs sm:text-sm">
-              {formatDateLong(date)}
-            </span>
-          )}
-          {location && (
-            <span className="inline-flex items-center rounded-full bg-black/5 dark:bg-white/10 text-brand-charcoal dark:text-gray-200 px-3 py-1 text-xs sm:text-sm">
-              {location}
-            </span>
-          )}
-        </div>
+          {/* Glassmorphic tags */}
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {sport && (
+              <span
+                title={sport}
+                className="glass-pill max-w-[120px] sm:max-w-[140px] whitespace-nowrap overflow-hidden text-ellipsis font-medium"
+              >
+                {sport}
+              </span>
+            )}
+            {date && (
+              <span
+                title={formatDateLong(date)}
+                className="glass-pill max-w-[120px] sm:max-w-[140px] whitespace-nowrap overflow-hidden text-ellipsis font-medium"
+              >
+                {formatDateLong(date)}
+              </span>
+            )}
+            {location && (
+              <span
+                title={location}
+                className="glass-pill max-w-[120px] sm:max-w-[140px] whitespace-nowrap overflow-hidden text-ellipsis font-medium"
+              >
+                {location}
+              </span>
+            )}
+          </div>
 
-        {/* actions */}
-        <div className="mt-1 flex flex-col sm:flex-row gap-2">
-          {flyerUrl && (
-            <a
-              href={flyerUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto text-center rounded-full border border-brand-lime/60 text-brand-charcoal dark:text-white hover:bg-brand-lime/10 font-semibold py-2.5 px-5"
-            >
-              View Flyer
-            </a>
-          )}
-
-          {registrationUrl
-            ? isNA(registrationUrl)
-              ? null
-              : isExternal(registrationUrl)
-                ? (
+          {/* CTA row - pushed to bottom */}
+          <div className="mt-auto">
+            <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+              {/* Always show View Flyer if available */}
+              {flyerUrl && (
+                <a
+                  href={flyerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-button-outline py-2 px-4 text-sm"
+                  aria-label={`View flyer for ${name}`}
+                >
+                  View Flyer
+                </a>
+              )}
+              
+              {/* Register Now button - only show if there's a valid registration URL */}
+              {hasValidRegistration && (
+                isExternal(registrationUrl) ? (
                   <a
                     href={registrationUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full sm:w-auto text-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold py-2.5 px-5 shadow-soft"
+                    className="glass-button-primary py-2 px-4 text-sm glass-glow-hover"
+                    aria-label={`Register for ${name}`}
                   >
                     Register Now
                   </a>
-                )
-                : (
+                ) : (
                   <Link
                     to={registrationUrl}
-                    className="w-full sm:w-auto text-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold py-2.5 px-5 shadow-soft"
+                    className="glass-button-primary py-2 px-4 text-sm glass-glow-hover"
+                    aria-label={`Register for ${name}`}
                   >
                     Register Now
                   </Link>
                 )
-            : (
-              <Link
-                to="/register"
-                className="w-full sm:w-auto text-center rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold py-2.5 px-5 shadow-soft"
-              >
-                Register Now
-              </Link>
-            )}
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 };
 

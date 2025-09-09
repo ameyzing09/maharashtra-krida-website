@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { getEvents } from "../services/eventService";
 import { listTeams } from "../services/teamService";
@@ -62,15 +63,17 @@ export default function TournamentAdmin() {
           ["schedule", "Schedule"],
           ["matches", "Matches"],
         ] as [AdminTab, string][]).map(([key, label]) => (
-          <button
+          <motion.button
             key={key}
             onClick={() => setTab(key)}
+            whileHover={{ y: tab === key ? 0 : -1 }}
+            whileTap={{ scale: tab === key ? 1 : 0.98 }}
             className={`px-3 py-1.5 text-sm rounded-full ${
               tab === key ? "bg-white dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-100 shadow" : "text-gray-700 dark:text-gray-300"
             }`}
           >
             {label}
-          </button>
+          </motion.button>
         ))}
       </div>
 

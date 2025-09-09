@@ -10,8 +10,8 @@ const Contact: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
-            <h2 className="text-lg font-semibold">Address</h2>
+          <div className="glass-panel p-5">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Address</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
               OM SAI Palace,
               <br /> Narhe, Sinhagad Road,
@@ -19,23 +19,23 @@ const Contact: React.FC = () => {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
-            <h2 className="text-lg font-semibold">Call</h2>
+          <div className="glass-panel p-5">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Call</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
               Contact Person: <span className="font-medium">Ashwin Panhalkar</span>
             </p>
-            <a href="tel:+919890171195" className="mt-1 inline-block text-sm text-brand-lime hover:underline">+91 9890 171 195</a>
+            <a href="tel:+919890171195" className="mt-1 inline-block text-sm text-lime-600 dark:text-lime-400 hover:underline">+91 9890 171 195</a>
           </div>
 
-          <div className="rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
-            <h2 className="text-lg font-semibold">Email</h2>
-            <a href="mailto:maharashtrakrida@gmail.com" className="mt-2 inline-block text-sm text-brand-lime hover:underline">maharashtrakrida@gmail.com</a>
+          <div className="glass-panel p-5">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Email</h2>
+            <a href="mailto:maharashtrakrida@gmail.com" className="mt-2 inline-block text-sm text-lime-600 dark:text-lime-400 hover:underline">maharashtrakrida@gmail.com</a>
             <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">We usually respond within 1–2 business days.</p>
           </div>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-5 shadow-soft">
-          <h2 className="text-lg font-semibold">Send us a message</h2>
+        <div className="mt-8 glass-panel p-5">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Send us a message</h2>
           <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">Prefer email? Fill this out and your mail client will open with pre-filled details.</p>
           <form
             className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4"
@@ -50,12 +50,12 @@ const Contact: React.FC = () => {
               (e.currentTarget as HTMLFormElement).reset();
             }}
           >
-            <input name="name" placeholder="Your name" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" />
-            <input name="subject" placeholder="Subject" className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" />
-            <textarea name="message" placeholder="Message" className="sm:col-span-2 min-h-[120px] rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 text-sm" />
+            <input name="name" placeholder="Your name" className="glass-input px-3 py-2 text-sm" />
+            <input name="subject" placeholder="Subject" className="glass-input px-3 py-2 text-sm" />
+            <textarea name="message" placeholder="Message" className="sm:col-span-2 min-h-[120px] glass-input px-3 py-2 text-sm" />
             <div className="sm:col-span-2 flex justify-end gap-2">
-              <button type="submit" className="rounded-full bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold px-5 py-2">Open Email</button>
-              <a href="/upcoming-events" className="rounded-full border border-brand-lime/60 px-5 py-2 text-brand-charcoal dark:text-white hover:bg-brand-lime/10">View Events</a>
+              <button type="submit" className="glass-button-primary px-5 py-2">Open Email</button>
+              <a href="/upcoming-events" className="glass-button-outline px-5 py-2">View Events</a>
             </div>
           </form>
         </div>

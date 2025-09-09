@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TailSpin } from "react-loader-spinner";
+import PageLoader from "./PageLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import useToast from "../hook/useToast";
@@ -50,7 +50,7 @@ export default function NewsList({ refreshKey }: Props) {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-40">
-        <TailSpin color="#a3e635" height={40} width={40} />
+        <PageLoader variant="center" label="Loading news..." />
       </div>
     );
   }

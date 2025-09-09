@@ -92,7 +92,7 @@ export default function LiveRecentWidget() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <h2 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white">Tournaments</h2>
-          <div className="inline-flex rounded-full bg-black/5 dark:bg-white/10 p-1">
+          <div className="glass-panel-subtle inline-flex rounded-full p-1">
             {([
               ["live", "Live"],
               ["upcoming", "Upcoming"],
@@ -101,8 +101,8 @@ export default function LiveRecentWidget() {
               <button
                 key={key}
                 onClick={() => { setAutoSwitchEnabled(false); setTab(key); }}
-                className={`px-3 py-1.5 text-xs sm:text-sm rounded-full ${
-                  tab === key ? "bg-white dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-100 shadow" : "text-gray-700 dark:text-gray-300"
+                className={`px-3 py-1.5 text-xs sm:text-sm rounded-full transition-all duration-200 ${
+                  tab === key ? "glass-button-primary" : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 {label}
@@ -110,7 +110,7 @@ export default function LiveRecentWidget() {
             ))}
           </div>
         </div>
-        <Link to="/tournaments" className="text-sm text-brand-lime hover:underline">View all</Link>
+        <Link to="/tournaments" className="text-sm text-lime-600 dark:text-lime-400 hover:underline">View all</Link>
       </div>
       {toast && <Toast message={toast.message} type={toast.type} />}
       {loading ? (

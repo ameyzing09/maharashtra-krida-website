@@ -39,13 +39,13 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
       <div className="rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-4">
         <h2 className="font-semibold mb-3">Create Team</h2>
         <div className="grid gap-2">
-          <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Team name" value={name} onChange={(e) => setName(e.target.value)} />
-          <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Short (optional)" value={short} onChange={(e) => setShort(e.target.value)} />
-          <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Logo URL (optional)" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
+          <input className="glass-input px-3 py-2" placeholder="Team name" value={name} onChange={(e) => setName(e.target.value)} />
+          <input className="glass-input px-3 py-2" placeholder="Short (optional)" value={short} onChange={(e) => setShort(e.target.value)} />
+          <input className="glass-input px-3 py-2" placeholder="Logo URL (optional)" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
           <div className="flex gap-2">
             <button
               disabled={creating}
-              className="rounded-full bg-brand-lime hover:bg-brand-limeDark disabled:bg-brand-lime/60 text-brand-charcoal font-semibold px-4 py-2 inline-flex items-center gap-2"
+              className="glass-button-primary w-full px-4 py-2 inline-flex items-center justify-center gap-2 disabled:opacity-60"
               onClick={async () => {
                 if (!name.trim()) return;
                 try {
@@ -117,6 +117,7 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
         <input
           type="file"
           accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          className="glass-file-input w-full mb-4"
           onChange={async (e) => {
             const file = e.target.files?.[0];
             if (!file) return;
@@ -141,7 +142,7 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
             <div className="mt-2 flex gap-2">
               <button
                 disabled={importing}
-                className="rounded-full bg-brand-lime hover:bg-brand-limeDark disabled:bg-brand-lime/60 text-brand-charcoal font-semibold px-4 py-1.5 text-sm inline-flex items-center gap-2"
+                className="glass-button-primary flex-1 px-4 py-1.5 text-sm inline-flex items-center justify-center gap-2 disabled:opacity-60"
                 onClick={async () => {
                   if (!importTeamRows) return;
                   try {
@@ -185,7 +186,7 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
               >
                 {importing && <TailSpin color="#84cc16" height={16} width={16} />}Create/Upsert Teams ({importTeamRows.length})
               </button>
-              <button className="rounded-full bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-brand-charcoal dark:text-gray-100 px-4 py-1.5 text-sm" onClick={() => setImportTeamRows(null)}>
+              <button className="glass-button-secondary px-4 py-1.5 text-sm" onClick={() => setImportTeamRows(null)}>
                 Clear
               </button>
             </div>
@@ -196,7 +197,7 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
       {/* Right: Add Override */}
       <div className="rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-4">
         <h2 className="font-semibold mb-3">Add Override to Event</h2>
-        <select className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2 mb-2 w-full" value={selectedTeamId} onChange={(e) => setSelectedTeamId(e.target.value)}>
+        <select className="glass-input px-3 py-2 mb-2 w-full" value={selectedTeamId} onChange={(e) => setSelectedTeamId(e.target.value)}>
           <option value="">Select team…</option>
           {teams.map((t) => (
             <option key={t.id} value={t.id}>
@@ -205,15 +206,15 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
           ))}
         </select>
         <div className="grid gap-2">
-          <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Override short (optional)" value={ovShort} onChange={(e) => setOvShort(e.target.value)} />
-          <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Logo override URL (optional)" value={ovLogo} onChange={(e) => setOvLogo(e.target.value)} />
+          <input className="glass-input px-3 py-2" placeholder="Override short (optional)" value={ovShort} onChange={(e) => setOvShort(e.target.value)} />
+          <input className="glass-input px-3 py-2" placeholder="Logo override URL (optional)" value={ovLogo} onChange={(e) => setOvLogo(e.target.value)} />
           <div className="grid grid-cols-2 gap-2">
-            <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Seed" value={seed} onChange={(e) => setSeed(e.target.value)} />
-            <input className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate px-3 py-2" placeholder="Group" value={group} onChange={(e) => setGroup(e.target.value)} />
+            <input className="glass-input px-3 py-2" placeholder="Seed" value={seed} onChange={(e) => setSeed(e.target.value)} />
+            <input className="glass-input px-3 py-2" placeholder="Group" value={group} onChange={(e) => setGroup(e.target.value)} />
           </div>
           <div className="flex gap-2">
             <button
-              className="rounded-full bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-semibold px-4 py-2"
+              className="glass-button-primary flex-1 px-4 py-2"
               onClick={async () => {
                 if (!selectedTeamId) return;
                 await upsertEventTeam({ eventId, teamId: selectedTeamId, short: ovShort || undefined, logoOverride: ovLogo || undefined, seed: seed ? Number(seed) : undefined, group: group || undefined });

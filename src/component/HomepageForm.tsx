@@ -87,19 +87,19 @@ const HomepageForm: React.FC = () => {
         <label className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" htmlFor="title">
           Title
         </label>
-        <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Title" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-100 dark:placeholder-gray-400 dark:bg-brand-slate dark:border-white/10 leading-tight focus:outline-none focus:shadow-outline" required />
+        <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Title" className="glass-input w-full py-2 px-3" required />
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" htmlFor="description">
           Description
         </label>
-        <input type="text" name="description" value={formData.description} onChange={handleChange} placeholder="Description" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-100 dark:placeholder-gray-400 dark:bg-brand-slate dark:border-white/10 leading-tight focus:outline-none focus:shadow-outline" required />
+        <input type="text" name="description" value={formData.description} onChange={handleChange} placeholder="Description" className="glass-input w-full py-2 px-3" required />
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 dark:text-gray-200 text-sm font-bold mb-2" htmlFor="imageFile">
           Image
         </label>
-        <input type="file" name="imageFile" onChange={handleFileChange} className="shadow border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-100 dark:bg-brand-slate dark:border-white/10 leading-tight focus:outline-none focus:shadow-outline file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-black/5 dark:file:bg-white/10" required />
+        <input type="file" name="imageFile" onChange={handleFileChange} className="glass-file-input w-full" required />
       </div>
       <div className="flex items-center justify-between">
         <button type="submit" className="bg-lime-400 hover:bg-lime-600 text-brand-charcoal font-bold py-2 px-4 rounded border border-black/10 focus:outline-none focus:shadow-outline">
