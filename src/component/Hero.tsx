@@ -81,7 +81,7 @@ const Hero: React.FC = () => {
                 <img 
                   src={nextEvent.imageUrl} 
                   alt={nextEvent.name} 
-                  className="absolute inset-0 w-full h-full object-cover" 
+                  className="absolute inset-0 w-full h-full object-fit" 
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900" />
