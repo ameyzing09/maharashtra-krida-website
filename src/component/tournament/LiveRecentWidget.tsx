@@ -7,6 +7,7 @@ import type { EventProps } from "../../types";
 import type { EventTeam, Match, ScoreCardData, Team } from "../../types/tournament";
 import { resolveTeamsForMatch } from "../../tournament/resolve";
 import { toScoreCardData } from "../../tournament/adapter";
+import { filterUpcomingMatches } from "../../utils/eventFilters";
 import ScoreCard from "./ScoreCard";
 import { Link } from "react-router-dom";
 import { calculateScoreCardsOnHome } from "../../";
@@ -82,7 +83,7 @@ export default function LiveRecentWidget() {
         .filter((x): x is ScoreCardData => !!x);
     let pool: ScoreCardData[] = [];
     if (tab === "live") pool = pick(live);
-    else if (tab === "upcoming") pool = pick(upcoming);
+    else if (tab === "upcoming") pool = pick(filterUpcomingMatches(upcoming));
     else pool = pick(recent);
     return pool.slice(0, limit);
   }, [events, teams, eventTeams, live, upcoming, recent, limit, tab]);

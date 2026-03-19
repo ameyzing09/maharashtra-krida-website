@@ -14,10 +14,7 @@ const Hero: React.FC = () => {
     const upcoming = withTs
       .filter((x) => x.ts > now)
       .sort((a, b) => a.ts - b.ts);
-    if (upcoming.length > 0) return upcoming[0].e;
-    // fallback: latest event if none upcoming
-    if (withTs.length > 0) return withTs.sort((a, b) => b.ts - a.ts)[0].e;
-    return eventsList[0];
+    return upcoming.length > 0 ? upcoming[0].e : undefined;
   }, [eventsList]);
   return (
     <section className="relative overflow-hidden min-h-screen flex items-center">

@@ -8,6 +8,7 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 import NotFound from "../pages/NotFound";
 import Event from "../pages/Event";
+import EventDetail from "../pages/EventDetail";
 import GalleryPage from "../pages/Gallery";
 import NewsPage from "../pages/News";
 import NewsDetail from "../pages/NewsDetail";
@@ -35,6 +36,7 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="about" element={<PageTransition><About /></PageTransition>} />
         <Route path="contact" element={<PageTransition><Contact /></PageTransition>} />
         <Route path="upcoming-events" element={<PageTransition><Event /></PageTransition>} />
+        <Route path="upcoming-events/:id" element={<PageTransition><EventDetail /></PageTransition>} />
         <Route path="gallery" element={<PageTransition><GalleryPage /></PageTransition>} />
         <Route path="news" element={<PageTransition><NewsPage /></PageTransition>} />
         <Route path="news/:id" element={<PageTransition><NewsDetail /></PageTransition>} />

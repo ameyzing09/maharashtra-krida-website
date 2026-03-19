@@ -7,6 +7,7 @@ import type { EventProps } from "../types";
 import type { EventTeam, Match, ScoreCardData, Team } from "../types/tournament";
 import { resolveTeamsForMatch } from "../tournament/resolve";
 import { toScoreCardData } from "../tournament/adapter";
+import { filterUpcomingMatches } from "../utils/eventFilters";
 import ScoreCard from "../component/tournament/ScoreCard";
 
 type Tab = "live" | "upcoming" | "past";
@@ -39,7 +40,8 @@ export default function TournamentsPage() {
 
   const cards: ScoreCardData[] = useMemo(() => {
     const byId = new Map(events.map((e) => [e.id, e]));
-    return matches
+    const filtered = tab === "upcoming" ? filterUpcomingMatches(matches) : matches;
+    return filtered
       .map((m) => {
         const ev = byId.get(m.eventId);
         if (!ev) return null;
@@ -47,7 +49,7 @@ export default function TournamentsPage() {
         return toScoreCardData(m, ev, resolved);
       })
       .filter((x): x is ScoreCardData => !!x);
-  }, [matches, events, teams, eventTeams]);
+  }, [matches, events, teams, eventTeams, tab]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">

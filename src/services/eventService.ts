@@ -2,7 +2,7 @@
 import { collections } from '../constants';
 import { EventProps } from '../types';
 import { db } from './firebaseConfig';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query } from 'firebase/firestore';
 import { wrapService } from './error';
 
 const eventsCollectionRef = collection(db, collections.EVENTS);
@@ -44,6 +44,15 @@ export const getEvents = async () => wrapService<EventProps[]>(
     return events;
   })(),
   'Failed to fetch events'
+);
+
+export const getEventById = async (id: string) => wrapService<EventProps | null>(
+  (async () => {
+    const d = await getDoc(doc(db, collections.EVENTS, id));
+    if (!d.exists()) return null;
+    return toEvent({ id: d.id, ...d.data() }) ?? null;
+  })(),
+  'Failed to fetch event details'
 );
 
 // code to add event to the database

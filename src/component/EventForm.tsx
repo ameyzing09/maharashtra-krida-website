@@ -24,14 +24,15 @@ const EventForm = () => {
   const [loading, setLoading] = useState(false);
   const { handleEventChange } = useEvents();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, files } = e.target;
-    if (name === "imageFile" || name === "flyerFile") {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name } = e.target;
+    if ((name === "imageFile" || name === "flyerFile") && e.target instanceof HTMLInputElement) {
+      const files = e.target.files;
       if (files && files[0]) {
         name === "imageFile" ? setImageFile(files[0]) : setFlyerFile(files[0]);
       }
     } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+      setFormData({ ...formData, [name]: e.target.value });
     }
   };
 
@@ -209,8 +210,9 @@ const EventForm = () => {
       >
         Description
       </label>
-      <input
+      <textarea
         name="description"
+        rows={4}
         value={formData.description}
         onChange={handleChange}
         placeholder="Description"
