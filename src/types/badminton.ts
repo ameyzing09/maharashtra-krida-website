@@ -15,11 +15,10 @@ export type CategoryEntry = {
   /** Stable client-side id for list rendering / removal. */
   id: string;
   category: BadmintonCategory;
+  /** Empty for the team event — it collects only a team name. */
   players: Player[];
   /** Team event only. */
   teamName?: string;
-  /** Team event only: index into `players` of the captain. */
-  captainIndex?: number;
 };
 
 export type Organization = {

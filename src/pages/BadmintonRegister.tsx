@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   BadmintonRegistrationProvider,
 } from "../context/badmintonRegistrationContext";
@@ -13,13 +13,28 @@ import logo from "../assets/badminton-logo.jpg";
 
 function Steps() {
   const { state } = useBadmintonRegistration();
+  const reduceMotion = useReducedMotion();
   const steps = [
     <StepOrganization key="org" />,
     <StepEntries key="ent" />,
     <StepReview key="rev" />,
     <StepPayment key="pay" />,
   ];
-  return <>{steps[state.step]}</>;
+  const anim = reduceMotion
+    ? {}
+    : {
+        initial: { opacity: 0, x: 32 },
+        animate: { opacity: 1, x: 0 },
+        exit: { opacity: 0, x: -32 },
+        transition: { duration: 0.25, ease: "easeOut" as const },
+      };
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div key={state.step} {...anim}>
+        {steps[state.step]}
+      </motion.div>
+    </AnimatePresence>
+  );
 }
 
 function Fact({ label, value }: { label: string; value: string }) {

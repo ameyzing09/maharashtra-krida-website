@@ -50,14 +50,19 @@ export default function StepReview() {
                 </p>
                 <span className="text-sm font-medium text-brand-lime">{formatINR(meta.fee)}</span>
               </div>
-              <ul className="mt-1.5 space-y-0.5">
-                {e.players.map((p, i) => (
-                  <li key={i} className="text-xs text-gray-600 dark:text-gray-300">
-                    {p.name}
-                    {e.captainIndex === i ? " (Captain)" : ""} · {p.phone} · {p.officialEmail}
-                  </li>
-                ))}
-              </ul>
+              {e.players.length > 0 ? (
+                <ul className="mt-1.5 space-y-0.5">
+                  {e.players.map((p, i) => (
+                    <li key={i} className="text-xs text-gray-600 dark:text-gray-300">
+                      {p.name} · {p.phone} · {p.officialEmail}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-1.5 text-xs text-gray-600 dark:text-gray-300">
+                  Roster to be shared before the Captains' Meeting.
+                </p>
+              )}
             </div>
           );
         })}

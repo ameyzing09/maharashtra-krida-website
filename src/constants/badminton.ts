@@ -21,21 +21,27 @@ export type CategoryMeta = {
   players: number | [number, number];
   /** Unit shown next to the fee, e.g. "per entry" / "per team". */
   unit: string;
+  /** Whether the entry form collects per-player details for this category. */
+  collectsPlayers: boolean;
+  /** Exclusive categories cannot be combined with any other entry. */
+  exclusive: boolean;
   /** For mixed doubles: hint that one male + one female is expected. */
   note?: string;
 };
 
 export const BADMINTON_CATEGORIES: CategoryMeta[] = [
-  { code: "mens_singles", label: "Men's Singles", fee: 150000, players: 1, unit: "per entry" },
-  { code: "womens_singles", label: "Women's Singles", fee: 150000, players: 1, unit: "per entry" },
-  { code: "mens_doubles", label: "Men's Doubles", fee: 300000, players: 2, unit: "per team" },
-  { code: "womens_doubles", label: "Women's Doubles", fee: 300000, players: 2, unit: "per team" },
+  { code: "mens_singles", label: "Men's Singles", fee: 150000, players: 1, unit: "per entry", collectsPlayers: true, exclusive: false },
+  { code: "womens_singles", label: "Women's Singles", fee: 150000, players: 1, unit: "per entry", collectsPlayers: true, exclusive: false },
+  { code: "mens_doubles", label: "Men's Doubles", fee: 300000, players: 2, unit: "per team", collectsPlayers: true, exclusive: false },
+  { code: "womens_doubles", label: "Women's Doubles", fee: 300000, players: 2, unit: "per team", collectsPlayers: true, exclusive: false },
   {
     code: "mixed_doubles",
     label: "Mixed Doubles",
     fee: 300000,
     players: 2,
     unit: "per team",
+    collectsPlayers: true,
+    exclusive: false,
     note: "One male and one female player.",
   },
   {
@@ -44,7 +50,9 @@ export const BADMINTON_CATEGORIES: CategoryMeta[] = [
     fee: 500000,
     players: [2, 4],
     unit: "per team",
-    note: "2 Singles + 1 Doubles. Minimum 2, maximum 4 players. Designate a captain.",
+    collectsPlayers: false,
+    exclusive: true,
+    note: "2 Singles + 1 Doubles per tie, 2–4 players. Only the team name is needed now; the roster is collected before the Captains' Meeting.",
   },
 ];
 

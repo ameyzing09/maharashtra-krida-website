@@ -12,14 +12,15 @@ const FEE_MAP = {
   team_event: 500000,
 };
 
-// Allowed player counts per category: [min, max].
+// Allowed player counts per category: [min, max]. The team event collects no
+// player details — only a team name — and is exclusive: it cannot be combined
+// with any other entry in the same registration.
 const PLAYER_BOUNDS = {
   mens_singles: [1, 1],
   womens_singles: [1, 1],
   mens_doubles: [2, 2],
   womens_doubles: [2, 2],
   mixed_doubles: [2, 2],
-  team_event: [2, 4],
 };
 
 const CATEGORY_LABEL = {
@@ -47,6 +48,20 @@ function validate(organization, entries) {
     return "Incomplete organisation details";
   }
   if (!Array.isArray(entries) || entries.length === 0) return "No entries provided";
+
+  // Team Event is exclusive: a registration is either one team entry, or any
+  // mix of individual entries — never both, and never more than one team.
+  const teamEntries = entries.filter((e) => e && e.category === "team_event");
+  if (teamEntries.length > 0) {
+    if (entries.length > 1) {
+      return "Corporate Team Event cannot be combined with other categories";
+    }
+    const team = teamEntries[0];
+    if (!team.teamName || String(team.teamName).trim().length < 2) {
+      return "Team name is required for the Corporate Team Event";
+    }
+    return null;
+  }
 
   for (const e of entries) {
     if (!e || !FEE_MAP[e.category]) return `Invalid category: ${e && e.category}`;

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TailSpin } from "react-loader-spinner";
 import { useBadmintonRegistration } from "../../hook/useBadmintonRegistration";
 import { createBadmintonOrder } from "../../services/paymentService";
 import { useRazorpayScript, RazorpaySuccess } from "../../hook/useRazorpayScript";
@@ -114,8 +115,9 @@ export default function StepPayment() {
       <button
         onClick={pay}
         disabled={!ready || loading}
-        className="glass-button-primary px-6 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="glass-button-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
       >
+        {loading && <TailSpin color="#ffffff" height={18} width={18} />}
         {loading ? "Processing..." : `Pay ${formatINR(totalPaise)}`}
       </button>
 
