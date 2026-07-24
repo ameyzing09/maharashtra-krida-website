@@ -51,6 +51,13 @@ const Header: React.FC = () => {
         <Link to="/news" className={`${linkBase} ${hover} ${isActive("/news")}`} aria-current={location.pathname === "/news" ? "page" : undefined}>
           News
         </Link>
+        <Link
+          to="/badminton"
+          className="block px-4 py-2 rounded-xl glass-button-primary font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-lime-300 focus:ring-offset-2"
+          aria-current={location.pathname === "/badminton" ? "page" : undefined}
+        >
+          Register
+        </Link>
       </>
     ), [location.pathname]
   );

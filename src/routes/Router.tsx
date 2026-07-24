@@ -18,6 +18,7 @@ import GalleryManagement from "../pages/GalleryManagement";
 import NewsManagement from "../pages/NewsManagement";
 import Menu from "../pages/Menu";
 import Register from "../pages/Register";
+import BadmintonRegister from "../pages/BadmintonRegister";
 import Success from "../pages/Payment/Success";
 import Failure from "../pages/Payment/Failure";
 import TournamentsPage from "../pages/Tournaments";
@@ -40,6 +41,7 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="news/:id" element={<PageTransition><NewsDetail /></PageTransition>} />
         <Route path="tournaments" element={<PageTransition><TournamentsPage /></PageTransition>} />
         <Route path="register" element={<PageTransition><Register /></PageTransition>} />
+        <Route path="badminton" element={<PageTransition><BadmintonRegister /></PageTransition>} />
         <Route element={<PrivateRoute />}>
           <Route path="menu" element={<PageTransition><Menu /></PageTransition>} />
           <Route path="/menu/content-management" element={<PageTransition><HomepageManagement /></PageTransition>} />
