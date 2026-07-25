@@ -1,0 +1,14 @@
+# Minimal config so `supabase link` / `supabase functions deploy` work without
+# running `supabase init` (which would scaffold files we don't need — this
+# repo only uses Supabase for the database, storage, auth, and these two
+# Edge Functions, not the full local dev stack).
+project_id = "maharashtra-krida-website"
+
+# Both functions are called by parties without a Supabase user session
+# (the public registration form uses the anon key; Razorpay calls the
+# webhook server-to-server) — so neither requires a verified user JWT.
+[functions.create-badminton-order]
+verify_jwt = false
+
+[functions.webhooks]
+verify_jwt = false

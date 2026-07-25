@@ -1,8 +1,8 @@
 // Pune's Corporate Badminton Bash 2026 — category / fee definitions.
 //
 // IMPORTANT: FEE amounts (in paise) are mirrored server-side in
-// `netlify/functions/create-badminton-order.js` (FEE_MAP). The server is the
-// source of truth for the charged amount; keep the two in sync when editing.
+// `supabase/functions/create-badminton-order/index.ts` (FEE_MAP). The server
+// is the source of truth for the charged amount; keep the two in sync when editing.
 
 export type BadmintonCategory =
   | "mens_singles"

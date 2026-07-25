@@ -1,8 +1,8 @@
-/* eslint-disable no-undef */
-import Razorpay from "razorpay";
+// deno-lint-ignore-file no-explicit-any
+import { corsHeaders, isAllowedOrigin } from "../_shared/cors.ts";
 
 // Fees in paise. MUST stay in sync with src/constants/badminton.ts.
-const FEE_MAP = {
+const FEE_MAP: Record<string, number> = {
   mens_singles: 150000,
   womens_singles: 150000,
   mens_doubles: 300000,
@@ -14,7 +14,7 @@ const FEE_MAP = {
 // Allowed player counts per category: [min, max]. The team event collects no
 // player details — only a team name — and is exclusive: it cannot be combined
 // with any other entry in the same registration.
-const PLAYER_BOUNDS = {
+const PLAYER_BOUNDS: Record<string, [number, number]> = {
   mens_singles: [1, 1],
   womens_singles: [1, 1],
   mens_doubles: [2, 2],
@@ -22,7 +22,7 @@ const PLAYER_BOUNDS = {
   mixed_doubles: [2, 2],
 };
 
-const CATEGORY_LABEL = {
+const CATEGORY_LABEL: Record<string, string> = {
   mens_singles: "Men's Singles",
   womens_singles: "Women's Singles",
   mens_doubles: "Men's Doubles",
@@ -39,29 +39,12 @@ const MAX_LONG = 200; // notes, designation
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[0-9]{10}$/;
 
-function allowedOrigin(origin) {
-  if (!origin) return true; // non-browser callers (no Origin header) — e.g. server-to-server
-  try {
-    const { hostname } = new URL(origin);
-    if (hostname === "localhost" || hostname === "127.0.0.1") return true;
-    if (hostname.endsWith(".netlify.app")) return true;
-    if (process.env.URL && origin === process.env.URL) return true; // Netlify primary URL
-    if (process.env.SITE_ORIGIN && origin === process.env.SITE_ORIGIN) return true; // custom domain
-    return false;
-  } catch {
-    return false;
-  }
-}
-
-function bad(msg) {
-  return { statusCode: 400, body: JSON.stringify({ error: msg }) };
-}
-
-function str(v, max) {
+function str(v: unknown, max: number): v is string {
   return typeof v === "string" && v.trim().length > 0 && v.length <= max;
 }
 
-function validate(organization, entries) {
+/** Pure — no Deno.* calls — so it's directly unit-testable with `deno test`. */
+export function validate(organization: any, entries: any[]): string | null {
   if (!organization || typeof organization !== "object") return "Missing organisation details";
   if (!str(organization.companyName, MAX_SHORT)) return "Invalid company name";
   if (!str(organization.officialEmail, MAX_SHORT) || !EMAIL_RE.test(organization.officialEmail))
@@ -103,106 +86,121 @@ function validate(organization, entries) {
   return null;
 }
 
-function summarizeCategories(entries) {
+export function computeAmount(entries: any[]): number {
+  return entries.reduce((sum, e) => sum + FEE_MAP[e.category], 0);
+}
+
+export function summarizeCategories(entries: any[]): string {
   return entries
     .map((e) => CATEGORY_LABEL[e.category] + (e.teamName ? ` (${e.teamName})` : ""))
     .join(", ");
 }
 
-async function insertPendingRow(order, organization, entries, amount) {
-  const res = await fetch(`${process.env.SUPABASE_URL}/rest/v1/badminton_registrations`, {
+async function createRazorpayOrder(amount: number, organization: any) {
+  const keyId = Deno.env.get("RAZORPAY_KEY_ID")!;
+  const keySecret = Deno.env.get("RAZORPAY_KEY_SECRET")!;
+  const auth = btoa(`${keyId}:${keySecret}`);
+  const res = await fetch("https://api.razorpay.com/v1/orders", {
+    method: "POST",
+    headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      amount,
+      currency: "INR",
+      receipt: `bad-${Date.now()}`,
+      payment_capture: 1,
+      // Razorpay notes are size-limited; the full roster is stored in
+      // Supabase, not here.
+      notes: {
+        regType: "badminton",
+        company: organization.companyName,
+        email: organization.officialEmail,
+      },
+    }),
+  });
+  if (!res.ok) throw new Error(`Razorpay order create failed (${res.status}): ${await res.text()}`);
+  return await res.json();
+}
+
+async function insertPendingRow(orderId: string, organization: any, entries: any[], amount: number) {
+  const url = `${Deno.env.get("SUPABASE_URL")}/rest/v1/badminton_registrations`;
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const res = await fetch(url, {
     method: "POST",
     headers: {
-      apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+      apikey: key,
+      Authorization: `Bearer ${key}`,
       "Content-Type": "application/json",
       Prefer: "return=minimal",
     },
     body: JSON.stringify({
-      order_id: order.id,
+      order_id: orderId,
       status: "PENDING",
       payment_method: "razorpay",
       company: organization.companyName,
-      contact_person: organization.contactPersonName || null,
+      contact_person: organization.contactPersonName ?? null,
       official_email: organization.officialEmail,
       phone: String(organization.phone),
-      personal_email: organization.personalEmail || null,
+      personal_email: organization.personalEmail ?? null,
       categories_summary: summarizeCategories(entries),
       total_paise: amount,
       entries,
     }),
   });
-  if (!res.ok) {
-    throw new Error(`Supabase insert failed (${res.status}): ${await res.text()}`);
-  }
+  if (!res.ok) throw new Error(`Supabase insert failed (${res.status}): ${await res.text()}`);
 }
 
-export const handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: JSON.stringify({ error: "Method Not Allowed" }) };
+export async function handleRequest(req: Request): Promise<Response> {
+  const origin = req.headers.get("origin");
+  const headers = { ...corsHeaders(origin), "Content-Type": "application/json" };
+
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers });
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method Not Allowed" }), { status: 405, headers });
   }
-  if (!allowedOrigin(event.headers && (event.headers.origin || event.headers.Origin))) {
-    return { statusCode: 403, body: JSON.stringify({ error: "Forbidden" }) };
+  if (!isAllowedOrigin(origin)) {
+    return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers });
   }
-  if ((event.body || "").length > MAX_BODY_BYTES) {
-    return { statusCode: 413, body: JSON.stringify({ error: "Payload too large" }) };
+
+  const raw = await req.text();
+  if (raw.length > MAX_BODY_BYTES) {
+    return new Response(JSON.stringify({ error: "Payload too large" }), { status: 413, headers });
   }
 
   try {
-    const { organization, entries } = JSON.parse(event.body || "{}");
+    const { organization, entries } = JSON.parse(raw || "{}");
 
     const invalid = validate(organization, entries);
-    if (invalid) return bad(invalid);
+    if (invalid) return new Response(JSON.stringify({ error: invalid }), { status: 400, headers });
 
     // Server is the source of truth for the amount.
-    const amount = entries.reduce((sum, e) => sum + FEE_MAP[e.category], 0);
-
-    const rzp = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET,
-    });
-
-    const order = await new Promise((resolve, reject) => {
-      rzp.orders.create(
-        {
-          amount,
-          currency: "INR",
-          receipt: `bad-${Date.now()}`,
-          payment_capture: 1,
-          // Razorpay notes are size-limited; the full roster is stored in
-          // Supabase, not here.
-          notes: {
-            regType: "badminton",
-            company: organization.companyName,
-            email: organization.officialEmail,
-          },
-        },
-        (error, orderResponse) => (error ? reject(error) : resolve(orderResponse))
-      );
-    });
+    const amount = computeAmount(entries);
+    const order = await createRazorpayOrder(amount, organization);
 
     // Persist the full registration as a PENDING row. The webhook flips it to
     // PAID on payment.captured. This is the durable record of the roster.
     try {
-      await insertPendingRow(order, organization, entries, amount);
+      await insertPendingRow(order.id, organization, entries, amount);
     } catch (dbErr) {
       // Do not fail the payment if the insert hiccups; the webhook has an
       // upsert fallback keyed on order_id.
-      console.error("Failed to write pending badminton row:", dbErr.message);
+      console.error("Failed to write pending badminton row:", (dbErr as Error).message);
     }
 
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    return new Response(
+      JSON.stringify({
         orderId: order.id,
         amount,
         currency: "INR",
-        keyId: process.env.RAZORPAY_KEY_ID,
+        keyId: Deno.env.get("RAZORPAY_KEY_ID"),
       }),
-    };
+      { status: 200, headers }
+    );
   } catch (error) {
     console.error("Error creating badminton order:", error);
-    return { statusCode: 500, body: JSON.stringify({ error: "Internal Server Error" }) };
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500, headers });
   }
-};
+}
+
+if (import.meta.main) {
+  Deno.serve(handleRequest);
+}
