@@ -1,14 +1,27 @@
 # Minimal config so `supabase link` / `supabase functions deploy` work without
 # running `supabase init` (which would scaffold files we don't need — this
-# repo only uses Supabase for the database, storage, auth, and these two
-# Edge Functions, not the full local dev stack).
+# repo only uses Supabase for the database, storage, auth, and these Edge
+# Functions, not the full local dev stack).
 project_id = "maharashtra-krida-website"
 
-# Both functions are called by parties without a Supabase user session
-# (the public registration form uses the anon key; Razorpay calls the
-# webhook server-to-server) — so neither requires a verified user JWT.
+# Called by parties without a Supabase user session (the public registration
+# form and success page use the anon key; Razorpay calls the webhook
+# server-to-server) — so none of these require a verified user JWT. Note
+# `verify_jwt = false` is a gateway-level relaxation, not the app's actual
+# access control — each function still applies its own checks (origin
+# allowlist, row lookup by unguessable order_id, etc; see each function's
+# source for specifics).
 [functions.create-badminton-order]
 verify_jwt = false
 
 [functions.webhooks]
 verify_jwt = false
+
+[functions.get-invoice]
+verify_jwt = false
+
+# Admin-only: requires a real logged-in user, enforced inside the function
+# itself (see requireAdmin in its source) since verify_jwt alone wouldn't
+# distinguish a genuine admin session from the public anon key.
+[functions.regenerate-invoice]
+verify_jwt = true

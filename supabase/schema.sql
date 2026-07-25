@@ -163,3 +163,36 @@ create policy "admin update media"
   on storage.objects for update to authenticated using (bucket_id = 'media');
 create policy "admin delete media"
   on storage.objects for delete to authenticated using (bucket_id = 'media');
+
+-- ---------------------------------------------------------------------------
+-- Invoices (see migrations/20260725160613_invoices.sql for the authoritative,
+-- already-applied version; kept here for a single-file reference of the
+-- full schema).
+-- ---------------------------------------------------------------------------
+
+alter table badminton_registrations
+  add column if not exists invoice_number text unique,
+  add column if not exists invoice_path text,
+  add column if not exists invoice_generated_at timestamptz;
+
+create sequence if not exists invoice_seq;
+
+create or replace function next_invoice_number()
+returns text
+language plpgsql
+security definer
+as $$
+declare
+  n bigint;
+begin
+  n := nextval('invoice_seq');
+  return 'MK-BADM-' || to_char(now(), 'YYYY') || '-' || lpad(n::text, 6, '0');
+end;
+$$;
+
+insert into storage.buckets (id, name, public)
+values ('invoices', 'invoices', false)
+on conflict (id) do nothing;
+
+create policy "admin read invoices"
+  on storage.objects for select to authenticated using (bucket_id = 'invoices');

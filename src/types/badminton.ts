@@ -38,7 +38,7 @@ export type BadmintonRegistrationState = {
   orderId: string;
 };
 
-/** Payload sent to the create-badminton-order Netlify function. */
+/** Payload sent to the create-badminton-order Edge Function. */
 export type BadmintonOrderPayload = {
   organization: Organization;
   entries: CategoryEntry[];
@@ -65,4 +65,7 @@ export type RegistrationRow = {
   categories_summary: string;
   total_paise: number;
   entries: CategoryEntry[];
+  invoice_number: string | null;
+  invoice_path: string | null;
+  invoice_generated_at: string | null;
 };

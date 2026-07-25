@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   cancelRegistration,
+  getInvoiceDownloadUrl,
   listRegistrations,
   markPaidOffline,
+  regenerateInvoice,
 } from "../services/registrationAdminService";
 import { RegistrationRow, RegistrationStatus } from "../types/badminton";
 import { BADMINTON_CATEGORIES, CATEGORY_BY_CODE, formatINR } from "../constants/badminton";
@@ -144,6 +146,40 @@ export default function RegistrationsDashboard() {
     } catch (e) {
       console.error(e);
       showToast("Update failed. Try again.", "error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onDownloadInvoice(row: RegistrationRow) {
+    if (!row.invoice_path) return;
+    try {
+      setBusy(true);
+      const url = await getInvoiceDownloadUrl(row.invoice_path);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      console.error(e);
+      showToast("Could not get the invoice link.", "error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onRegenerateInvoice(row: RegistrationRow) {
+    try {
+      setBusy(true);
+      const result = await regenerateInvoice(row.order_id);
+      setRows((prev) =>
+        prev.map((r) =>
+          r.id === row.id
+            ? { ...r, invoice_number: result.invoiceNumber, invoice_path: result.path, invoice_generated_at: new Date().toISOString() }
+            : r
+        )
+      );
+      showToast("Invoice generated.", "success");
+    } catch (e) {
+      console.error(e);
+      showToast("Invoice generation failed. Try again.", "error");
     } finally {
       setBusy(false);
     }
@@ -311,6 +347,39 @@ export default function RegistrationsDashboard() {
                               {r.payment_id && <p><span className="text-gray-500">Payment:</span> {r.payment_id}</p>}
                               {r.payment_note && <p><span className="text-gray-500">Payment ref:</span> {r.payment_note}</p>}
                               {r.paid_at && <p><span className="text-gray-500">Paid at:</span> {new Date(r.paid_at).toLocaleString("en-IN")}</p>}
+
+                              <div className="pt-2 flex items-center gap-3">
+                                {r.invoice_number ? (
+                                  <>
+                                    <span className="text-gray-500">Invoice:</span>
+                                    <span>{r.invoice_number}</span>
+                                    <button
+                                      disabled={busy}
+                                      onClick={() => onDownloadInvoice(r)}
+                                      className="text-lime-700 dark:text-lime-400 hover:underline"
+                                    >
+                                      Download
+                                    </button>
+                                    <button
+                                      disabled={busy}
+                                      onClick={() => onRegenerateInvoice(r)}
+                                      className="text-gray-500 hover:underline"
+                                    >
+                                      Regenerate
+                                    </button>
+                                  </>
+                                ) : r.status === "PAID" ? (
+                                  <button
+                                    disabled={busy}
+                                    onClick={() => onRegenerateInvoice(r)}
+                                    className="text-lime-700 dark:text-lime-400 hover:underline"
+                                  >
+                                    Generate Invoice
+                                  </button>
+                                ) : (
+                                  <span className="text-gray-500">Invoice available once paid</span>
+                                )}
+                              </div>
                             </div>
                             <div className="space-y-2">
                               {r.entries.map((e) => (

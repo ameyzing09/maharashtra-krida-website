@@ -1,4 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
+import { generateAndStoreInvoice } from "../_shared/invoice.ts";
 
 /** Pure, portable — used by both the handler and unit tests. */
 export function hexToBytes(hex: string): Uint8Array | null {
@@ -94,6 +95,15 @@ export async function handleRequest(req: Request): Promise<Response> {
       return new Response("Ignored", { status: 200 });
     }
     await markPaid(p);
+
+    // Best-effort: a PDF failure must never fail the payment webhook itself.
+    // The admin dashboard can retry generation for a row if this doesn't land.
+    try {
+      await generateAndStoreInvoice(p.order_id);
+    } catch (invErr) {
+      console.error("Invoice generation failed:", (invErr as Error).message);
+    }
+
     return new Response("Logged", { status: 200 });
   } catch (e) {
     console.error("Webhook processing failed:", (e as Error).message);

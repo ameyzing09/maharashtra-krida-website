@@ -44,3 +44,23 @@ export async function cancelRegistration(id: string): Promise<void> {
     throw toServiceError(e, "Failed to cancel registration");
   }
 }
+
+/** Admin session only — the signed URL is short-lived and not cached. */
+export async function getInvoiceDownloadUrl(invoicePath: string): Promise<string> {
+  try {
+    const { data, error } = await supabase.storage.from("invoices").createSignedUrl(invoicePath, 3600);
+    if (error) throw error;
+    return data.signedUrl;
+  } catch (e) {
+    throw toServiceError(e, "Failed to get invoice link");
+  }
+}
+
+/** Re-runs invoice generation for a row (e.g. after a prior failure). */
+export async function regenerateInvoice(orderId: string): Promise<{ invoiceNumber: string; path: string }> {
+  const { data, error } = await supabase.functions.invoke("regenerate-invoice", {
+    body: { order_id: orderId },
+  });
+  if (error) throw toServiceError(error, "Failed to regenerate invoice");
+  return data;
+}
