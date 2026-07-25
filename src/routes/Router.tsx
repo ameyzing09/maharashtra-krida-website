@@ -23,6 +23,7 @@ import Failure from "../pages/Payment/Failure";
 import TournamentsPage from "../pages/Tournaments";
 import TournamentAdmin from "../pages/TournamentAdmin";
 import RegistrationsDashboard from "../pages/RegistrationsDashboard";
+import InvoiceSettings from "../pages/InvoiceSettings";
 import PageTransition from "../component/PageTransition";
 import TopProgressBar from "../component/TopProgressBar";
 
@@ -47,6 +48,7 @@ const AnimatedRoutes: React.FC = () => {
           <Route path="/menu/event-management" element={<PageTransition><EventManagement /></PageTransition>} />
           <Route path="/menu/tournaments" element={<PageTransition><TournamentAdmin /></PageTransition>} />
           <Route path="/menu/badminton-registrations" element={<PageTransition><RegistrationsDashboard /></PageTransition>} />
+          <Route path="/menu/invoice-settings" element={<PageTransition><InvoiceSettings /></PageTransition>} />
           <Route path="/menu/gallery-management" element={<PageTransition><GalleryManagement /></PageTransition>} />
           <Route path="/menu/news-management" element={<PageTransition><NewsManagement /></PageTransition>} />
         </Route>

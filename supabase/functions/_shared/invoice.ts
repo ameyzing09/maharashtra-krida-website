@@ -2,6 +2,8 @@
 import { PDFDocument, StandardFonts, rgb } from "npm:pdf-lib@1.17.1";
 import { CATEGORY_LABEL, FEE_MAP } from "./badminton.ts";
 
+// Fallback branding used whenever invoice_settings doesn't override a field
+// (or the settings row doesn't exist / GST mode is off).
 export const ORGANIZER = {
   name: "Maharashtra Krida",
   addressLines: ["OM SAI Palace", "Narhe, Sinhagad Road", "Pune 411 041"],
@@ -16,6 +18,7 @@ export type InvoiceSourceRow = {
   contact_person: string | null;
   official_email: string;
   phone: string;
+  state: string | null;
   total_paise: number;
   entries: any[];
   payment_id: string | null;
@@ -23,26 +26,69 @@ export type InvoiceSourceRow = {
   paid_at: string | null;
 };
 
+/** The invoice_settings table — admin-configured via /menu/invoice-settings. */
+export type InvoiceSettings = {
+  gst_enabled: boolean;
+  gstin: string | null;
+  hsn_sac_code: string | null;
+  gst_rate_percent: number | null;
+  organizer_legal_name: string | null;
+  organizer_pan: string | null;
+  organizer_state: string | null;
+  organizer_address: string | null;
+};
+
+export type TaxLine = { label: string; amountPaise: number };
+
 export type InvoiceContent = {
   mode: "receipt" | "gst";
   gstin?: string;
+  hsnSac?: string;
+  organizerName: string;
+  organizerAddressLines: string[];
   invoiceNumber: string;
   invoiceDate: string;
   billTo: { company: string; contact: string; email: string; phone: string };
   lineItems: { label: string; amountPaise: number }[];
+  /** Value before tax. Equals totalPaise in receipt mode or when the rate
+   * isn't configured. */
+  taxableValuePaise: number;
+  taxLines: TaxLine[];
+  /** What was actually collected (tax-inclusive) — never changes based on
+   * GST mode; only how it's broken down on the document does. */
   totalPaise: number;
   payment: { id: string; orderId: string; method: string };
 };
 
 /**
- * Pure — no Deno.* calls — so it's directly unit-testable with `deno test`.
- * `gstin`, when provided (from the ORGANIZER_GSTIN secret), switches the
- * document into GST-invoice mode. NOTE: this only toggles what's *displayed*
- * (GSTIN line, "TAX INVOICE" title) — it does not compute or assert a tax
- * breakup. Review with an accountant before relying on it as a compliant tax
- * invoice; today's default (no GSTIN configured) is a plain payment receipt.
+ * Splits an already-collected (tax-inclusive) amount into taxable value +
+ * tax, given a GST rate. Entry fees are quoted and charged as a single flat
+ * amount — there is no separate "add tax at checkout" step in this flow —
+ * so GST mode treats that collected total as inclusive of tax and works
+ * backwards from it, rather than adding tax on top of what was charged.
+ * Rounds the taxable value once and derives tax as the remainder, so any
+ * further split (CGST+SGST) always sums back to exactly this tax amount.
  */
-export function buildInvoiceContent(row: InvoiceSourceRow, gstin?: string): InvoiceContent {
+function splitTax(totalPaise: number, ratePercent: number): { taxableValuePaise: number; taxPaise: number } {
+  const taxableValuePaise = Math.round(totalPaise / (1 + ratePercent / 100));
+  return { taxableValuePaise, taxPaise: totalPaise - taxableValuePaise };
+}
+
+/**
+ * Pure — no Deno.* calls — so it's directly unit-testable with `deno test`.
+ *
+ * `settings` (from invoice_settings, admin-configured) controls receipt vs
+ * GST mode. The GST rate/HSN/GSTIN themselves are taken as given — this
+ * function applies them mechanically, it does not assert they are correct;
+ * that is a compliance decision for the organiser (see splitTax above for
+ * the one methodology choice made here: tax-inclusive back-calculation).
+ *
+ * Same-state-as-organizer → CGST+SGST (split evenly); different state →
+ * IGST. When the registrant's state is unknown (older rows predating the
+ * state field) or the rate isn't configured, this degrades gracefully
+ * (IGST label as a neutral default / no tax lines) rather than throwing.
+ */
+export function buildInvoiceContent(row: InvoiceSourceRow, settings?: InvoiceSettings | null): InvoiceContent {
   const lineItems = (row.entries || []).map((e: any) => ({
     label: (CATEGORY_LABEL[e.category] || e.category) + (e.teamName ? ` — ${e.teamName}` : ""),
     amountPaise: FEE_MAP[e.category] ?? 0,
@@ -52,9 +98,33 @@ export function buildInvoiceContent(row: InvoiceSourceRow, gstin?: string): Invo
     ? new Date(row.paid_at).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })
     : new Date().toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" });
 
+  const gstMode = !!settings?.gst_enabled;
+  const rate = settings?.gst_rate_percent;
+  let taxableValuePaise = row.total_paise;
+  const taxLines: TaxLine[] = [];
+
+  if (gstMode && typeof rate === "number" && rate > 0) {
+    const split = splitTax(row.total_paise, rate);
+    taxableValuePaise = split.taxableValuePaise;
+    const sameState = !!(row.state && settings?.organizer_state && row.state === settings.organizer_state);
+    if (sameState) {
+      const cgst = Math.round(split.taxPaise / 2);
+      const sgst = split.taxPaise - cgst;
+      taxLines.push({ label: `CGST @ ${rate / 2}%`, amountPaise: cgst });
+      taxLines.push({ label: `SGST @ ${rate / 2}%`, amountPaise: sgst });
+    } else {
+      taxLines.push({ label: `IGST @ ${rate}%`, amountPaise: split.taxPaise });
+    }
+  }
+
   return {
-    mode: gstin ? "gst" : "receipt",
-    gstin,
+    mode: gstMode ? "gst" : "receipt",
+    gstin: settings?.gstin || undefined,
+    hsnSac: settings?.hsn_sac_code || undefined,
+    organizerName: settings?.organizer_legal_name || ORGANIZER.name,
+    organizerAddressLines: settings?.organizer_address
+      ? settings.organizer_address.split("\n").map((l) => l.trim()).filter(Boolean)
+      : ORGANIZER.addressLines,
     invoiceNumber: row.invoice_number,
     invoiceDate,
     billTo: {
@@ -64,6 +134,8 @@ export function buildInvoiceContent(row: InvoiceSourceRow, gstin?: string): Invo
       phone: row.phone,
     },
     lineItems,
+    taxableValuePaise,
+    taxLines,
     totalPaise: row.total_paise,
     payment: { id: row.payment_id || "", orderId: row.order_id, method: "Razorpay" },
   };
@@ -105,9 +177,9 @@ export async function renderInvoicePdf(
     }
   }
 
-  page.drawText(ORGANIZER.name, { x: left, y, size: 18, font: bold, color: dark });
+  page.drawText(content.organizerName, { x: left, y, size: 18, font: bold, color: dark });
   y -= 18;
-  for (const line of ORGANIZER.addressLines) {
+  for (const line of content.organizerAddressLines) {
     page.drawText(line, { x: left, y, size: 9, font, color: gray });
     y -= 12;
   }
@@ -123,6 +195,10 @@ export async function renderInvoicePdf(
   y -= 14;
   if (content.mode === "gst" && content.gstin) {
     page.drawText(`GSTIN: ${content.gstin}`, { x: left, y, size: 10, font });
+    y -= 14;
+  }
+  if (content.mode === "gst" && content.hsnSac) {
+    page.drawText(`HSN/SAC: ${content.hsnSac}`, { x: left, y, size: 10, font });
     y -= 14;
   }
   y -= 10;
@@ -157,6 +233,19 @@ export async function renderInvoicePdf(
   y -= 6;
   page.drawLine({ start: { x: left, y }, end: { x: right, y }, thickness: 0.5, color: gray });
   y -= 20;
+
+  if (content.taxLines.length > 0) {
+    page.drawText("Taxable Value", { x: left, y, size: 10, font });
+    page.drawText(inr(content.taxableValuePaise), { x: 470, y, size: 10, font });
+    y -= 16;
+    for (const t of content.taxLines) {
+      page.drawText(t.label, { x: left, y, size: 10, font });
+      page.drawText(inr(t.amountPaise), { x: 470, y, size: 10, font });
+      y -= 16;
+    }
+    y -= 4;
+  }
+
   page.drawText("Total", { x: left, y, size: 12, font: bold });
   page.drawText(inr(content.totalPaise), { x: 460, y, size: 12, font: bold });
   y -= 34;
@@ -197,6 +286,20 @@ async function fetchLogo(): Promise<Uint8Array | null> {
   return cachedLogo;
 }
 
+async function fetchInvoiceSettings(): Promise<InvoiceSettings | null> {
+  try {
+    const res = await fetch(
+      `${Deno.env.get("SUPABASE_URL")}/rest/v1/invoice_settings?select=*&limit=1`,
+      { headers: SB_HEADERS() }
+    );
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Fetches the registration row, assigns it an invoice number (idempotent —
  * reuses one already assigned by a prior attempt), renders the PDF, uploads
@@ -229,8 +332,8 @@ export async function generateAndStoreInvoice(
     invoiceNumber = await rpcRes.json();
   }
 
-  const gstin = Deno.env.get("ORGANIZER_GSTIN") || undefined;
-  const content = buildInvoiceContent({ ...row, invoice_number: invoiceNumber! }, gstin);
+  const settings = await fetchInvoiceSettings();
+  const content = buildInvoiceContent({ ...row, invoice_number: invoiceNumber! }, settings);
   const logo = await fetchLogo();
   const pdfBytes = await renderInvoicePdf(content, logo);
 

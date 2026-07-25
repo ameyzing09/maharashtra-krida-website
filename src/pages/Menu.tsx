@@ -13,6 +13,7 @@ const Menu: React.FC = () => {
           <Link to="/menu/news-management" className="glass-button-secondary w-full py-3 px-6 text-center block">News Management</Link>
           <Link to="/menu/tournaments" className="glass-button-secondary w-full py-3 px-6 text-center block">Tournament Manager</Link>
           <Link to="/menu/badminton-registrations" className="glass-button-primary w-full py-3 px-6 text-center block">Badminton Registrations</Link>
+          <Link to="/menu/invoice-settings" className="glass-button-secondary w-full py-3 px-6 text-center block">Invoice Settings</Link>
         </div>
       </div>
     </div>

@@ -196,3 +196,34 @@ on conflict (id) do nothing;
 
 create policy "admin read invoices"
   on storage.objects for select to authenticated using (bucket_id = 'invoices');
+
+-- ---------------------------------------------------------------------------
+-- Invoice compliance settings (see migrations/20260725192610_invoice_settings.sql
+-- for the authoritative, already-applied version).
+-- ---------------------------------------------------------------------------
+
+create table if not exists invoice_settings (
+  id boolean primary key default true,
+  gst_enabled boolean not null default false,
+  gstin text,
+  hsn_sac_code text,
+  gst_rate_percent numeric,
+  organizer_legal_name text,
+  organizer_pan text,
+  organizer_state text,
+  organizer_address text,
+  updated_at timestamptz not null default now(),
+  constraint invoice_settings_single_row check (id)
+);
+
+alter table invoice_settings enable row level security;
+
+create policy "admin read invoice settings"
+  on invoice_settings for select to authenticated using (true);
+create policy "admin write invoice settings"
+  on invoice_settings for insert to authenticated with check (true);
+create policy "admin update invoice settings"
+  on invoice_settings for update to authenticated using (true) with check (true);
+
+alter table badminton_registrations
+  add column if not exists state text;

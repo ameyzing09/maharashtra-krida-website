@@ -2,6 +2,7 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useBadmintonRegistration } from "../../hook/useBadmintonRegistration";
+import { INDIAN_STATES } from "../../constants/indianStates";
 
 const officialEmail = z
   .string()
@@ -20,6 +21,7 @@ const schema = z.object({
     .email("Enter a valid email")
     .optional()
     .or(z.literal("")),
+  state: z.enum(INDIAN_STATES, { message: "Select your state" }),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -36,13 +38,16 @@ export default function StepOrganization() {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: "onChange",
-    defaultValues: state.organization || {
-      companyName: "",
-      contactPersonName: "",
-      phone: "",
-      officialEmail: "",
-      personalEmail: "",
-    },
+    defaultValues: state.organization
+      ? { ...state.organization, state: state.organization.state as FormData["state"] }
+      : {
+          companyName: "",
+          contactPersonName: "",
+          phone: "",
+          officialEmail: "",
+          personalEmail: "",
+          state: undefined,
+        },
   });
 
   const onSubmit = (data: FormData) => {
@@ -54,6 +59,7 @@ export default function StepOrganization() {
         phone: data.phone,
         officialEmail: data.officialEmail,
         personalEmail: data.personalEmail || undefined,
+        state: data.state,
       },
     });
     dispatch({ type: "NEXT" });
@@ -103,6 +109,22 @@ export default function StepOrganization() {
         {errors.personalEmail && (
           <p className="text-xs text-red-600 mt-1">{errors.personalEmail.message}</p>
         )}
+      </div>
+
+      <div className="flex flex-col">
+        <label className={labelCls}>State</label>
+        <select className={input} defaultValue="" {...register("state")}>
+          <option value="" disabled>
+            Select your state
+          </option>
+          {INDIAN_STATES.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+        <p className="text-[11px] text-gray-500 mt-1">Used for tax purposes on your invoice.</p>
+        {errors.state && <p className="text-xs text-red-600 mt-1">{errors.state.message}</p>}
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 sm:justify-end pt-2">

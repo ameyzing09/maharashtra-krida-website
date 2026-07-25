@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { corsHeaders, isAllowedOrigin } from "../_shared/cors.ts";
 import { CATEGORY_LABEL, FEE_MAP, PLAYER_BOUNDS } from "../_shared/badminton.ts";
+import { INDIAN_STATES } from "../_shared/indianStates.ts";
 
 // Abuse guards
 const MAX_BODY_BYTES = 50 * 1024;
@@ -23,6 +24,8 @@ export function validate(organization: any, entries: any[]): string | null {
   if (!PHONE_RE.test(String(organization.phone || ""))) return "Invalid phone number";
   if (organization.contactPersonName && !str(organization.contactPersonName, MAX_SHORT))
     return "Invalid contact person name";
+  if (!str(organization.state, MAX_SHORT) || !INDIAN_STATES.has(organization.state))
+    return "Select a valid state";
   if (!Array.isArray(entries) || entries.length === 0) return "No entries provided";
   if (entries.length > MAX_ENTRIES) return "Too many entries";
 
@@ -112,6 +115,7 @@ async function insertPendingRow(orderId: string, organization: any, entries: any
       official_email: organization.officialEmail,
       phone: String(organization.phone),
       personal_email: organization.personalEmail ?? null,
+      state: organization.state,
       categories_summary: summarizeCategories(entries),
       total_paise: amount,
       entries,

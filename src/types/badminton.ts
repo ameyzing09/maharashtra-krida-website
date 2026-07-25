@@ -29,6 +29,8 @@ export type Organization = {
   phone: string;
   /** Personal email — optional. */
   personalEmail?: string;
+  /** Registrant's state — used to decide CGST+SGST vs IGST on GST invoices. */
+  state: string;
 };
 
 export type BadmintonRegistrationState = {
@@ -62,6 +64,7 @@ export type RegistrationRow = {
   official_email: string;
   phone: string;
   personal_email: string | null;
+  state: string | null;
   categories_summary: string;
   total_paise: number;
   entries: CategoryEntry[];
