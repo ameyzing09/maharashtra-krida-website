@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "../services/firebaseConfig";
 import { toast } from "react-toastify";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { collections } from "../constants";
+import { addEvent } from "../services/eventService";
+import { uploadImage } from "../services/storageService";
 import PageLoader from "./PageLoader";
 import useEvents from "../hook/useEvents";
 
@@ -35,23 +33,14 @@ const EventForm = () => {
     }
   };
 
-  const uploadFiles = async (file: File, folder: string) => {
-    const storage = getStorage();
-    const timeStamp = new Date().getTime();
-    const storageRef = ref(storage, `${folder}/${formData.name}_${timeStamp}_${file.name}`);
-    const snapshot = await uploadBytes(storageRef, file);
-    const fileDownloadURL = await getDownloadURL(snapshot.ref);
-    return fileDownloadURL;
-  }
-
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (imageFile && flyerFile) {
       try {
         setLoading(true);
-        const uploadFilesPromises = [uploadFiles(imageFile, "images"), uploadFiles(flyerFile, "flyers")];
+        const uploadFilesPromises = [uploadImage(imageFile, "images"), uploadImage(flyerFile, "flyers")];
         const [imageUrl, flyerUrl] = await Promise.all(uploadFilesPromises);
-        await addDoc(collection(db, collections.EVENTS), {
+        await addEvent({
           ...formData,
           imageUrl,
           flyerUrl,

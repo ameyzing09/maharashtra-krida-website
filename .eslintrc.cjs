@@ -6,8 +6,11 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
   ],
-  files: ["netlify/functions/**/*.{js,ts}"],
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
+  // supabase/functions runs on Deno, not this project's Node/Vite toolchain —
+  // it's checked separately via `deno check` / `deno test` (see that
+  // directory's own deno.json), which understand Deno globals and npm:
+  // specifiers that this ESLint config does not.
+  ignorePatterns: ['dist', '.eslintrc.cjs', 'supabase/functions'],
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh'],
   rules: {

@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { TailSpin } from "react-loader-spinner";
+import { supabase } from "../../services/supabaseClient";
 
 type SuccessData = {
   razorpay_payment_id?: string;
@@ -15,6 +17,77 @@ type SuccessData = {
 
 const inr = (p?: number) =>
   typeof p === "number" ? (p / 100).toLocaleString("en-IN", { style: "currency", currency: "INR" }) : "";
+
+const POLL_INTERVAL_MS = 3000;
+const MAX_POLLS = 10; // ~30s
+
+function InvoiceDownload({ orderId }: { orderId: string }) {
+  const [status, setStatus] = useState<"polling" | "ready" | "timeout">("polling");
+  const [url, setUrl] = useState<string | null>(null);
+  const attempts = useRef(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    let timer: number | undefined;
+
+    async function poll() {
+      attempts.current += 1;
+      try {
+        const { data, error } = await supabase.functions.invoke("get-invoice", {
+          body: { order_id: orderId },
+        });
+        if (cancelled) return;
+        if (!error && data?.ready && data.url) {
+          setUrl(data.url);
+          setStatus("ready");
+          return;
+        }
+      } catch {
+        /* keep polling — a transient failure shouldn't stop retries */
+      }
+      if (cancelled) return;
+      if (attempts.current >= MAX_POLLS) {
+        setStatus("timeout");
+        return;
+      }
+      timer = window.setTimeout(poll, POLL_INTERVAL_MS);
+    }
+
+    poll();
+    return () => {
+      cancelled = true;
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [orderId]);
+
+  if (status === "ready" && url) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full sm:w-auto rounded-full border border-black/10 bg-brand-lime hover:bg-brand-limeDark text-brand-charcoal font-medium px-4 py-2.5 text-center inline-flex items-center justify-center gap-2"
+      >
+        Download Invoice
+      </a>
+    );
+  }
+
+  if (status === "timeout") {
+    return (
+      <p className="text-xs text-gray-500 dark:text-gray-400 text-center sm:text-left">
+        Your invoice is taking longer than expected. Refresh this page in a bit, or contact us and we'll send it over.
+      </p>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+      <TailSpin color="#84cc16" height={16} width={16} />
+      Preparing your invoice…
+    </div>
+  );
+}
 
 export default function Success() {
   const [data, setData] = useState<SuccessData | null>(null);
@@ -92,6 +165,12 @@ export default function Success() {
             </div>
           </div>
 
+          {data.razorpay_order_id && (
+            <div className="mt-4 flex justify-center">
+              <InvoiceDownload orderId={data.razorpay_order_id} />
+            </div>
+          )}
+
           <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:justify-center">
             <button
               onClick={() => navigator.clipboard?.writeText(data.razorpay_payment_id || "")}
@@ -108,11 +187,10 @@ export default function Success() {
           </div>
 
           <p className="text-[11px] sm:text-xs text-center text-gray-500 dark:text-gray-400 mt-4">
-            Final confirmation comes from the payment webhook; check your email for receipts if enabled.
+            Please save your Payment ID above — it's your confirmation reference for this registration.
           </p>
         </div>
       </div>
     </div>
   );
 }
-

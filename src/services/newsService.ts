@@ -1,36 +1,42 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp } from "firebase/firestore";
-import { db } from "./firebaseConfig";
-import { collections } from "../constants";
+import { supabase } from "./supabaseClient";
 import { toServiceError } from "./error";
 
 export type NewsItem = { id: string; title: string; summary?: string; content?: string; imageUrl?: string; eventId?: string; createdAt?: unknown };
 export type NewNewsItem = Omit<NewsItem, 'id' | 'createdAt'>;
 
-const coll = collection(db, collections.NEWS);
+const TABLE = "news";
 
 export async function listNews(max = 20): Promise<NewsItem[]> {
   try {
-    const snap = await getDocs(query(coll, orderBy('createdAt', 'desc'), limit(max)));
-    return snap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<NewsItem, 'id'>) }));
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select("*")
+      .order("createdAt", { ascending: false })
+      .limit(max);
+    if (error) throw error;
+    return (data ?? []) as NewsItem[];
   } catch (e) { throw toServiceError(e, 'Failed to fetch news'); }
 }
 
 export async function addNewsItem(item: NewNewsItem): Promise<string> {
   try {
-    const res = await addDoc(coll, { ...item, createdAt: serverTimestamp() });
-    return res.id;
+    const { data, error } = await supabase.from(TABLE).insert(item).select("id").single();
+    if (error) throw error;
+    return data.id as string;
   } catch (e) { throw toServiceError(e, 'Failed to add news'); }
 }
 
 export async function deleteNewsItem(id: string): Promise<void> {
-  try { await deleteDoc(doc(db, collections.NEWS, id)); }
-  catch (e) { throw toServiceError(e, 'Failed to delete news'); }
+  try {
+    const { error } = await supabase.from(TABLE).delete().eq("id", id);
+    if (error) throw error;
+  } catch (e) { throw toServiceError(e, 'Failed to delete news'); }
 }
 
 export async function getNewsItem(id: string): Promise<NewsItem | null> {
   try {
-    const d = await getDoc(doc(db, collections.NEWS, id));
-    if (!d.exists()) return null;
-    return { id: d.id, ...(d.data() as Omit<NewsItem, 'id'>) };
+    const { data, error } = await supabase.from(TABLE).select("*").eq("id", id).maybeSingle();
+    if (error) throw error;
+    return (data as NewsItem) ?? null;
   } catch (e) { throw toServiceError(e, 'Failed to fetch news'); }
 }

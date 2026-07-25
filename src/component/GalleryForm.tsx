@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { uploadImage } from "../services/storageService";
 import PageLoader from "./PageLoader";
 import useToast from "../hook/useToast";
 import Toast from "./common/Toast";
@@ -22,13 +22,7 @@ export default function GalleryForm({ onAdded }: Props) {
     }
   };
 
-  const upload = async (f: File) => {
-    const storage = getStorage();
-    const ts = Date.now();
-    const storageRef = ref(storage, `gallery/${ts}_${f.name}`);
-    const snap = await uploadBytes(storageRef, f);
-    return await getDownloadURL(snap.ref);
-  };
+  const upload = async (f: File) => uploadImage(f, "gallery");
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

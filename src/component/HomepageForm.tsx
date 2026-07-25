@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { SliderImageInput } from "../types";
 import useHomepageContent from "../hook/useHomepage";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { uploadImage } from "../services/storageService";
 import { TailSpin } from "react-loader-spinner";
 import Toast from "./common/Toast";
 import useToast from "../hook/useToast";
@@ -20,17 +20,7 @@ const HomepageForm: React.FC = () => {
 
   const { toast, showToast } = useToast();
 
-  const uploadFiles = async (file: File, folder: string) => {
-    const storage = getStorage();
-    const timeStamp = new Date().getTime();
-    const storageRef = ref(
-      storage,
-      `${folder}/${formData.title}_${timeStamp}_${file.name}`
-    );
-    const snapshot = await uploadBytes(storageRef, file);
-    const fileDownloadURL = await getDownloadURL(snapshot.ref);
-    return fileDownloadURL;
-  };
+  const uploadFiles = async (file: File, folder: string) => uploadImage(file, folder);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {

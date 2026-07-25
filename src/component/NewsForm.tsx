@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PageLoader from "./PageLoader";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { uploadImage } from "../services/storageService";
 import useToast from "../hook/useToast";
 import Toast from "./common/Toast";
 import { addNewsItem } from "../services/newsService";
@@ -40,13 +40,7 @@ export default function NewsForm({ onAdded }: Props) {
     }
   };
 
-  const upload = async (f: File) => {
-    const storage = getStorage();
-    const ts = Date.now();
-    const storageRef = ref(storage, `news/${ts}_${f.name}`);
-    const snap = await uploadBytes(storageRef, f);
-    return await getDownloadURL(snap.ref);
-  };
+  const upload = async (f: File) => uploadImage(f, "news");
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
