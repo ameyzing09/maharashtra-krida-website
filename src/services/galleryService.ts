@@ -1,35 +1,42 @@
-import { addDoc, collection, deleteDoc, doc, getCountFromServer, getDocs, limit, orderBy, query, serverTimestamp } from "firebase/firestore";
-import { db } from "./firebaseConfig";
-import { collections } from "../constants";
+import { supabase } from "./supabaseClient";
 import { toServiceError } from "./error";
 
 export type GalleryItem = { id: string; imageUrl: string; alt?: string; title?: string; description?: string; createdAt?: unknown };
 export type NewGalleryItem = Omit<GalleryItem, 'id' | 'createdAt'>;
 
-const coll = collection(db, collections.GALLERY);
+const TABLE = "gallery";
 const MAX_ITEMS = 10;
 
 export async function listGallery(): Promise<GalleryItem[]> {
   try {
-    const snap = await getDocs(query(coll, orderBy('createdAt', 'desc'), limit(30)));
-    return snap.docs.map(d => ({ id: d.id, ...(d.data() as Omit<GalleryItem, 'id'>) }));
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select("*")
+      .order("createdAt", { ascending: false })
+      .limit(30);
+    if (error) throw error;
+    return (data ?? []) as GalleryItem[];
   } catch (e) { throw toServiceError(e, 'Failed to list gallery'); }
 }
 
 export async function addGalleryItem(item: NewGalleryItem): Promise<string> {
   try {
-    const countSnap = await getCountFromServer(coll);
-    if ((countSnap.data().count ?? 0) >= MAX_ITEMS) {
+    const { count, error: countError } = await supabase
+      .from(TABLE)
+      .select("id", { count: "exact", head: true });
+    if (countError) throw countError;
+    if ((count ?? 0) >= MAX_ITEMS) {
       throw new Error(`Gallery limit reached (${MAX_ITEMS}). Delete older items to add new.`);
     }
-    const res = await addDoc(coll, { ...item, createdAt: serverTimestamp() });
-    return res.id;
+    const { data, error } = await supabase.from(TABLE).insert(item).select("id").single();
+    if (error) throw error;
+    return data.id as string;
   } catch (e) { throw toServiceError(e, 'Failed to add gallery item'); }
 }
 
 export async function deleteGalleryItem(id: string): Promise<void> {
   try {
-    await deleteDoc(doc(db, collections.GALLERY, id));
+    const { error } = await supabase.from(TABLE).delete().eq("id", id);
+    if (error) throw error;
   } catch (e) { throw toServiceError(e, 'Failed to delete gallery item'); }
 }
-

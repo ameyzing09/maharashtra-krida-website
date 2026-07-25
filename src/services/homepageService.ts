@@ -1,14 +1,14 @@
-import { db } from "./firebaseConfig";
-import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { supabase } from "./supabaseClient";
 import { SliderImage, SliderImageInput } from "../types";
 import { toServiceError } from "./error";
 
-const homepageCollectionRef = collection(db, "homepageContent");
+const TABLE = "homepage_content";
 
 export const getHomepageContent = async (): Promise<SliderImage[]> => {
   try {
-    const snapshot = await getDocs(homepageCollectionRef);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SliderImage));
+    const { data, error } = await supabase.from(TABLE).select("*");
+    if (error) throw error;
+    return (data ?? []) as SliderImage[];
   } catch (error) {
     throw toServiceError(error, 'Failed to fetch homepage content');
   }
@@ -16,8 +16,9 @@ export const getHomepageContent = async (): Promise<SliderImage[]> => {
 
 export const addHomepageContent = async (data: SliderImageInput): Promise<string> => {
   try {
-    const response = await addDoc(homepageCollectionRef, data);
-    return response.id;
+    const { data: row, error } = await supabase.from(TABLE).insert(data).select("id").single();
+    if (error) throw error;
+    return row.id as string;
   } catch (error) {
     throw toServiceError(error, 'Failed to add homepage content');
   }
@@ -25,8 +26,8 @@ export const addHomepageContent = async (data: SliderImageInput): Promise<string
 
 export const updateHomepageContent = async (id: string, data: SliderImageInput): Promise<void> => {
   try {
-    const docRef = doc(db, "homepageContent", id);
-    await updateDoc(docRef, {...data});
+    const { error } = await supabase.from(TABLE).update({ ...data }).eq("id", id);
+    if (error) throw error;
   } catch (error) {
     throw toServiceError(error, 'Failed to update homepage content');
   }
@@ -34,8 +35,8 @@ export const updateHomepageContent = async (id: string, data: SliderImageInput):
 
 export const deleteHomepageContent = async (id: string): Promise<void> => {
   try {
-    const docRef = doc(db, "homepageContent", id);
-    await deleteDoc(docRef);
+    const { error } = await supabase.from(TABLE).delete().eq("id", id);
+    if (error) throw error;
   } catch (error) {
     throw toServiceError(error, 'Failed to delete homepage content');
   }

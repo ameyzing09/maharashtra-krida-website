@@ -1,10 +1,8 @@
-import { collection, getDocs, addDoc, doc, setDoc, deleteDoc, getDoc, query, orderBy } from "firebase/firestore";
-import { db } from "./firebaseConfig";
-import { collections } from "../constants";
+import { supabase } from "./supabaseClient";
 import type { ID, NewTeam, Team } from "../types/tournament";
 import { toServiceError } from "./error";
 
-const teamsRef = collection(db, collections.TEAMS);
+const TABLE = "teams";
 
 function prune<T extends Record<string, unknown>>(obj: T): T {
   const entries = Object.entries(obj).filter(([, v]) => v !== undefined);
@@ -13,45 +11,48 @@ function prune<T extends Record<string, unknown>>(obj: T): T {
 
 export async function listTeams(): Promise<Team[]> {
   try {
-    const q = query(teamsRef, orderBy("name"));
-    const snap = await getDocs(q);
-    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Team, "id">) }));
+    const { data, error } = await supabase.from(TABLE).select("*").order("name");
+    if (error) throw error;
+    return (data ?? []) as Team[];
   } catch (e) {
-    throw toServiceError(e, 'Failed to list teams');
+    throw toServiceError(e, "Failed to list teams");
   }
 }
 
 export async function getTeam(id: ID): Promise<Team | null> {
   try {
-    const d = await getDoc(doc(db, collections.TEAMS, id));
-    if (!d.exists()) return null;
-    return { id: d.id, ...(d.data() as Omit<Team, "id">) };
+    const { data, error } = await supabase.from(TABLE).select("*").eq("id", id).maybeSingle();
+    if (error) throw error;
+    return (data as Team) ?? null;
   } catch (e) {
-    throw toServiceError(e, 'Failed to get team');
+    throw toServiceError(e, "Failed to get team");
   }
 }
 
 export async function createTeam(input: NewTeam): Promise<ID> {
   try {
-    const res = await addDoc(teamsRef, prune(input));
-    return res.id;
+    const { data, error } = await supabase.from(TABLE).insert(prune(input)).select("id").single();
+    if (error) throw error;
+    return data.id as ID;
   } catch (e) {
-    throw toServiceError(e, 'Failed to create team');
+    throw toServiceError(e, "Failed to create team");
   }
 }
 
 export async function updateTeam(id: ID, patch: Partial<NewTeam>): Promise<void> {
   try {
-    await setDoc(doc(db, collections.TEAMS, id), prune(patch), { merge: true });
+    const { error } = await supabase.from(TABLE).update(prune(patch)).eq("id", id);
+    if (error) throw error;
   } catch (e) {
-    throw toServiceError(e, 'Failed to update team');
+    throw toServiceError(e, "Failed to update team");
   }
 }
 
 export async function deleteTeam(id: ID): Promise<void> {
   try {
-    await deleteDoc(doc(db, collections.TEAMS, id));
+    const { error } = await supabase.from(TABLE).delete().eq("id", id);
+    if (error) throw error;
   } catch (e) {
-    throw toServiceError(e, 'Failed to delete team');
+    throw toServiceError(e, "Failed to delete team");
   }
 }

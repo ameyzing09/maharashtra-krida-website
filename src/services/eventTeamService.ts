@@ -1,10 +1,8 @@
-import { collection, getDocs, doc, setDoc, deleteDoc, query, where } from "firebase/firestore";
-import { db } from "./firebaseConfig";
-import { collections } from "../constants";
+import { supabase } from "./supabaseClient";
 import type { EventTeam, ID, NewEventTeam } from "../types/tournament";
 import { toServiceError } from "./error";
 
-const eventTeamsRef = collection(db, collections.EVENT_TEAMS);
+const TABLE = "event_teams";
 
 function key(eventId: ID, teamId: ID): ID {
   return `${eventId}__${teamId}`;
@@ -17,11 +15,11 @@ function prune<T extends Record<string, unknown>>(obj: T): T {
 
 export async function listEventTeams(eventId: ID): Promise<EventTeam[]> {
   try {
-    const q = query(eventTeamsRef, where("eventId", "==", eventId));
-    const snap = await getDocs(q);
-    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<EventTeam, "id">) }));
+    const { data, error } = await supabase.from(TABLE).select("*").eq("eventId", eventId);
+    if (error) throw error;
+    return (data ?? []) as EventTeam[];
   } catch (e) {
-    throw toServiceError(e, 'Failed to list event teams');
+    throw toServiceError(e, "Failed to list event teams");
   }
 }
 
@@ -29,17 +27,19 @@ export async function upsertEventTeam(input: NewEventTeam): Promise<ID> {
   // deterministic id to avoid duplicates per event/team
   const id = key(input.eventId, input.teamId);
   try {
-    await setDoc(doc(db, collections.EVENT_TEAMS, id), prune(input), { merge: true });
+    const { error } = await supabase.from(TABLE).upsert({ id, ...prune(input) });
+    if (error) throw error;
     return id;
   } catch (e) {
-    throw toServiceError(e, 'Failed to upsert event team');
+    throw toServiceError(e, "Failed to upsert event team");
   }
 }
 
 export async function deleteEventTeam(eventId: ID, teamId: ID): Promise<void> {
   try {
-    await deleteDoc(doc(db, collections.EVENT_TEAMS, key(eventId, teamId)));
+    const { error } = await supabase.from(TABLE).delete().eq("id", key(eventId, teamId));
+    if (error) throw error;
   } catch (e) {
-    throw toServiceError(e, 'Failed to delete event team');
+    throw toServiceError(e, "Failed to delete event team");
   }
 }

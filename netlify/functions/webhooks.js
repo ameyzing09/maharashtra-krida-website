@@ -1,84 +1,63 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-var-requires */
-const crypto = require("crypto");
-const { google } = require("googleapis");
+import crypto from "node:crypto";
 
-function sheets() {
-  const creds = JSON.parse(process.env.GOOGLE_SA_CREDENTIALS_JSON);
-  const jwt = new google.auth.JWT(
-    creds.client_email,
-    null,
-    creds.private_key,
-    ["https://www.googleapis.com/auth/spreadsheets"]
-  );
-  return google.sheets({ version: "v4", auth: jwt });
-}
+const SB_HEADERS = () => ({
+  apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+  "Content-Type": "application/json",
+});
 
-const BADMINTON_TAB = process.env.BADMINTON_SHEET_TAB || "Badminton";
-
-// Marks a badminton registration PAID by locating its PENDING row (created by
-// create-badminton-order) via the order_id in column B. Columns:
-// A=timestamp, B=order_id, C=status, D=payment_id, E=paid_at, ...
-async function markBadmintonPaid(p) {
-  const api = sheets();
-  const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
+// Flip the PENDING row (written at order creation) to PAID. If the row is
+// missing (insert hiccup), upsert a PAID fallback keyed on order_id so webhook
+// replays can never duplicate rows.
+async function markPaid(p) {
+  const base = `${process.env.SUPABASE_URL}/rest/v1/badminton_registrations`;
   const paidAt = new Date().toISOString();
 
-  const read = await api.spreadsheets.values.get({
-    spreadsheetId,
-    range: `${BADMINTON_TAB}!B:B`,
+  const patch = await fetch(`${base}?order_id=eq.${encodeURIComponent(p.order_id)}`, {
+    method: "PATCH",
+    headers: { ...SB_HEADERS(), Prefer: "return=representation" },
+    body: JSON.stringify({ status: "PAID", payment_id: p.id, paid_at: paidAt }),
   });
-  const orderIds = (read.data.values || []).map((r) => r[0]);
-  // rowNumber is 1-based; index 0 is the header row.
-  const idx = orderIds.findIndex((id) => id === p.order_id);
+  if (!patch.ok) throw new Error(`Supabase PATCH failed (${patch.status}): ${await patch.text()}`);
+  const rows = await patch.json();
+  if (rows.length > 0) return;
 
-  if (idx > 0) {
-    const rowNumber = idx + 1;
-    await api.spreadsheets.values.update({
-      spreadsheetId,
-      range: `${BADMINTON_TAB}!C${rowNumber}:E${rowNumber}`,
-      valueInputOption: "RAW",
-      requestBody: { values: [["PAID", p.id, paidAt]] },
-    });
-    return;
-  }
-
-  // Fallback: no pending row found — append a PAID marker so the payment is not lost.
-  await api.spreadsheets.values.append({
-    spreadsheetId,
-    range: `${BADMINTON_TAB}!A1`,
-    valueInputOption: "RAW",
-    requestBody: {
-      values: [[
-        paidAt,
-        p.order_id || "",
-        "PAID",
-        p.id,
-        paidAt,
-        (p.notes && p.notes.company) || "",
-        "",
-        (p.notes && p.notes.email) || p.email || "",
-        p.contact || "",
-        "",
-        "",
-        p.amount ? (p.amount / 100).toFixed(2) : "",
-        "",
-      ]],
-    },
+  // Fallback: pending row never landed — upsert a PAID marker.
+  const upsert = await fetch(`${base}?on_conflict=order_id`, {
+    method: "POST",
+    headers: { ...SB_HEADERS(), Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({
+      order_id: p.order_id || `missing-${p.id}`,
+      status: "PAID",
+      payment_id: p.id,
+      paid_at: paidAt,
+      payment_method: "razorpay",
+      company: (p.notes && p.notes.company) || "(unknown)",
+      official_email: (p.notes && p.notes.email) || p.email || "",
+      phone: p.contact || "",
+      categories_summary: "",
+      total_paise: p.amount || 0,
+      entries: [],
+    }),
   });
+  if (!upsert.ok) throw new Error(`Supabase upsert failed (${upsert.status}): ${await upsert.text()}`);
 }
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   if (event.httpMethod !== "POST") return { statusCode: 405, body: "Method Not Allowed" };
 
   const sig = event.headers["x-razorpay-signature"];
   const secret = process.env.RZP_WEBHOOK_SECRET;
   const raw = event.body || "";
 
-  // verify signature
+  // verify signature before touching anything
   const expected = crypto.createHmac("sha256", secret).update(raw).digest("hex");
-  if (!sig || !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(sig))) {
+  if (
+    !sig ||
+    sig.length !== expected.length ||
+    !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(sig))
+  ) {
     return { statusCode: 400, body: "Invalid signature" };
   }
 
@@ -89,40 +68,13 @@ exports.handler = async (event) => {
 
   try {
     const p = payload.payload.payment.entity;
-
-    // Badminton registrations are persisted at order-creation time; here we
-    // just flip the pending row to PAID. Keeps the chess flow untouched.
-    if (p.notes && p.notes.regType === "badminton") {
-      await markBadmintonPaid(p);
-      return { statusCode: 200, body: "Logged (badminton)" };
+    if (!p.notes || p.notes.regType !== "badminton") {
+      return { statusCode: 200, body: "Ignored" };
     }
-
-    // Append row to Sheet1 (make sure it exists + has headers)
-    const values = [[
-      new Date().toISOString(),
-      p.id,                   // payment_id
-      p.order_id || "",
-      p.method || "",
-      p.amount || "",         // paise
-      p.currency || "",
-      p.email || "",
-      p.contact || "",
-      (p.notes && p.notes.eventCode) || "",
-      (p.notes && p.notes.name) || "",
-      (p.notes && p.notes.phone) || "",
-      (p.notes && p.notes.email) || "",
-      (p.notes && p.notes.other) || "",
-    ]];
-
-    await sheets().spreadsheets.values.append({
-      spreadsheetId: process.env.GOOGLE_SHEETS_ID,
-      range: "Sheet1!A1",
-      valueInputOption: "RAW",
-      requestBody: { values },
-    });
-
+    await markPaid(p);
     return { statusCode: 200, body: "Logged" };
   } catch (e) {
-    return { statusCode: 500, body: e.message };
+    console.error("Webhook processing failed:", e.message);
+    return { statusCode: 500, body: "Processing failed" };
   }
 };

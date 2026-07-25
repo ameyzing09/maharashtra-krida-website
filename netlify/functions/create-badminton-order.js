@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 import Razorpay from "razorpay";
-import { google } from "googleapis";
 
 // Fees in paise. MUST stay in sync with src/constants/badminton.ts.
 const FEE_MAP = {
@@ -32,22 +31,46 @@ const CATEGORY_LABEL = {
   team_event: "Corporate Team Event",
 };
 
-const BADMINTON_TAB = process.env.BADMINTON_SHEET_TAB || "Badminton";
+// Abuse guards
+const MAX_BODY_BYTES = 50 * 1024;
+const MAX_ENTRIES = 10;
+const MAX_SHORT = 120; // names, company, emails
+const MAX_LONG = 200; // notes, designation
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_RE = /^[0-9]{10}$/;
 
-function sheets() {
-  const creds = JSON.parse(process.env.GOOGLE_SA_CREDENTIALS_JSON);
-  const jwt = new google.auth.JWT(creds.client_email, null, creds.private_key, [
-    "https://www.googleapis.com/auth/spreadsheets",
-  ]);
-  return google.sheets({ version: "v4", auth: jwt });
+function allowedOrigin(origin) {
+  if (!origin) return true; // non-browser callers (no Origin header) — e.g. server-to-server
+  try {
+    const { hostname } = new URL(origin);
+    if (hostname === "localhost" || hostname === "127.0.0.1") return true;
+    if (hostname.endsWith(".netlify.app")) return true;
+    if (process.env.URL && origin === process.env.URL) return true; // Netlify primary URL
+    if (process.env.SITE_ORIGIN && origin === process.env.SITE_ORIGIN) return true; // custom domain
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+function bad(msg) {
+  return { statusCode: 400, body: JSON.stringify({ error: msg }) };
+}
+
+function str(v, max) {
+  return typeof v === "string" && v.trim().length > 0 && v.length <= max;
 }
 
 function validate(organization, entries) {
   if (!organization || typeof organization !== "object") return "Missing organisation details";
-  if (!organization.companyName || !organization.officialEmail || !organization.phone) {
-    return "Incomplete organisation details";
-  }
+  if (!str(organization.companyName, MAX_SHORT)) return "Invalid company name";
+  if (!str(organization.officialEmail, MAX_SHORT) || !EMAIL_RE.test(organization.officialEmail))
+    return "Invalid official email";
+  if (!PHONE_RE.test(String(organization.phone || ""))) return "Invalid phone number";
+  if (organization.contactPersonName && !str(organization.contactPersonName, MAX_SHORT))
+    return "Invalid contact person name";
   if (!Array.isArray(entries) || entries.length === 0) return "No entries provided";
+  if (entries.length > MAX_ENTRIES) return "Too many entries";
 
   // Team Event is exclusive: a registration is either one team entry, or any
   // mix of individual entries — never both, and never more than one team.
@@ -57,7 +80,7 @@ function validate(organization, entries) {
       return "Corporate Team Event cannot be combined with other categories";
     }
     const team = teamEntries[0];
-    if (!team.teamName || String(team.teamName).trim().length < 2) {
+    if (!str(team.teamName || "", MAX_SHORT) || String(team.teamName).trim().length < 2) {
       return "Team name is required for the Corporate Team Event";
     }
     return null;
@@ -70,9 +93,11 @@ function validate(organization, entries) {
       return `${CATEGORY_LABEL[e.category]} requires ${min}${min === max ? "" : `-${max}`} player(s)`;
     }
     for (const p of e.players) {
-      if (!p || !p.name || !p.phone || !p.officialEmail) {
+      if (!p || !str(p.name, MAX_SHORT) || !PHONE_RE.test(String(p.phone || "")))
         return `Incomplete player details in ${CATEGORY_LABEL[e.category]}`;
-      }
+      if (!str(p.officialEmail, MAX_SHORT) || !EMAIL_RE.test(p.officialEmail))
+        return `Invalid player email in ${CATEGORY_LABEL[e.category]}`;
+      if (p.designation && String(p.designation).length > MAX_LONG) return "Designation too long";
     }
   }
   return null;
@@ -84,16 +109,50 @@ function summarizeCategories(entries) {
     .join(", ");
 }
 
+async function insertPendingRow(order, organization, entries, amount) {
+  const res = await fetch(`${process.env.SUPABASE_URL}/rest/v1/badminton_registrations`, {
+    method: "POST",
+    headers: {
+      apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    },
+    body: JSON.stringify({
+      order_id: order.id,
+      status: "PENDING",
+      payment_method: "razorpay",
+      company: organization.companyName,
+      contact_person: organization.contactPersonName || null,
+      official_email: organization.officialEmail,
+      phone: String(organization.phone),
+      personal_email: organization.personalEmail || null,
+      categories_summary: summarizeCategories(entries),
+      total_paise: amount,
+      entries,
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(`Supabase insert failed (${res.status}): ${await res.text()}`);
+  }
+}
+
 export const handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: JSON.stringify({ error: "Method Not Allowed" }) };
+  }
+  if (!allowedOrigin(event.headers && (event.headers.origin || event.headers.Origin))) {
+    return { statusCode: 403, body: JSON.stringify({ error: "Forbidden" }) };
+  }
+  if ((event.body || "").length > MAX_BODY_BYTES) {
+    return { statusCode: 413, body: JSON.stringify({ error: "Payload too large" }) };
   }
 
   try {
     const { organization, entries } = JSON.parse(event.body || "{}");
 
     const invalid = validate(organization, entries);
-    if (invalid) return { statusCode: 400, body: JSON.stringify({ error: invalid }) };
+    if (invalid) return bad(invalid);
 
     // Server is the source of truth for the amount.
     const amount = entries.reduce((sum, e) => sum + FEE_MAP[e.category], 0);
@@ -110,8 +169,8 @@ export const handler = async (event) => {
           currency: "INR",
           receipt: `bad-${Date.now()}`,
           payment_capture: 1,
-          // Razorpay notes are size-limited; the full roster is stored in the
-          // Sheet below, not here.
+          // Razorpay notes are size-limited; the full roster is stored in
+          // Supabase, not here.
           notes: {
             regType: "badminton",
             company: organization.companyName,
@@ -125,31 +184,11 @@ export const handler = async (event) => {
     // Persist the full registration as a PENDING row. The webhook flips it to
     // PAID on payment.captured. This is the durable record of the roster.
     try {
-      const row = [
-        new Date().toISOString(), // timestamp
-        order.id, // order_id
-        "PENDING", // status
-        "", // payment_id (filled by webhook)
-        "", // paid_at (filled by webhook)
-        organization.companyName,
-        organization.contactPersonName || "",
-        organization.officialEmail,
-        organization.phone,
-        organization.personalEmail || "",
-        summarizeCategories(entries),
-        (amount / 100).toFixed(2), // total INR
-        JSON.stringify(entries), // full roster
-      ];
-      await sheets().spreadsheets.values.append({
-        spreadsheetId: process.env.GOOGLE_SHEETS_ID,
-        range: `${BADMINTON_TAB}!A1`,
-        valueInputOption: "RAW",
-        requestBody: { values: [row] },
-      });
-    } catch (sheetErr) {
-      // Do not fail the payment if the sheet write hiccups; the webhook has a
-      // fallback that appends a PAID row when no pending row is found.
-      console.error("Failed to write pending badminton row:", sheetErr.message);
+      await insertPendingRow(order, organization, entries, amount);
+    } catch (dbErr) {
+      // Do not fail the payment if the insert hiccups; the webhook has an
+      // upsert fallback keyed on order_id.
+      console.error("Failed to write pending badminton row:", dbErr.message);
     }
 
     return {
@@ -164,6 +203,6 @@ export const handler = async (event) => {
     };
   } catch (error) {
     console.error("Error creating badminton order:", error);
-    return { statusCode: 500, body: error.message || "Internal Server Error" };
+    return { statusCode: 500, body: JSON.stringify({ error: "Internal Server Error" }) };
   }
 };

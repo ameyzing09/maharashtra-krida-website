@@ -1,7 +1,6 @@
-// src/context/AuthContext.js
-
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { User } from "@supabase/supabase-js";
+import { supabase } from "../services/supabaseClient";
 import { AuthContextType } from "../types";
 
 const initialAuthState: AuthContextType = {
@@ -20,12 +19,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [status, setStatus] = useState<"loading" | "signedIn" | "notSignedIn">(
     "loading"
   );
-  const auth = getAuth();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-     if (user) {
-        setUser(user);
+    // Seed from the persisted session, then follow auth state changes.
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user) {
+        setUser(data.session.user);
         setStatus("signedIn");
       } else {
         setUser(null);
@@ -33,8 +32,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     });
 
-    return () => unsubscribe();
-  }, [auth]); 
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser(session.user);
+        setStatus("signedIn");
+      } else {
+        setUser(null);
+        setStatus("notSignedIn");
+      }
+    });
+
+    return () => sub.subscription.unsubscribe();
+  }, []);
 
   return <AuthContext.Provider value={{ user, status }}>{children}</AuthContext.Provider>;
 };

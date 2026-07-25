@@ -43,3 +43,26 @@ export type BadmintonOrderPayload = {
   organization: Organization;
   entries: CategoryEntry[];
 };
+
+export type RegistrationStatus = "PENDING" | "PAID" | "CANCELLED";
+export type PaymentMethod = "razorpay" | "offline";
+
+/** A row of the badminton_registrations table (admin dashboard). */
+export type RegistrationRow = {
+  id: string;
+  created_at: string;
+  order_id: string;
+  payment_id: string | null;
+  paid_at: string | null;
+  status: RegistrationStatus;
+  payment_method: PaymentMethod;
+  payment_note: string | null;
+  company: string;
+  contact_person: string | null;
+  official_email: string;
+  phone: string;
+  personal_email: string | null;
+  categories_summary: string;
+  total_paise: number;
+  entries: CategoryEntry[];
+};

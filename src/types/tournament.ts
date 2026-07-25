@@ -1,5 +1,3 @@
-import { Timestamp } from "firebase/firestore";
-
 export type ID = string;
 
 export type Team = {
@@ -7,8 +5,8 @@ export type Team = {
   name: string;
   short?: string;
   logoUrl?: string;
-  createdAt?: Timestamp | number;
-  updatedAt?: Timestamp | number;
+  createdAt?: string | number;
+  updatedAt?: string | number;
 };
 
 export type NewTeam = Omit<Team, "id">;

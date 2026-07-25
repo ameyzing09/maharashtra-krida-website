@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { errorConstants } from "../constants/errorConstant";
-import { getEvents } from "../services/eventService";
+import { deleteEvent, getEvents } from "../services/eventService";
 import { EventProps } from "../types";
-import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "../services/firebaseConfig";
-import { collections } from "../constants";
 
 const useEvents = () => {
   const [eventsList, setEventsList] = useState<EventProps[]>([]);
@@ -36,7 +33,7 @@ const useEvents = () => {
   const handleEventDelete = async (eventId: string) => {
     try {
       setLoading(true);
-      await deleteDoc(doc(db, collections.EVENTS, eventId));
+      await deleteEvent(eventId);
       const updatedEventsList = eventsList.filter(
         (event) => event.id !== eventId
       );
