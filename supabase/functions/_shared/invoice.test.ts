@@ -14,6 +14,8 @@ const row = {
     { category: "team_event", teamName: "Smashers", players: [] },
   ],
   payment_id: "pay_ABC123",
+  payment_method: "razorpay",
+  payment_note: null,
   order_id: "order_XYZ789",
   paid_at: "2026-08-01T10:30:00.000Z",
 };
@@ -70,6 +72,22 @@ Deno.test("gst_enabled with no rate configured skips tax lines gracefully", () =
   assertEquals(content.mode, "gst"); // still shows GSTIN/title, just no computed tax
   assertEquals(content.taxLines, []);
   assertEquals(content.taxableValuePaise, row.total_paise);
+});
+
+Deno.test("razorpay row shows the payment id and Razorpay method", () => {
+  const content = buildInvoiceContent(row, null);
+  assertEquals(content.payment.refLabel, "Payment ID");
+  assertEquals(content.payment.id, "pay_ABC123");
+  assertEquals(content.payment.method, "Razorpay");
+});
+
+Deno.test("offline row shows the NEFT reference (payment_note), not a blank Razorpay id", () => {
+  const offline = { ...row, payment_method: "offline", payment_id: null, payment_note: "UTR N999888777" };
+  const content = buildInvoiceContent(offline, null);
+  assertEquals(content.payment.method, "Bank Transfer (Offline)");
+  assertEquals(content.payment.refLabel, "Payment Ref");
+  assertEquals(content.payment.id, "UTR N999888777");
+  assertEquals(content.payment.orderId, "order_XYZ789");
 });
 
 Deno.test("total never changes based on GST mode — only the breakdown does", () => {

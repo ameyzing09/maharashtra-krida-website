@@ -22,6 +22,8 @@ export type InvoiceSourceRow = {
   total_paise: number;
   entries: any[];
   payment_id: string | null;
+  payment_method: string | null;
+  payment_note: string | null;
   order_id: string;
   paid_at: string | null;
 };
@@ -57,7 +59,7 @@ export type InvoiceContent = {
   /** What was actually collected (tax-inclusive) — never changes based on
    * GST mode; only how it's broken down on the document does. */
   totalPaise: number;
-  payment: { id: string; orderId: string; method: string };
+  payment: { id: string; orderId: string; method: string; refLabel: string };
 };
 
 /**
@@ -72,6 +74,19 @@ export type InvoiceContent = {
 function splitTax(totalPaise: number, ratePercent: number): { taxableValuePaise: number; taxPaise: number } {
   const taxableValuePaise = Math.round(totalPaise / (1 + ratePercent / 100));
   return { taxableValuePaise, taxPaise: totalPaise - taxableValuePaise };
+}
+
+/** Payment reference for the invoice. Offline (bank-transfer) registrations
+ * have no Razorpay payment id — they carry the admin-entered reference
+ * (NEFT/UTR/cheque no.) in payment_note and the correct method label. */
+function payment(row: InvoiceSourceRow): InvoiceContent["payment"] {
+  const isOffline = row.payment_method === "offline";
+  return {
+    id: isOffline ? row.payment_note || "" : row.payment_id || "",
+    orderId: row.order_id,
+    method: isOffline ? "Bank Transfer (Offline)" : "Razorpay",
+    refLabel: isOffline ? "Payment Ref" : "Payment ID",
+  };
 }
 
 /**
@@ -137,7 +152,7 @@ export function buildInvoiceContent(row: InvoiceSourceRow, settings?: InvoiceSet
     taxableValuePaise,
     taxLines,
     totalPaise: row.total_paise,
-    payment: { id: row.payment_id || "", orderId: row.order_id, method: "Razorpay" },
+    payment: payment(row),
   };
 }
 
@@ -252,7 +267,7 @@ export async function renderInvoicePdf(
 
   page.drawText("Payment Reference", { x: left, y, size: 10, font: bold, color: dark });
   y -= 14;
-  page.drawText(`Payment ID: ${content.payment.id}`, { x: left, y, size: 9, font, color: gray });
+  page.drawText(`${content.payment.refLabel}: ${content.payment.id}`, { x: left, y, size: 9, font, color: gray });
   y -= 12;
   page.drawText(`Order ID: ${content.payment.orderId}`, { x: left, y, size: 9, font, color: gray });
   y -= 12;
