@@ -1,74 +1,13 @@
 // deno-lint-ignore-file no-explicit-any
 import { corsHeaders, isAllowedOrigin } from "../_shared/cors.ts";
-import { CATEGORY_LABEL, FEE_MAP, PLAYER_BOUNDS } from "../_shared/badminton.ts";
-import { INDIAN_STATES } from "../_shared/indianStates.ts";
-
-// Abuse guards
-const MAX_BODY_BYTES = 50 * 1024;
-const MAX_ENTRIES = 10;
-const MAX_SHORT = 120; // names, company, emails
-const MAX_LONG = 200; // notes, designation
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^[0-9]{10}$/;
-
-function str(v: unknown, max: number): v is string {
-  return typeof v === "string" && v.trim().length > 0 && v.length <= max;
-}
-
-/** Pure — no Deno.* calls — so it's directly unit-testable with `deno test`. */
-export function validate(organization: any, entries: any[]): string | null {
-  if (!organization || typeof organization !== "object") return "Missing organisation details";
-  if (!str(organization.companyName, MAX_SHORT)) return "Invalid company name";
-  if (!str(organization.officialEmail, MAX_SHORT) || !EMAIL_RE.test(organization.officialEmail))
-    return "Invalid official email";
-  if (!PHONE_RE.test(String(organization.phone || ""))) return "Invalid phone number";
-  if (organization.contactPersonName && !str(organization.contactPersonName, MAX_SHORT))
-    return "Invalid contact person name";
-  if (!str(organization.state, MAX_SHORT) || !INDIAN_STATES.has(organization.state))
-    return "Select a valid state";
-  if (!Array.isArray(entries) || entries.length === 0) return "No entries provided";
-  if (entries.length > MAX_ENTRIES) return "Too many entries";
-
-  // Team Event is exclusive: a registration is either one team entry, or any
-  // mix of individual entries — never both, and never more than one team.
-  const teamEntries = entries.filter((e) => e && e.category === "team_event");
-  if (teamEntries.length > 0) {
-    if (entries.length > 1) {
-      return "Corporate Team Event cannot be combined with other categories";
-    }
-    const team = teamEntries[0];
-    if (!str(team.teamName || "", MAX_SHORT) || String(team.teamName).trim().length < 2) {
-      return "Team name is required for the Corporate Team Event";
-    }
-    return null;
-  }
-
-  for (const e of entries) {
-    if (!e || !FEE_MAP[e.category]) return `Invalid category: ${e && e.category}`;
-    const [min, max] = PLAYER_BOUNDS[e.category];
-    if (!Array.isArray(e.players) || e.players.length < min || e.players.length > max) {
-      return `${CATEGORY_LABEL[e.category]} requires ${min}${min === max ? "" : `-${max}`} player(s)`;
-    }
-    for (const p of e.players) {
-      if (!p || !str(p.name, MAX_SHORT) || !PHONE_RE.test(String(p.phone || "")))
-        return `Incomplete player details in ${CATEGORY_LABEL[e.category]}`;
-      if (!str(p.officialEmail, MAX_SHORT) || !EMAIL_RE.test(p.officialEmail))
-        return `Invalid player email in ${CATEGORY_LABEL[e.category]}`;
-      if (p.designation && String(p.designation).length > MAX_LONG) return "Designation too long";
-    }
-  }
-  return null;
-}
-
-export function computeAmount(entries: any[]): number {
-  return entries.reduce((sum, e) => sum + FEE_MAP[e.category], 0);
-}
-
-export function summarizeCategories(entries: any[]): string {
-  return entries
-    .map((e) => CATEGORY_LABEL[e.category] + (e.teamName ? ` (${e.teamName})` : ""))
-    .join(", ");
-}
+import {
+  computeAmount,
+  generateReferenceCode,
+  insertPendingRow,
+  MAX_BODY_BYTES,
+  summarizeCategories,
+  validate,
+} from "../_shared/registration.ts";
 
 async function createRazorpayOrder(amount: number, organization: any) {
   const keyId = Deno.env.get("RAZORPAY_KEY_ID")!;
@@ -95,33 +34,20 @@ async function createRazorpayOrder(amount: number, organization: any) {
   return await res.json();
 }
 
-async function insertPendingRow(orderId: string, organization: any, entries: any[], amount: number) {
-  const url = `${Deno.env.get("SUPABASE_URL")}/rest/v1/badminton_registrations`;
-  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-      Prefer: "return=minimal",
-    },
-    body: JSON.stringify({
-      order_id: orderId,
-      status: "PENDING",
-      payment_method: "razorpay",
-      company: organization.companyName,
-      contact_person: organization.contactPersonName ?? null,
-      official_email: organization.officialEmail,
-      phone: String(organization.phone),
-      personal_email: organization.personalEmail ?? null,
-      state: organization.state,
-      categories_summary: summarizeCategories(entries),
-      total_paise: amount,
-      entries,
-    }),
-  });
-  if (!res.ok) throw new Error(`Supabase insert failed (${res.status}): ${await res.text()}`);
+// Offline ("company will pay separately"): reserve a PENDING row with a
+// generated reference code, no Razorpay order. Retries on the (astronomically
+// unlikely) code collision against the unique order_id.
+async function createOfflineReservation(organization: any, entries: any[], amount: number) {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = generateReferenceCode();
+    const res = await insertPendingRow(code, organization, entries, amount, "offline");
+    if (res.ok) return code;
+    const body = await res.text();
+    // 409 = unique violation on order_id → regenerate and retry.
+    if (res.status === 409 || /duplicate key|unique/i.test(body)) continue;
+    throw new Error(`Supabase insert failed (${res.status}): ${body}`);
+  }
+  throw new Error("Could not allocate a unique reference code");
 }
 
 export async function handleRequest(req: Request): Promise<Response> {
@@ -142,19 +68,31 @@ export async function handleRequest(req: Request): Promise<Response> {
   }
 
   try {
-    const { organization, entries } = JSON.parse(raw || "{}");
+    const { organization, entries, paymentMode } = JSON.parse(raw || "{}");
 
     const invalid = validate(organization, entries);
     if (invalid) return new Response(JSON.stringify({ error: invalid }), { status: 400, headers });
 
     // Server is the source of truth for the amount.
     const amount = computeAmount(entries);
+
+    // ── Offline path: reserve now, pay later, admin confirms. ──
+    if (paymentMode === "offline") {
+      const referenceCode = await createOfflineReservation(organization, entries, amount);
+      return new Response(
+        JSON.stringify({ offline: true, referenceCode, amount }),
+        { status: 200, headers }
+      );
+    }
+
+    // ── Online path (default): Razorpay checkout. ──
     const order = await createRazorpayOrder(amount, organization);
 
     // Persist the full registration as a PENDING row. The webhook flips it to
     // PAID on payment.captured. This is the durable record of the roster.
     try {
-      await insertPendingRow(order.id, organization, entries, amount);
+      const res = await insertPendingRow(order.id, organization, entries, amount, "razorpay");
+      if (!res.ok) throw new Error(`Supabase insert failed (${res.status}): ${await res.text()}`);
     } catch (dbErr) {
       // Do not fail the payment if the insert hiccups; the webhook has an
       // upsert fallback keyed on order_id.

@@ -24,6 +24,7 @@ import TournamentsPage from "../pages/Tournaments";
 import TournamentAdmin from "../pages/TournamentAdmin";
 import RegistrationsDashboard from "../pages/RegistrationsDashboard";
 import InvoiceSettings from "../pages/InvoiceSettings";
+import RegistrationStatus from "../pages/RegistrationStatus";
 import PageTransition from "../component/PageTransition";
 import TopProgressBar from "../component/TopProgressBar";
 
@@ -42,6 +43,7 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="news/:id" element={<PageTransition><NewsDetail /></PageTransition>} />
         <Route path="tournaments" element={<PageTransition><TournamentsPage /></PageTransition>} />
         <Route path="badminton" element={<PageTransition><BadmintonRegister /></PageTransition>} />
+        <Route path="registration/status" element={<PageTransition><RegistrationStatus /></PageTransition>} />
         <Route element={<PrivateRoute />}>
           <Route path="menu" element={<PageTransition><Menu /></PageTransition>} />
           <Route path="/menu/content-management" element={<PageTransition><HomepageManagement /></PageTransition>} />

@@ -1,5 +1,5 @@
-import { assertEquals } from "@std/assert";
-import { computeAmount, summarizeCategories, validate } from "./index.ts";
+import { assert, assertEquals, assertMatch } from "@std/assert";
+import { computeAmount, generateReferenceCode, summarizeCategories, validate } from "./registration.ts";
 
 const org = {
   companyName: "Acme",
@@ -105,4 +105,17 @@ Deno.test("summarizeCategories includes team name", () => {
     summarizeCategories([{ category: "team_event", teamName: "Smashers" }]),
     "Corporate Team Event (Smashers)"
   );
+});
+
+Deno.test("generateReferenceCode has the MKB- prefix and unambiguous alphabet", () => {
+  const code = generateReferenceCode();
+  assertMatch(code, /^MKB-[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{6}$/);
+  // no ambiguous characters
+  assert(!/[01OIL]/.test(code.slice(4)));
+});
+
+Deno.test("generateReferenceCode is effectively unique across many draws", () => {
+  const seen = new Set<string>();
+  for (let i = 0; i < 1000; i++) seen.add(generateReferenceCode());
+  assert(seen.size > 995); // collisions across 1000 draws should be ~0
 });

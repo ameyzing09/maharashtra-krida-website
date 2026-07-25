@@ -133,14 +133,31 @@ export default function RegistrationsDashboard() {
     try {
       setBusy(true);
       await markPaidOffline(payTarget.id, payRef.trim());
+      // Offline payments don't go through the Razorpay webhook, so generate
+      // the invoice here (best-effort — don't fail the status update if it hiccups).
+      let invoice: { invoiceNumber: string; path: string } | null = null;
+      try {
+        invoice = await regenerateInvoice(payTarget.order_id);
+      } catch (invErr) {
+        console.error("Invoice generation after mark-paid failed:", invErr);
+      }
       setRows((prev) =>
         prev.map((r) =>
           r.id === payTarget.id
-            ? { ...r, status: "PAID", payment_method: "offline", payment_note: payRef.trim(), paid_at: new Date().toISOString() }
+            ? {
+                ...r,
+                status: "PAID",
+                payment_method: "offline",
+                payment_note: payRef.trim(),
+                paid_at: new Date().toISOString(),
+                ...(invoice
+                  ? { invoice_number: invoice.invoiceNumber, invoice_path: invoice.path, invoice_generated_at: new Date().toISOString() }
+                  : {}),
+              }
             : r
         )
       );
-      showToast("Marked as paid (offline).", "success");
+      showToast(invoice ? "Marked as paid — invoice generated." : "Marked as paid (offline).", "success");
       setPayTarget(null);
       setPayRef("");
     } catch (e) {

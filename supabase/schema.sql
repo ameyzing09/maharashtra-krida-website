@@ -227,3 +227,30 @@ create policy "admin update invoice settings"
 
 alter table badminton_registrations
   add column if not exists state text;
+
+-- ---------------------------------------------------------------------------
+-- Offline payment settings (see migrations/20260725215527_payment_settings.sql).
+-- Publicly readable (bank details for receiving payment are not secret and must
+-- show on the public offline confirmation/status page); admin write only.
+-- ---------------------------------------------------------------------------
+
+create table if not exists payment_settings (
+  id boolean primary key default true,
+  offline_enabled boolean not null default false,
+  bank_account_name text,
+  bank_account_number text,
+  bank_ifsc text,
+  upi_id text,
+  instructions_note text,
+  updated_at timestamptz not null default now(),
+  constraint payment_settings_single_row check (id)
+);
+
+alter table payment_settings enable row level security;
+
+create policy "public read payment settings"
+  on payment_settings for select using (true);
+create policy "admin write payment settings"
+  on payment_settings for insert to authenticated with check (true);
+create policy "admin update payment settings"
+  on payment_settings for update to authenticated using (true) with check (true);

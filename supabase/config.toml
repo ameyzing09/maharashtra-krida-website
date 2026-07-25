@@ -20,6 +20,9 @@ verify_jwt = false
 [functions.get-invoice]
 verify_jwt = false
 
+[functions.get-registration-status]
+verify_jwt = false
+
 # Admin-only: requires a real logged-in user, enforced inside the function
 # itself (see requireAdmin in its source) since verify_jwt alone wouldn't
 # distinguish a genuine admin session from the public anon key.
