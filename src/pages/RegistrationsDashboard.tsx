@@ -236,29 +236,49 @@ export default function RegistrationsDashboard() {
       </div>
 
       {/* Filters */}
-      <div className="glass-panel p-4 mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="glass-panel p-4 mb-6 flex flex-wrap gap-3">
         <input
-          className="glass-input px-3 py-2 lg:col-span-2"
+          className="glass-input px-3 py-2 flex-1 min-w-[220px]"
           placeholder="Search company / contact / email / phone"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <select className="glass-input px-3 py-2" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as never)}>
+        <select
+          className="glass-input px-3 py-2 w-full sm:w-auto sm:min-w-[160px]"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as never)}
+        >
           <option value="ALL">All statuses</option>
           <option value="PENDING">Pending</option>
           <option value="PAID">Paid</option>
           <option value="CANCELLED">Cancelled</option>
         </select>
-        <select className="glass-input px-3 py-2" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+        <select
+          className="glass-input px-3 py-2 w-full sm:w-auto sm:min-w-[180px]"
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        >
           <option value="ALL">All categories</option>
           {BADMINTON_CATEGORIES.map((c) => (
             <option key={c.code} value={c.code}>{c.label}</option>
           ))}
         </select>
-        <div className="flex items-center gap-2">
-          <input type="date" className="glass-input px-2 py-2 w-full" value={fromDate} onChange={(e) => setFromDate(e.target.value)} aria-label="From date" />
-          <span className="text-gray-400">–</span>
-          <input type="date" className="glass-input px-2 py-2 w-full" value={toDate} onChange={(e) => setToDate(e.target.value)} aria-label="To date" />
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
+          <input
+            type="date"
+            className="glass-input px-2 py-2 w-full sm:w-auto"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            aria-label="From date"
+          />
+          <span className="text-gray-400 hidden sm:inline">–</span>
+          <input
+            type="date"
+            className="glass-input px-2 py-2 w-full sm:w-auto"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            aria-label="To date"
+          />
         </div>
       </div>
 
