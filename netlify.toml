@@ -1,7 +1,6 @@
 [build]
   command = "npm run build"
   publish = "dist"
-
 # Public client config, inlined into the bundle by Vite at build time. The
 # anon key is safe to commit — it's public by design and the data is protected
 # by row-level security. (When the separate prod Supabase project exists, move
@@ -10,7 +9,6 @@
 [build.environment]
   VITE_SUPABASE_URL = "https://admofuvpawimmotbubls.supabase.co"
   VITE_SUPABASE_ANON_KEY = "sb_publishable_mk-XMZSmlYEJ-jyecs5Puw_Ntn8q3wL"
-
 [dev]
   command    = "npm run dev"   # Vite dev
   targetPort = 5173            # Vite's port (change if different)
