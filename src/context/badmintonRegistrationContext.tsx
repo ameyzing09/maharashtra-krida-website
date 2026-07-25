@@ -1,5 +1,6 @@
-import { createContext, useReducer } from "react";
+import { createContext, useEffect, useReducer } from "react";
 import { BadmintonRegistrationState, CategoryEntry, Organization } from "../types/badminton";
+import { clearDraft, loadDraft, saveDraft } from "../utils/badmintonDraft";
 
 type BadmintonAction =
   | { type: "SET_ORG"; payload: Organization }
@@ -16,6 +17,14 @@ const initial: BadmintonRegistrationState = {
   entries: [],
   orderId: "",
 };
+
+// Resume an in-progress registration (e.g. after a failed payment hard-redirects
+// back to this page and wipes in-memory state) but never resume a stale orderId.
+function initState(): BadmintonRegistrationState {
+  const draft = loadDraft();
+  if (!draft) return initial;
+  return { ...initial, step: draft.step, organization: draft.organization, entries: draft.entries };
+}
 
 function reducer(
   state: BadmintonRegistrationState,
@@ -49,7 +58,16 @@ export const BadmintonRegistrationContext = createContext<{
 export const BadmintonRegistrationProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [state, dispatch] = useReducer(reducer, initial);
+  const [state, dispatch] = useReducer(reducer, undefined, initState);
+
+  useEffect(() => {
+    if (!state.organization && state.entries.length === 0) {
+      clearDraft();
+      return;
+    }
+    saveDraft({ step: state.step, organization: state.organization, entries: state.entries });
+  }, [state.step, state.organization, state.entries]);
+
   return (
     <BadmintonRegistrationContext.Provider value={{ state, dispatch }}>
       {children}

@@ -4,6 +4,7 @@ import { useBadmintonRegistration } from "../../hook/useBadmintonRegistration";
 import { createBadmintonOrder } from "../../services/paymentService";
 import { useRazorpayScript, RazorpaySuccess } from "../../hook/useRazorpayScript";
 import { CATEGORY_BY_CODE, formatINR, TOURNAMENT } from "../../constants/badminton";
+import { clearDraft } from "../../utils/badmintonDraft";
 import useToast from "../../hook/useToast";
 import Toast from "../common/Toast";
 
@@ -71,6 +72,7 @@ export default function StepPayment() {
         theme: { color: "#84cc16" },
         handler: function (resp: RazorpaySuccess) {
           sessionStorage.setItem("rzp_success", JSON.stringify({ ...resp, ...payloadForSuccess }));
+          clearDraft();
           window.location.href = "/payment/success";
         },
         remember_customer: false,
@@ -128,7 +130,11 @@ export default function StepPayment() {
         >
           Back
         </button>
-        <a href="/" className="text-sm text-gray-500 dark:text-gray-400 underline">
+        <a
+          href="/"
+          onClick={clearDraft}
+          className="text-sm text-gray-500 dark:text-gray-400 underline"
+        >
           Start over
         </a>
       </div>
