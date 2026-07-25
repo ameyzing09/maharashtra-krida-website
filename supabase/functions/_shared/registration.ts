@@ -2,7 +2,6 @@
 // Shared registration validation + persistence, used by both the online
 // (Razorpay) and offline ("company will pay separately") create paths.
 import { CATEGORY_LABEL, FEE_MAP, PLAYER_BOUNDS } from "./badminton.ts";
-import { INDIAN_STATES } from "./indianStates.ts";
 
 // Abuse guards
 export const MAX_BODY_BYTES = 50 * 1024;
@@ -25,8 +24,6 @@ export function validate(organization: any, entries: any[]): string | null {
   if (!PHONE_RE.test(String(organization.phone || ""))) return "Invalid phone number";
   if (organization.contactPersonName && !str(organization.contactPersonName, MAX_SHORT))
     return "Invalid contact person name";
-  if (!str(organization.state, MAX_SHORT) || !INDIAN_STATES.has(organization.state))
-    return "Select a valid state";
   if (!Array.isArray(entries) || entries.length === 0) return "No entries provided";
   if (entries.length > MAX_ENTRIES) return "Too many entries";
 
@@ -114,7 +111,7 @@ export async function insertPendingRow(
       official_email: organization.officialEmail,
       phone: String(organization.phone),
       personal_email: organization.personalEmail ?? null,
-      state: organization.state,
+      state: organization.state ?? null,
       categories_summary: summarizeCategories(entries),
       total_paise: amount,
       entries,

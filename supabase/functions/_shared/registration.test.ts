@@ -6,7 +6,6 @@ const org = {
   contactPersonName: "Jane",
   officialEmail: "jane@acme.com",
   phone: "9876543210",
-  state: "Maharashtra",
 };
 const player = { name: "Jane Doe", phone: "9876543210", officialEmail: "jane@acme.com" };
 
@@ -74,21 +73,6 @@ Deno.test("company name too long rejected", () => {
   assertEquals(
     validate({ ...org, companyName: "A".repeat(200) }, [{ category: "womens_singles", players: [player] }]),
     "Invalid company name"
-  );
-});
-
-Deno.test("missing state rejected", () => {
-  const { state: _state, ...noState } = org;
-  assertEquals(
-    validate(noState, [{ category: "womens_singles", players: [player] }]),
-    "Select a valid state"
-  );
-});
-
-Deno.test("unrecognized state rejected", () => {
-  assertEquals(
-    validate({ ...org, state: "Narnia" }, [{ category: "womens_singles", players: [player] }]),
-    "Select a valid state"
   );
 });
 

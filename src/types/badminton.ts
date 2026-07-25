@@ -29,8 +29,6 @@ export type Organization = {
   phone: string;
   /** Personal email — optional. */
   personalEmail?: string;
-  /** Registrant's state — used to decide CGST+SGST vs IGST on GST invoices. */
-  state: string;
 };
 
 export type BadmintonRegistrationState = {
