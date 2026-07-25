@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
           <nav aria-label="Quick links" className="grid gap-2 content-start">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 drop-shadow-sm">Quick Links</h3>
             <Link to="/upcoming-events" className="text-sm text-gray-700 dark:text-gray-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors duration-200">Events</Link>
-            <Link to="/register" className="text-sm text-gray-700 dark:text-gray-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors duration-200">Register</Link>
+            <Link to="/badminton" className="text-sm text-gray-700 dark:text-gray-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors duration-200">Register</Link>
             <Link to="/about" className="text-sm text-gray-700 dark:text-gray-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors duration-200">About</Link>
             <Link to="/contact" className="text-sm text-gray-700 dark:text-gray-300 hover:text-lime-600 dark:hover:text-lime-400 transition-colors duration-200">Contact</Link>
           </nav>
