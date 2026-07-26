@@ -4,6 +4,13 @@
 // callers — but the allowlist below (not CORS) is the actual security
 // boundary; CORS headers only affect what browsers permit, never a curl/bot.
 
+// Matched exactly, not by suffix — a suffix match on a bare domain would also
+// let in an attacker-registered lookalike like "evilmaharashtrakrida.in". The
+// live domain is pinned here rather than left to the SITE_ORIGIN secret alone,
+// so losing that secret can't take checkout down again.
+const ALLOWED_HOSTS = ["maharashtrakrida.in", "www.maharashtrakrida.in"];
+
+// Safe as suffixes because of the leading dot.
 const ALLOWED_HOST_SUFFIXES = [".netlify.app"];
 
 export function isAllowedOrigin(origin: string | null): boolean {
@@ -11,6 +18,7 @@ export function isAllowedOrigin(origin: string | null): boolean {
   try {
     const { hostname } = new URL(origin);
     if (hostname === "localhost" || hostname === "127.0.0.1") return true;
+    if (ALLOWED_HOSTS.includes(hostname)) return true;
     if (ALLOWED_HOST_SUFFIXES.some((suffix) => hostname.endsWith(suffix))) return true;
     const siteOrigin = Deno.env.get("SITE_ORIGIN");
     if (siteOrigin && origin === siteOrigin) return true;
