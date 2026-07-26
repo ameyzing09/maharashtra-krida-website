@@ -11,9 +11,8 @@ export const FEE_MAP: Record<string, number> = {
   team_event: 500000,
 };
 
-// Allowed player counts per category: [min, max]. The team event collects no
-// player details — only a team name — and is exclusive: it cannot be combined
-// with any other entry in the same registration.
+// Allowed player counts per category: [min, max]. The team event is absent by
+// design — it collects only a team name, not a roster.
 export const PLAYER_BOUNDS: Record<string, [number, number]> = {
   mens_singles: [1, 1],
   womens_singles: [1, 1],

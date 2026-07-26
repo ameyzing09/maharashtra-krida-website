@@ -33,9 +33,6 @@ export default function StepEntries() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const hasTeamEntry = state.entries.some((e) => CATEGORY_BY_CODE[e.category].exclusive);
-  const hasIndividualEntry = state.entries.some((e) => !CATEGORY_BY_CODE[e.category].exclusive);
-
   const total = useMemo(
     () => state.entries.reduce((sum, e) => sum + CATEGORY_BY_CODE[e.category].fee, 0),
     [state.entries]
@@ -43,16 +40,9 @@ export default function StepEntries() {
 
   const meta = selected ? CATEGORY_BY_CODE[selected] : null;
 
-  function isDisabled(code: BadmintonCategory): boolean {
-    const m = CATEGORY_BY_CODE[code];
-    // A team entry locks the whole registration; individual entries lock team.
-    if (hasTeamEntry) return true;
-    if (m.exclusive && hasIndividualEntry) return true;
-    return false;
-  }
-
+  // Any mix of categories is allowed, including several corporate teams, so no
+  // category is ever locked out.
   function selectCategory(code: BadmintonCategory) {
-    if (isDisabled(code)) return;
     if (selected === code) {
       closeForm();
       return;
@@ -162,26 +152,40 @@ export default function StepEntries() {
                   <motion.div
                     key={e.id}
                     {...listAnim}
-                    className="glass-panel-subtle p-3 flex items-start justify-between gap-3"
+                    className="glass-panel-subtle p-4 flex items-start justify-between gap-4"
                   >
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                    <div className="min-w-0 space-y-1.5">
+                      <p className="text-base font-semibold text-gray-900 dark:text-white leading-snug">
                         {em.label}
-                        {e.teamName ? ` — ${e.teamName}` : ""}
                       </p>
-                      {e.players.length > 0 && (
-                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5 truncate">
-                          {e.players.map((p) => p.name).join(", ")}
+                      {e.teamName && (
+                        <p className="text-sm text-gray-700 dark:text-gray-200">
+                          <span className="text-gray-500 dark:text-gray-400">Team:</span>{" "}
+                          <span className="font-medium">{e.teamName}</span>
+                        </p>
+                      )}
+                      {e.players.length > 0 ? (
+                        <ul className="space-y-0.5">
+                          {e.players.map((p, i) => (
+                            <li key={i} className="text-sm text-gray-600 dark:text-gray-300 break-words">
+                              {p.name}
+                              <span className="text-gray-400 dark:text-gray-500"> · {p.phone}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Roster shared before the Captains' Meeting.
                         </p>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-sm font-medium text-brand-lime">{formatINR(em.fee)}</span>
+                    <div className="flex flex-col items-end gap-2 shrink-0">
+                      <span className="text-base font-bold text-brand-lime">{formatINR(em.fee)}</span>
                       <button
                         type="button"
                         onClick={() => dispatch({ type: "REMOVE_ENTRY", payload: e.id })}
-                        className="text-xs text-red-600 hover:underline"
-                        aria-label={`Remove ${em.label}`}
+                        className="rounded-full border border-red-300 dark:border-red-500/40 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 text-xs font-medium px-3 py-1.5 transition-colors"
+                        aria-label={`Remove ${em.label}${e.teamName ? ` — ${e.teamName}` : ""}`}
                       >
                         Remove
                       </button>
@@ -205,20 +209,17 @@ export default function StepEntries() {
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {BADMINTON_CATEGORIES.map((c) => {
-            const disabled = isDisabled(c.code);
             const active = selected === c.code;
             return (
               <motion.button
                 key={c.code}
                 type="button"
                 onClick={() => selectCategory(c.code)}
-                disabled={disabled}
                 aria-pressed={active}
-                {...(reduceMotion || disabled ? {} : { whileHover: { y: -2 }, whileTap: { scale: 0.97 } })}
+                {...(reduceMotion ? {} : { whileHover: { y: -2 }, whileTap: { scale: 0.97 } })}
                 className={[
-                  "glass-panel p-3 sm:p-4 text-left transition-all duration-200",
+                  "glass-panel p-3 sm:p-4 text-left transition-all duration-200 glass-hover cursor-pointer",
                   active ? "ring-2 ring-brand-lime shadow-lg" : "",
-                  disabled ? "opacity-40 cursor-not-allowed" : "glass-hover cursor-pointer",
                 ].join(" ")}
               >
                 <p className="text-sm font-semibold text-gray-900 dark:text-white leading-snug">{c.label}</p>
@@ -232,18 +233,10 @@ export default function StepEntries() {
             );
           })}
         </div>
-        {hasTeamEntry && (
-          <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
-            Corporate Team registrations cannot be combined with other entries. Remove the team entry
-            to add individual categories.
-          </p>
-        )}
-        {!hasTeamEntry && hasIndividualEntry && (
-          <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
-            The Corporate Team Event cannot be combined with individual entries — it needs a separate
-            registration.
-          </p>
-        )}
+        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+          Add as many categories as you like — corporate teams and individual entries can be
+          combined in a single registration.
+        </p>
       </div>
 
       {/* Focused entry form */}
@@ -281,9 +274,17 @@ export default function StepEntries() {
                     <button
                       type="button"
                       onClick={useContactForFirst}
-                      className="text-xs text-brand-lime hover:underline"
+                      className="glass-button-outline inline-flex items-center gap-2 text-sm px-4 py-2"
                     >
-                      Use primary contact details for Player 1
+                      <svg
+                        className="w-4 h-4 shrink-0"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
+                      </svg>
+                      Autofill Player 1 with my contact details
                     </button>
                   )}
 
