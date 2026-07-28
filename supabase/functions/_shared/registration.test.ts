@@ -23,23 +23,53 @@ Deno.test("valid team-only passes", () => {
   assertEquals(validate(org, [{ category: "team_event", teamName: "Smashers", players: [] }]), null);
 });
 
-Deno.test("team mixed with individual is rejected", () => {
+// A company can enter a corporate team and individual categories together.
+Deno.test("team mixed with individual passes", () => {
   assertEquals(
     validate(org, [
       { category: "team_event", teamName: "Smashers", players: [] },
       { category: "womens_singles", players: [player] },
     ]),
-    "Corporate Team Event cannot be combined with other categories"
+    null
   );
 });
 
-Deno.test("two team entries rejected", () => {
+Deno.test("two team entries pass", () => {
   assertEquals(
     validate(org, [
-      { category: "team_event", teamName: "A", players: [] },
-      { category: "team_event", teamName: "B", players: [] },
+      { category: "team_event", teamName: "Acme A", players: [] },
+      { category: "team_event", teamName: "Acme B", players: [] },
     ]),
-    "Corporate Team Event cannot be combined with other categories"
+    null
+  );
+});
+
+// Entries are validated individually, so a team entry earlier in the list must
+// not let a later bad entry through.
+Deno.test("a bad entry after a team entry is still rejected", () => {
+  assertEquals(
+    validate(org, [
+      { category: "team_event", teamName: "Smashers", players: [] },
+      { category: "mens_doubles", players: [player] },
+    ]),
+    "Men's Doubles requires 2 player(s)"
+  );
+  assertEquals(
+    validate(org, [
+      { category: "team_event", teamName: "Smashers", players: [] },
+      { category: "not_a_category", players: [] },
+    ]),
+    "Invalid category: not_a_category"
+  );
+});
+
+Deno.test("a team without a name is rejected even when it isn't first", () => {
+  assertEquals(
+    validate(org, [
+      { category: "womens_singles", players: [player] },
+      { category: "team_event", teamName: "", players: [] },
+    ]),
+    "Team name is required for the Corporate Team Event"
   );
 });
 

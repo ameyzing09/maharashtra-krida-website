@@ -23,17 +23,15 @@ export type CategoryMeta = {
   unit: string;
   /** Whether the entry form collects per-player details for this category. */
   collectsPlayers: boolean;
-  /** Exclusive categories cannot be combined with any other entry. */
-  exclusive: boolean;
   /** For mixed doubles: hint that one male + one female is expected. */
   note?: string;
 };
 
 export const BADMINTON_CATEGORIES: CategoryMeta[] = [
-  { code: "mens_singles", label: "Men's Singles", fee: 150000, players: 1, unit: "per entry", collectsPlayers: true, exclusive: false },
-  { code: "womens_singles", label: "Women's Singles", fee: 150000, players: 1, unit: "per entry", collectsPlayers: true, exclusive: false },
-  { code: "mens_doubles", label: "Men's Doubles", fee: 300000, players: 2, unit: "per team", collectsPlayers: true, exclusive: false },
-  { code: "womens_doubles", label: "Women's Doubles", fee: 300000, players: 2, unit: "per team", collectsPlayers: true, exclusive: false },
+  { code: "mens_singles", label: "Men's Singles", fee: 150000, players: 1, unit: "per entry", collectsPlayers: true },
+  { code: "womens_singles", label: "Women's Singles", fee: 150000, players: 1, unit: "per entry", collectsPlayers: true },
+  { code: "mens_doubles", label: "Men's Doubles", fee: 300000, players: 2, unit: "per team", collectsPlayers: true },
+  { code: "womens_doubles", label: "Women's Doubles", fee: 300000, players: 2, unit: "per team", collectsPlayers: true },
   {
     code: "mixed_doubles",
     label: "Mixed Doubles",
@@ -41,7 +39,6 @@ export const BADMINTON_CATEGORIES: CategoryMeta[] = [
     players: 2,
     unit: "per team",
     collectsPlayers: true,
-    exclusive: false,
     note: "One male and one female player.",
   },
   {
@@ -51,7 +48,6 @@ export const BADMINTON_CATEGORIES: CategoryMeta[] = [
     players: [2, 4],
     unit: "per team",
     collectsPlayers: false,
-    exclusive: true,
     note: "2 Singles + 1 Doubles per tie, 2–4 players. Only the team name is needed now; the roster is collected before the Captains' Meeting.",
   },
 ];

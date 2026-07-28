@@ -27,22 +27,22 @@ export function validate(organization: any, entries: any[]): string | null {
   if (!Array.isArray(entries) || entries.length === 0) return "No entries provided";
   if (entries.length > MAX_ENTRIES) return "Too many entries";
 
-  // Team Event is exclusive: a registration is either one team entry, or any
-  // mix of individual entries — never both, and never more than one team.
-  const teamEntries = entries.filter((e) => e && e.category === "team_event");
-  if (teamEntries.length > 0) {
-    if (entries.length > 1) {
-      return "Corporate Team Event cannot be combined with other categories";
-    }
-    const team = teamEntries[0];
-    if (!str(team.teamName || "", MAX_SHORT) || String(team.teamName).trim().length < 2) {
-      return "Team name is required for the Corporate Team Event";
-    }
-    return null;
-  }
-
+  // A registration may freely mix corporate team entries with individual
+  // categories, and may contain more than one team — MAX_ENTRIES is the only
+  // cap. Every entry is checked on its own terms below.
   for (const e of entries) {
     if (!e || !FEE_MAP[e.category]) return `Invalid category: ${e && e.category}`;
+
+    // Team entries carry a name instead of a roster — the players are
+    // collected before the Captains' Meeting, so PLAYER_BOUNDS has no entry
+    // for them and the per-player checks below don't apply.
+    if (e.category === "team_event") {
+      if (!str(e.teamName || "", MAX_SHORT) || String(e.teamName).trim().length < 2) {
+        return "Team name is required for the Corporate Team Event";
+      }
+      continue;
+    }
+
     const [min, max] = PLAYER_BOUNDS[e.category];
     if (!Array.isArray(e.players) || e.players.length < min || e.players.length > max) {
       return `${CATEGORY_LABEL[e.category]} requires ${min}${min === max ? "" : `-${max}`} player(s)`;
