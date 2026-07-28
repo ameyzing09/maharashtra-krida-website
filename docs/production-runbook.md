@@ -80,8 +80,9 @@ invoice is `MK-BADM-<year>-000001`.
 objects:
 
 ```sh
-supabase --experimental storage ls ss://invoices     # look first
-supabase --experimental storage rm -r ss://invoices  # then remove
+# Note the three slashes: the URL form is ss:///<bucket>/<prefix>
+supabase --experimental storage ls ss:///invoices/       # look first
+supabase --experimental storage rm -r ss:///invoices/    # then remove
 ```
 
 Do **not** touch the `media` bucket — the invoice generator reads the header logo from

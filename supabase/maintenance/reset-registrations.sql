@@ -13,7 +13,7 @@
 -- What this does NOT do:
 --   * delete the invoice PDFs — those are storage objects in the private
 --     `invoices` bucket and outlive the rows. Remove them separately:
---       supabase --experimental storage rm -r ss://invoices
+--       supabase --experimental storage rm -r ss:///invoices/
 --   * touch CMS content, auth users, admin_users, or the `media` bucket.
 --
 -- See docs/production-runbook.md.
