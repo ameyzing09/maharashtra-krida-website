@@ -22,8 +22,8 @@ export default function NewsList({ refreshKey }: Props) {
       setLoading(true);
       setItems(await listNews(50));
       setError(null);
-    } catch (e: any) {
-      setError(e?.message || "Failed to load news");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load news");
     } finally {
       setLoading(false);
     }
@@ -31,7 +31,6 @@ export default function NewsList({ refreshKey }: Props) {
 
   useEffect(() => {
     fetchItems();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey]);
 
   const onDelete = async (id: string) => {

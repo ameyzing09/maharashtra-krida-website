@@ -1,7 +1,13 @@
-// deno-lint-ignore-file no-explicit-any
 // Shared registration validation + persistence, used by both the online
 // (Razorpay) and offline ("company will pay separately") create paths.
-import { CATEGORY_LABEL, FEE_MAP, PLAYER_BOUNDS } from "./badminton.ts";
+import {
+  CATEGORY_LABEL,
+  CategoryEntry,
+  FEE_MAP,
+  isCategory,
+  Organization,
+  PLAYER_BOUNDS,
+} from "./badminton.ts";
 
 // Abuse guards
 export const MAX_BODY_BYTES = 50 * 1024;
@@ -15,14 +21,24 @@ function str(v: unknown, max: number): v is string {
   return typeof v === "string" && v.trim().length > 0 && v.length <= max;
 }
 
-/** Pure — no Deno.* calls — so it's directly unit-testable with `deno test`. */
-export function validate(organization: any, entries: any[]): string | null {
-  if (!organization || typeof organization !== "object") return "Missing organisation details";
-  if (!str(organization.companyName, MAX_SHORT)) return "Invalid company name";
-  if (!str(organization.officialEmail, MAX_SHORT) || !EMAIL_RE.test(organization.officialEmail))
+/** Untrusted JSON → an indexable record, or null for anything that isn't one.
+ *  The assertion is sound because the typeof check in front of it is what
+ *  proves the shape; nothing here trusts the caller. */
+function record(v: unknown): Record<string, unknown> | null {
+  return v !== null && typeof v === "object" ? v as Record<string, unknown> : null;
+}
+
+/** Pure — no Deno.* calls — so it's directly unit-testable with `deno test`.
+ *  Takes `unknown` because this IS the trust boundary: everything it receives
+ *  came straight off the wire. */
+export function validate(organization: unknown, entries: unknown): string | null {
+  const org = record(organization);
+  if (!org) return "Missing organisation details";
+  if (!str(org.companyName, MAX_SHORT)) return "Invalid company name";
+  if (!str(org.officialEmail, MAX_SHORT) || !EMAIL_RE.test(org.officialEmail))
     return "Invalid official email";
-  if (!PHONE_RE.test(String(organization.phone || ""))) return "Invalid phone number";
-  if (organization.contactPersonName && !str(organization.contactPersonName, MAX_SHORT))
+  if (!PHONE_RE.test(String(org.phone || ""))) return "Invalid phone number";
+  if (org.contactPersonName && !str(org.contactPersonName, MAX_SHORT))
     return "Invalid contact person name";
   if (!Array.isArray(entries) || entries.length === 0) return "No entries provided";
   if (entries.length > MAX_ENTRIES) return "Too many entries";
@@ -30,8 +46,9 @@ export function validate(organization: any, entries: any[]): string | null {
   // A registration may freely mix corporate team entries with individual
   // categories, and may contain more than one team — MAX_ENTRIES is the only
   // cap. Every entry is checked on its own terms below.
-  for (const e of entries) {
-    if (!e || !FEE_MAP[e.category]) return `Invalid category: ${e && e.category}`;
+  for (const raw of entries) {
+    const e = record(raw);
+    if (!e || !isCategory(e.category)) return `Invalid category: ${e && e.category}`;
 
     // Team entries carry a name instead of a roster — the players are
     // collected before the Captains' Meeting, so PLAYER_BOUNDS has no entry
@@ -47,7 +64,8 @@ export function validate(organization: any, entries: any[]): string | null {
     if (!Array.isArray(e.players) || e.players.length < min || e.players.length > max) {
       return `${CATEGORY_LABEL[e.category]} requires ${min}${min === max ? "" : `-${max}`} player(s)`;
     }
-    for (const p of e.players) {
+    for (const rawPlayer of e.players) {
+      const p = record(rawPlayer);
       if (!p || !str(p.name, MAX_SHORT) || !PHONE_RE.test(String(p.phone || "")))
         return `Incomplete player details in ${CATEGORY_LABEL[e.category]}`;
       if (!str(p.officialEmail, MAX_SHORT) || !EMAIL_RE.test(p.officialEmail))
@@ -58,11 +76,51 @@ export function validate(organization: any, entries: any[]): string | null {
   return null;
 }
 
-export function computeAmount(entries: any[]): number {
+type RawPayload = { organization: unknown; entries: unknown };
+
+/** validate() returning null is exactly the condition under which the payload
+ *  has this shape, so the predicate delegates rather than re-checking anything. */
+function isValidPayload(
+  body: RawPayload
+): body is RawPayload & { organization: Organization; entries: CategoryEntry[] } {
+  return validate(body.organization, body.entries) === null;
+}
+
+export type ParsedRequest =
+  | { ok: false; error: string }
+  | {
+    ok: true;
+    organization: Organization;
+    entries: CategoryEntry[];
+    paymentMode: string | null;
+  };
+
+/** The single entry point for turning a parsed request body into trusted data.
+ *  Callers get either an error message to return verbatim, or fully typed
+ *  values — so no handler has to narrow untrusted input itself. */
+export function parseRequestBody(body: unknown): ParsedRequest {
+  const b = record(body) ?? {};
+  const payload: RawPayload = { organization: b.organization, entries: b.entries };
+
+  const error = validate(payload.organization, payload.entries);
+  if (error) return { ok: false, error };
+  // Unreachable in practice — validate() just returned null. Present so the
+  // narrowing is the compiler's conclusion rather than our assertion.
+  if (!isValidPayload(payload)) return { ok: false, error: "Invalid registration payload" };
+
+  return {
+    ok: true,
+    organization: payload.organization,
+    entries: payload.entries,
+    paymentMode: typeof b.paymentMode === "string" ? b.paymentMode : null,
+  };
+}
+
+export function computeAmount(entries: CategoryEntry[]): number {
   return entries.reduce((sum, e) => sum + FEE_MAP[e.category], 0);
 }
 
-export function summarizeCategories(entries: any[]): string {
+export function summarizeCategories(entries: CategoryEntry[]): string {
   return entries
     .map((e) => CATEGORY_LABEL[e.category] + (e.teamName ? ` (${e.teamName})` : ""))
     .join(", ");
@@ -88,8 +146,8 @@ const SB = () => ({
  * flow; `orderId` is the Razorpay order id or the generated MKB- code. */
 export async function insertPendingRow(
   orderId: string,
-  organization: any,
-  entries: any[],
+  organization: Organization,
+  entries: CategoryEntry[],
   amount: number,
   paymentMethod: "razorpay" | "offline"
 ): Promise<Response> {

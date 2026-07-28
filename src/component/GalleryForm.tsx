@@ -14,7 +14,7 @@ export default function GalleryForm({ onAdded }: Props) {
   const { toast, showToast } = useToast();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, files } = e.target as any;
+    const { name, value, files } = e.target;
     if (name === "imageFile") {
       if (files?.[0]) setFile(files[0]);
     } else {

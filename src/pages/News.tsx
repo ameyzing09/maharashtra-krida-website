@@ -13,7 +13,7 @@ export default function NewsPage() {
   useEffect(() => {
     (async () => {
       try { setLoading(true); setItems(await listNews(50)); setError(null); }
-      catch (e: any) { setError(e?.message || 'Failed to load news'); }
+      catch (e) { setError(e instanceof Error ? e.message : 'Failed to load news'); }
       finally { setLoading(false); }
     })();
   }, []);

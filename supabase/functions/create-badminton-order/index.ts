@@ -1,15 +1,22 @@
-// deno-lint-ignore-file no-explicit-any
 import { corsHeaders, isAllowedOrigin } from "../_shared/cors.ts";
+import { CategoryEntry, Organization } from "../_shared/badminton.ts";
 import {
   computeAmount,
   generateReferenceCode,
   insertPendingRow,
   MAX_BODY_BYTES,
-  summarizeCategories,
-  validate,
+  parseRequestBody,
 } from "../_shared/registration.ts";
 
-async function createRazorpayOrder(amount: number, organization: any) {
+/** Only the fields this function reads back off Razorpay's order response. */
+type RazorpayOrder = { id: string };
+
+// The declared return type is what narrows res.json() at the boundary — no
+// assertion, and no `any` leaking inward from an external API.
+async function createRazorpayOrder(
+  amount: number,
+  organization: Organization
+): Promise<RazorpayOrder> {
   const keyId = Deno.env.get("RAZORPAY_KEY_ID")!;
   const keySecret = Deno.env.get("RAZORPAY_KEY_SECRET")!;
   const auth = btoa(`${keyId}:${keySecret}`);
@@ -37,7 +44,11 @@ async function createRazorpayOrder(amount: number, organization: any) {
 // Offline ("company will pay separately"): reserve a PENDING row with a
 // generated reference code, no Razorpay order. Retries on the (astronomically
 // unlikely) code collision against the unique order_id.
-async function createOfflineReservation(organization: any, entries: any[], amount: number) {
+async function createOfflineReservation(
+  organization: Organization,
+  entries: CategoryEntry[],
+  amount: number
+) {
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = generateReferenceCode();
     const res = await insertPendingRow(code, organization, entries, amount, "offline");
@@ -68,10 +79,13 @@ export async function handleRequest(req: Request): Promise<Response> {
   }
 
   try {
-    const { organization, entries, paymentMode } = JSON.parse(raw || "{}");
+    const body: unknown = JSON.parse(raw || "{}");
 
-    const invalid = validate(organization, entries);
-    if (invalid) return new Response(JSON.stringify({ error: invalid }), { status: 400, headers });
+    const parsed = parseRequestBody(body);
+    if (!parsed.ok) {
+      return new Response(JSON.stringify({ error: parsed.error }), { status: 400, headers });
+    }
+    const { organization, entries, paymentMode } = parsed;
 
     // Server is the source of truth for the amount.
     const amount = computeAmount(entries);

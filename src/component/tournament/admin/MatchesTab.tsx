@@ -300,9 +300,9 @@ export default function MatchesTab({ event, matches, teams, eventTeams, refreshM
                           const timeline: FootballGoal[] = ev.target.value.split(",").map(s => s.trim()).filter(Boolean).map(s => {
                             const [min, team, scorer, assist] = s.split("-");
                             const t = team === "A" ? "A" : "B" as const;
-                            const base: any = { minute: Number(min) || 0, team: t, scorer: (scorer||"").trim() };
-                            if (assist && assist.trim()) base.assist = assist.trim();
-                            return base as FootballGoal;
+                            const goal: FootballGoal = { minute: Number(min) || 0, team: t, scorer: (scorer||"").trim() };
+                            if (assist?.trim()) goal.assist = assist.trim();
+                            return goal;
                           });
                           setFootball(m, { timeline });
                         }} 

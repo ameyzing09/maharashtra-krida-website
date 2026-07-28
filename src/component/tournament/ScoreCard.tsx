@@ -58,8 +58,8 @@ export default function ScoreCard({ data }: Props) {
             <span className="text-sm text-brand-charcoal dark:text-gray-100">{abbr(data.teamA.name, data.teamA.short)}</span>
           </div>
           <div className="text-xl font-bold text-brand-charcoal dark:text-gray-100">
-            {typeof (data as any).score?.aGoals === "number" && typeof (data as any).score?.bGoals === "number"
-              ? `${(data as any).score.aGoals} - ${(data as any).score.bGoals}`
+            {typeof data.score?.aGoals === "number" && typeof data.score?.bGoals === "number"
+              ? `${data.score.aGoals} - ${data.score.bGoals}`
               : "-"}
           </div>
           <div className="flex items-center gap-2 justify-end">

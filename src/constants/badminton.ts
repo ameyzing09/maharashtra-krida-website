@@ -1,8 +1,10 @@
 // Pune's Corporate Badminton Bash 2026 — category / fee definitions.
 //
-// IMPORTANT: FEE amounts (in paise) are mirrored server-side in
-// `supabase/functions/create-badminton-order/index.ts` (FEE_MAP). The server
-// is the source of truth for the charged amount; keep the two in sync when editing.
+// IMPORTANT: fee amounts (in paise) are mirrored server-side in
+// `supabase/functions/_shared/badminton.ts` (FEE_MAP). The server is the source
+// of truth for what is actually charged, so if these two drift the page quotes
+// one price and the card is debited another. `_shared/badminton.test.ts` fails
+// on any mismatch — change both files together.
 
 export type BadmintonCategory =
   | "mens_singles"
@@ -30,12 +32,12 @@ export type CategoryMeta = {
 export const BADMINTON_CATEGORIES: CategoryMeta[] = [
   { code: "mens_singles", label: "Men's Singles", fee: 150000, players: 1, unit: "per entry", collectsPlayers: true },
   { code: "womens_singles", label: "Women's Singles", fee: 150000, players: 1, unit: "per entry", collectsPlayers: true },
-  { code: "mens_doubles", label: "Men's Doubles", fee: 300000, players: 2, unit: "per team", collectsPlayers: true },
-  { code: "womens_doubles", label: "Women's Doubles", fee: 300000, players: 2, unit: "per team", collectsPlayers: true },
+  { code: "mens_doubles", label: "Men's Doubles", fee: 200000, players: 2, unit: "per team", collectsPlayers: true },
+  { code: "womens_doubles", label: "Women's Doubles", fee: 200000, players: 2, unit: "per team", collectsPlayers: true },
   {
     code: "mixed_doubles",
     label: "Mixed Doubles",
-    fee: 300000,
+    fee: 200000,
     players: 2,
     unit: "per team",
     collectsPlayers: true,
@@ -44,7 +46,7 @@ export const BADMINTON_CATEGORIES: CategoryMeta[] = [
   {
     code: "team_event",
     label: "Corporate Team Event",
-    fee: 500000,
+    fee: 400000,
     players: [2, 4],
     unit: "per team",
     collectsPlayers: false,
@@ -85,7 +87,9 @@ export const TOURNAMENT = {
   playingDates: "29 & 30 August 2026",
   reserveDates: "5 & 6 September 2026",
   lastRegistration: "21 August 2026",
-  prizePool: "₹27,500",
+  prizePool: "₹30,500",
+  /** Qualifier shown after the prize pool in the hero copy, not on the fact tile. */
+  prizePoolNote: "including the Triple Crown",
   organizer: "Maharashtra Krida",
   contactName: "Ashwin Panhalkar",
   contactPhone: "+91 98901 71195",

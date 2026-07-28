@@ -55,7 +55,7 @@ export default function LiveRecentWidget() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [showToast]);
 
   useEffect(() => {
     const onResize = () => setLimit(calculateScoreCardsOnHome());

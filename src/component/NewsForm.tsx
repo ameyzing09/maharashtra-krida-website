@@ -31,13 +31,18 @@ export default function NewsForm({ onAdded }: Props) {
     })();
   }, []);
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, files } = e.target as any;
-    if (name === "imageFile") {
-      if (files?.[0]) setFile(files[0]);
-    } else {
-      setForm((f) => ({ ...f, [name]: value }));
+  // Shared by the text inputs, the textarea and the event <select>. Only an
+  // <input> carries `files`, so narrow before reaching for it.
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const target = e.target;
+    if (target instanceof HTMLInputElement && target.name === "imageFile") {
+      const picked = target.files?.[0];
+      if (picked) setFile(picked);
+      return;
     }
+    setForm((f) => ({ ...f, [target.name]: target.value }));
   };
 
   const upload = async (f: File) => uploadImage(f, "news");
@@ -82,7 +87,7 @@ export default function NewsForm({ onAdded }: Props) {
           <select
             name="eventId"
             value={form.eventId || ""}
-            onChange={onChange as any}
+            onChange={onChange}
             className="glass-input w-full py-2 px-3"
             disabled={eventsLoading}
           >

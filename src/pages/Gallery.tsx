@@ -10,7 +10,7 @@ export default function GalleryPage() {
   useEffect(() => {
     (async () => {
       try { setLoading(true); setItems(await listGallery()); setError(null); }
-      catch (e: any) { setError(e?.message || 'Failed to load gallery'); }
+      catch (e) { setError(e instanceof Error ? e.message : 'Failed to load gallery'); }
       finally { setLoading(false); }
     })();
   }, []);

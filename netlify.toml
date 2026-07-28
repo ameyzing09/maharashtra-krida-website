@@ -3,9 +3,14 @@
   publish = "dist"
 # Public client config, inlined into the bundle by Vite at build time. The
 # anon key is safe to commit — it's public by design and the data is protected
-# by row-level security. (When the separate prod Supabase project exists, move
-# these into [context.production.environment] / [context.deploy-preview.environment]
-# so prod and previews point at their own projects.)
+# by row-level security.
+#
+# There is deliberately no [context.production.environment] split: this project
+# IS production. Rather than stand up a second Supabase project, the original
+# one was cleaned out and promoted (see docs/production-runbook.md), so previews
+# and production intentionally share it. The consequence to keep in mind: a
+# deploy preview writes to real data, and a checkout run from a *.netlify.app
+# preview hits whichever Razorpay account `npm run rzp:status` reports.
 [build.environment]
   VITE_SUPABASE_URL = "https://admofuvpawimmotbubls.supabase.co"
   VITE_SUPABASE_ANON_KEY = "sb_publishable_mk-XMZSmlYEJ-jyecs5Puw_Ntn8q3wL"

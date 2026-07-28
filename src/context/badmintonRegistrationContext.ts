@@ -1,8 +1,12 @@
-import { createContext, useEffect, useReducer } from "react";
+import { createContext, Dispatch } from "react";
 import { BadmintonRegistrationState, CategoryEntry, Organization } from "../types/badminton";
-import { clearDraft, loadDraft, saveDraft } from "../utils/badmintonDraft";
+import { loadDraft } from "../utils/badmintonDraft";
 
-type BadmintonAction =
+// Kept apart from BadmintonRegistrationProvider.tsx so that file exports only a
+// component — mixing the two breaks React Fast Refresh
+// (react-refresh/only-export-components).
+
+export type BadmintonAction =
   | { type: "SET_ORG"; payload: Organization }
   | { type: "ADD_ENTRY"; payload: CategoryEntry }
   | { type: "REMOVE_ENTRY"; payload: string }
@@ -20,13 +24,13 @@ const initial: BadmintonRegistrationState = {
 
 // Resume an in-progress registration (e.g. after a failed payment hard-redirects
 // back to this page and wipes in-memory state) but never resume a stale orderId.
-function initState(): BadmintonRegistrationState {
+export function initState(): BadmintonRegistrationState {
   const draft = loadDraft();
   if (!draft) return initial;
   return { ...initial, step: draft.step, organization: draft.organization, entries: draft.entries };
 }
 
-function reducer(
+export function reducer(
   state: BadmintonRegistrationState,
   action: BadmintonAction
 ): BadmintonRegistrationState {
@@ -52,25 +56,5 @@ function reducer(
 
 export const BadmintonRegistrationContext = createContext<{
   state: BadmintonRegistrationState;
-  dispatch: React.Dispatch<BadmintonAction>;
+  dispatch: Dispatch<BadmintonAction>;
 } | null>(null);
-
-export const BadmintonRegistrationProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [state, dispatch] = useReducer(reducer, undefined, initState);
-
-  useEffect(() => {
-    if (!state.organization && state.entries.length === 0) {
-      clearDraft();
-      return;
-    }
-    saveDraft({ step: state.step, organization: state.organization, entries: state.entries });
-  }, [state.step, state.organization, state.entries]);
-
-  return (
-    <BadmintonRegistrationContext.Provider value={{ state, dispatch }}>
-      {children}
-    </BadmintonRegistrationContext.Provider>
-  );
-};
