@@ -73,7 +73,8 @@ const BadmintonRegister = () => {
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-300 text-sm sm:text-base max-w-2xl">
             Pune's premier corporate badminton championship — six categories, knockout format, and a
-            prize pool of {TOURNAMENT.prizePool}. Register your organisation below.
+            prize pool of {TOURNAMENT.prizePool}, {TOURNAMENT.prizePoolNote}. Register your
+            organisation below.
           </p>
           <a href="#register" className="glass-button-primary mt-5 px-6 py-3">
             Register Now

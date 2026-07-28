@@ -47,12 +47,12 @@ Deno.test("online path: charges the server-computed amount and stores the roster
     assertEquals(json.orderId, "order_TESTORDER1");
     assertEquals(json.currency, "INR");
     assertEquals(json.keyId, "rzp_test_stubkey");
-    // 150000 (womens_singles) + 500000 (team_event)
-    assertEquals(json.amount, 650000);
+    // 150000 (womens_singles) + 400000 (team_event)
+    assertEquals(json.amount, 550000);
 
     const [rzp] = fetchStub.to("api.razorpay.com");
     const rzpBody = rzp.body as { amount: number; notes: Record<string, string> };
-    assertEquals(rzpBody.amount, 650000);
+    assertEquals(rzpBody.amount, 550000);
     assertEquals(rzpBody.notes.regType, "badminton");
     assertEquals(rzpBody.notes.company, "Acme Technologies");
 
@@ -61,7 +61,7 @@ Deno.test("online path: charges the server-computed amount and stores the roster
     assertEquals(rowBody.order_id, "order_TESTORDER1");
     assertEquals(rowBody.status, "PENDING");
     assertEquals(rowBody.payment_method, "razorpay");
-    assertEquals(rowBody.total_paise, 650000);
+    assertEquals(rowBody.total_paise, 550000);
     assertEquals(rowBody.company, "Acme Technologies");
     assertEquals(rowBody.categories_summary, "Women's Singles, Corporate Team Event (Smashers)");
     assertEquals((rowBody.entries as unknown[]).length, 2);
@@ -83,9 +83,9 @@ Deno.test("a client-supplied amount cannot lower the charge", async () => {
       })
     );
     assertEquals(res.status, 200);
-    assertEquals((await res.json()).amount, 500000);
+    assertEquals((await res.json()).amount, 400000);
     const rzpBody = fetchStub.to("api.razorpay.com")[0].body as { amount: number };
-    assertEquals(rzpBody.amount, 500000);
+    assertEquals(rzpBody.amount, 400000);
   } finally {
     fetchStub.restore();
   }

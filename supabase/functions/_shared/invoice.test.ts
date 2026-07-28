@@ -44,7 +44,7 @@ Deno.test("line items resolve each entry to its label and fee", () => {
   const { lineItems } = buildInvoiceContent(row, null);
   assertEquals(lineItems, [
     { label: "Women's Singles", amountPaise: 150000 },
-    { label: "Corporate Team Event — Smashers", amountPaise: 500000 },
+    { label: "Corporate Team Event — Smashers", amountPaise: 400000 },
   ]);
 });
 

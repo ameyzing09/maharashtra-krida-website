@@ -123,7 +123,7 @@ Deno.test("computeAmount sums fees server-side", () => {
     { category: "womens_singles" },
     { category: "mens_doubles" },
   ]);
-  assertEquals(total, 150000 + 300000);
+  assertEquals(total, 150000 + 200000);
 });
 
 Deno.test("summarizeCategories includes team name", () => {

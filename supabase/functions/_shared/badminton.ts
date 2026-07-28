@@ -16,10 +16,10 @@ export type BadmintonCategory =
 export const FEE_MAP: Record<BadmintonCategory, number> = {
   mens_singles: 150000,
   womens_singles: 150000,
-  mens_doubles: 300000,
-  womens_doubles: 300000,
-  mixed_doubles: 300000,
-  team_event: 500000,
+  mens_doubles: 200000,
+  womens_doubles: 200000,
+  mixed_doubles: 200000,
+  team_event: 400000,
 };
 
 // Allowed player counts per category: [min, max]. The team event is absent by

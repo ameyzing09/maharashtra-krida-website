@@ -78,7 +78,7 @@ async function deliver(body: string): Promise<Response> {
 const BADMINTON_ENTITY = {
   id: "pay_TEST1",
   order_id: "order_TEST1",
-  amount: 650000,
+  amount: 550000,
   contact: "9876543210",
   email: "jane@acme.com",
   notes: { regType: "badminton", company: "Acme Technologies", email: "jane@acme.com" },
@@ -120,7 +120,7 @@ Deno.test("a missing pending row falls back to a PAID upsert carrying the notes"
     assertEquals(body.payment_method, "razorpay");
     assertEquals(body.company, "Acme Technologies");
     assertEquals(body.official_email, "jane@acme.com");
-    assertEquals(body.total_paise, 650000);
+    assertEquals(body.total_paise, 550000);
   } finally {
     fetchStub.restore();
   }
