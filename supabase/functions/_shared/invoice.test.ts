@@ -1,4 +1,5 @@
 import { assertEquals } from "@std/assert";
+import { CategoryEntry } from "./badminton.ts";
 import { buildInvoiceContent, InvoiceSettings, InvoiceSourceRow, renderInvoicePdf } from "./invoice.ts";
 
 // Annotated rather than inferred so the fixture has to stay a valid row: if
@@ -35,6 +36,27 @@ const gstSettings: InvoiceSettings = {
   organizer_state: "Maharashtra",
   organizer_address: "OM SAI Palace\nNarhe, Sinhagad Road\nPune 411 041",
 };
+
+// Line items are what the registrant actually reads off the invoice, and they
+// are the one part built by looking each stored category up in CATEGORY_LABEL
+// and FEE_MAP — so a category rename or a bad entries type shows up here first.
+Deno.test("line items resolve each entry to its label and fee", () => {
+  const { lineItems } = buildInvoiceContent(row, null);
+  assertEquals(lineItems, [
+    { label: "Women's Singles", amountPaise: 150000 },
+    { label: "Corporate Team Event — Smashers", amountPaise: 500000 },
+  ]);
+});
+
+Deno.test("an unknown stored category degrades to its raw value, never a blank line", () => {
+  const legacy: InvoiceSourceRow = {
+    ...row,
+    // A category retired from FEE_MAP after this row was written.
+    entries: [{ category: "retired_category" as CategoryEntry["category"] }],
+  };
+  const { lineItems } = buildInvoiceContent(legacy, null);
+  assertEquals(lineItems, [{ label: "retired_category", amountPaise: 0 }]);
+});
 
 Deno.test("no settings row defaults to receipt mode", () => {
   const content = buildInvoiceContent(row, null);
