@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import { corsHeaders, isAllowedOrigin } from "../_shared/cors.ts";
 import { generateAndStoreInvoice } from "../_shared/invoice.ts";
 import { requireAdmin } from "../_shared/auth.ts";

@@ -99,6 +99,18 @@ Deno.test("too many entries rejected", () => {
   assertEquals(validate(org, entries), "Too many entries");
 });
 
+// Regression: the category check used to be a truthiness test on FEE_MAP[c],
+// which accepts inherited Object.prototype keys — so these were treated as real
+// categories and then crashed the PLAYER_BOUNDS destructure with a 500.
+Deno.test("inherited Object.prototype keys are not categories", () => {
+  for (const category of ["toString", "constructor", "hasOwnProperty", "__proto__"]) {
+    assertEquals(
+      validate(org, [{ category, players: [player] }]),
+      `Invalid category: ${category}`
+    );
+  }
+});
+
 Deno.test("company name too long rejected", () => {
   assertEquals(
     validate({ ...org, companyName: "A".repeat(200) }, [{ category: "womens_singles", players: [player] }]),

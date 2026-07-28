@@ -1,7 +1,9 @@
 import { assertEquals } from "@std/assert";
-import { buildInvoiceContent, InvoiceSettings, renderInvoicePdf } from "./invoice.ts";
+import { buildInvoiceContent, InvoiceSettings, InvoiceSourceRow, renderInvoicePdf } from "./invoice.ts";
 
-const row = {
+// Annotated rather than inferred so the fixture has to stay a valid row: if
+// InvoiceSourceRow changes, this fails to compile instead of silently drifting.
+const row: InvoiceSourceRow = {
   invoice_number: "MK-BADM-2026-000001",
   company: "Acme Technologies",
   contact_person: "Jane Doe",
@@ -10,7 +12,10 @@ const row = {
   state: "Maharashtra",
   total_paise: 450000,
   entries: [
-    { category: "womens_singles", players: [{ name: "Jane" }] },
+    {
+      category: "womens_singles",
+      players: [{ name: "Jane", phone: "9876543210", officialEmail: "jane@acme.com" }],
+    },
     { category: "team_event", teamName: "Smashers", players: [] },
   ],
   payment_id: "pay_ABC123",

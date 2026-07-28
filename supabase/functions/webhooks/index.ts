@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import { generateAndStoreInvoice } from "../_shared/invoice.ts";
 
 /** Pure, portable — used by both the handler and unit tests. */
@@ -35,14 +34,36 @@ const SB_HEADERS = () => ({
   "Content-Type": "application/json",
 });
 
+// Only the fields this function reads off Razorpay's payment entity. Every
+// optional marker is load-bearing: it mirrors a `||`/`??` fallback below that
+// exists because a real webhook can omit that field.
+type RazorpayPaymentEntity = {
+  id: string;
+  order_id?: string;
+  amount?: number;
+  email?: string;
+  contact?: string;
+  notes?: { regType?: string; company?: string; email?: string };
+};
+
+type RazorpayWebhookEvent = {
+  event?: string;
+  payload?: { payment?: { entity?: RazorpayPaymentEntity } };
+};
+
 // Flip the PENDING row (written at order creation) to PAID. If the row is
 // missing (insert hiccup), upsert a PAID fallback keyed on order_id so webhook
 // replays can never duplicate rows.
-async function markPaid(p: any) {
+async function markPaid(p: RazorpayPaymentEntity) {
   const base = `${Deno.env.get("SUPABASE_URL")}/rest/v1/badminton_registrations`;
   const paidAt = new Date().toISOString();
+  // Resolved once and used for both the PATCH and the upsert below. Previously
+  // the PATCH used p.order_id raw, so an entity without one produced
+  // `order_id=eq.undefined`; sharing the fallback also makes a webhook replay
+  // find the row the earlier upsert wrote instead of upserting again.
+  const orderId = p.order_id || `missing-${p.id}`;
 
-  const patch = await fetch(`${base}?order_id=eq.${encodeURIComponent(p.order_id)}`, {
+  const patch = await fetch(`${base}?order_id=eq.${encodeURIComponent(orderId)}`, {
     method: "PATCH",
     headers: { ...SB_HEADERS(), Prefer: "return=representation" },
     body: JSON.stringify({ status: "PAID", payment_id: p.id, paid_at: paidAt }),
@@ -56,7 +77,7 @@ async function markPaid(p: any) {
     method: "POST",
     headers: { ...SB_HEADERS(), Prefer: "resolution=merge-duplicates,return=minimal" },
     body: JSON.stringify({
-      order_id: p.order_id || `missing-${p.id}`,
+      order_id: orderId,
       status: "PAID",
       payment_id: p.id,
       paid_at: paidAt,
@@ -84,13 +105,16 @@ export async function handleRequest(req: Request): Promise<Response> {
     return new Response("Invalid signature", { status: 400 });
   }
 
-  const payload = JSON.parse(raw);
-  if (payload.event !== "payment.captured") {
+  const event: RazorpayWebhookEvent = JSON.parse(raw);
+  if (event.event !== "payment.captured") {
     return new Response("Ignored", { status: 200 });
   }
 
   try {
-    const p = payload.payload.payment.entity;
+    const p = event.payload?.payment?.entity;
+    // Same as before: a structurally malformed event is a 500, so Razorpay
+    // retries it rather than us silently swallowing a real payment.
+    if (!p) throw new Error("payment.captured event carried no payment entity");
     if (!p.notes || p.notes.regType !== "badminton") {
       return new Response("Ignored", { status: 200 });
     }
@@ -99,6 +123,7 @@ export async function handleRequest(req: Request): Promise<Response> {
     // Best-effort: a PDF failure must never fail the payment webhook itself.
     // The admin dashboard can retry generation for a row if this doesn't land.
     try {
+      if (!p.order_id) throw new Error("payment entity carried no order_id");
       await generateAndStoreInvoice(p.order_id);
     } catch (invErr) {
       console.error("Invoice generation failed:", (invErr as Error).message);

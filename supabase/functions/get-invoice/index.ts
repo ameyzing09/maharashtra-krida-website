@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import { corsHeaders, isAllowedOrigin } from "../_shared/cors.ts";
 
 const MAX_BODY_BYTES = 2 * 1024;

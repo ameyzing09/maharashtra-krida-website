@@ -1,6 +1,11 @@
-// deno-lint-ignore-file no-explicit-any
+// The inline `npm:` specifier is deliberate, and why deno.json excludes the
+// `no-import-prefix` lint rule. It's the documented Supabase Edge Function
+// import form, and this project's functions all deploy with import_map: false
+// (see `supabase functions list`) — moving pdf-lib to a bare specifier would
+// stake invoice generation on an import map that has never been exercised at
+// deploy time. Not a trade worth making on a live payment path.
 import { PDFDocument, StandardFonts, rgb } from "npm:pdf-lib@1.17.1";
-import { CATEGORY_LABEL, FEE_MAP } from "./badminton.ts";
+import { CATEGORY_LABEL, CategoryEntry, FEE_MAP } from "./badminton.ts";
 
 // Fallback branding used whenever invoice_settings doesn't override a field
 // (or the settings row doesn't exist / GST mode is off).
@@ -20,7 +25,7 @@ export type InvoiceSourceRow = {
   phone: string;
   state: string | null;
   total_paise: number;
-  entries: any[];
+  entries: CategoryEntry[];
   payment_id: string | null;
   payment_method: string | null;
   payment_note: string | null;
@@ -104,7 +109,7 @@ function payment(row: InvoiceSourceRow): InvoiceContent["payment"] {
  * (IGST label as a neutral default / no tax lines) rather than throwing.
  */
 export function buildInvoiceContent(row: InvoiceSourceRow, settings?: InvoiceSettings | null): InvoiceContent {
-  const lineItems = (row.entries || []).map((e: any) => ({
+  const lineItems = (row.entries || []).map((e) => ({
     label: (CATEGORY_LABEL[e.category] || e.category) + (e.teamName ? ` — ${e.teamName}` : ""),
     amountPaise: FEE_MAP[e.category] ?? 0,
   }));
