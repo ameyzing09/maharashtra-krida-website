@@ -124,14 +124,11 @@ public sign-ups **off** in the dashboard.
 
 ```sh
 # Frontend — Netlify builds from master automatically
-npm run build && npm run lint
+npm run lint && npm run typecheck && npm run build
 
 # Edge Functions
 supabase functions deploy <name>          # or omit <name> for all
-
-# Edge Function tests — must run from supabase/functions/, that's where the
-# deno.json import map lives; from the repo root the imports don't resolve.
-(cd supabase/functions && deno test --allow-all .)
+npm test                                  # the Deno edge-function tests
 
 # Migrations
 supabase migration list --linked          # compare local vs remote

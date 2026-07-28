@@ -1,7 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import {
-  BadmintonRegistrationProvider,
-} from "../context/badmintonRegistrationContext";
+import { BadmintonRegistrationProvider } from "../context/BadmintonRegistrationProvider";
 import { useBadmintonRegistration } from "../hook/useBadmintonRegistration";
 import Progress from "../component/badminton/Progress";
 import StepOrganization from "../component/badminton/StepOrganization";

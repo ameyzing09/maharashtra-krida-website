@@ -22,8 +22,8 @@ export default function GalleryList({ refreshKey }: Props) {
       setLoading(true);
       setItems(await listGallery());
       setError(null);
-    } catch (e: any) {
-      setError(e?.message || "Failed to load gallery");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load gallery");
     } finally {
       setLoading(false);
     }
@@ -31,7 +31,6 @@ export default function GalleryList({ refreshKey }: Props) {
 
   useEffect(() => {
     fetchItems();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey]);
 
   const onDelete = async (id: string) => {

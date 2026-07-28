@@ -1,14 +1,5 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-
-type Theme = "light" | "dark";
-
-type ThemeContextValue = {
-  theme: Theme;
-  setTheme: (t: Theme) => void;
-  toggleTheme: () => void;
-};
-
-const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+import React, { useEffect, useMemo, useState } from "react";
+import { Theme, ThemeContext, ThemeContextValue } from "./themeContext";
 
 function getInitialTheme(): Theme {
   try {
@@ -44,10 +35,4 @@ export const ThemeProvider: React.FC<React.PropsWithChildren> = ({ children }) =
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };
-
-export function useThemeContext(): ThemeContextValue {
-  const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useThemeContext must be used within ThemeProvider");
-  return ctx;
-}
 

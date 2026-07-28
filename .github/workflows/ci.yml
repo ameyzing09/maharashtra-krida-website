@@ -1,0 +1,36 @@
+name: CI
+
+# The repo had no CI, so nothing enforced the lint gate and 24 lint problems
+# accumulated on master unnoticed. These are the same four commands you'd run
+# locally — keep them passing.
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  frontend:
+    name: Lint, typecheck, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+
+  edge-functions:
+    name: Edge Function tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      # Runs from supabase/functions/ — that's where the deno.json import map
+      # lives, and the imports don't resolve from the repo root.
+      - run: npm test

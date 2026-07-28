@@ -1,14 +1,7 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "../services/supabaseClient";
-import { AuthContextType } from "../types";
-
-const initialAuthState: AuthContextType = {
-  user: null,
-  status: "loading",
-};
-
-export const AuthContext = createContext(initialAuthState);
+import { AuthContext } from "./authContext";
 
 interface AuthProviderProps {
   children: ReactNode;

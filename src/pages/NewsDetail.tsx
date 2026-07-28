@@ -25,8 +25,8 @@ export default function NewsDetail() {
         setItem(n);
         setEvents(ev);
         setError(null);
-      } catch (e: any) {
-        setError(e?.message || 'Failed to load news');
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Failed to load news');
       } finally {
         setLoading(false);
       }

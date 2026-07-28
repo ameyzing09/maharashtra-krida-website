@@ -12,7 +12,7 @@ function tryParseKnownPatterns(text: string): Date | null {
   if (!Number.isNaN(t)) return new Date(t);
 
   // dd-MMM-yy or dd-MMM-yyyy (e.g., 30-Aug-25 or 30-Aug-2025)
-  let m = text.match(/^(\d{1,2})[\s\-]([A-Za-z]{3,})[\s\-](\d{2,4})$/);
+  let m = text.match(/^(\d{1,2})[\s-]([A-Za-z]{3,})[\s-](\d{2,4})$/);
   if (m) {
     const day = parseInt(m[1], 10);
     const monStr = m[2].slice(0, 3).toLowerCase();
@@ -24,7 +24,7 @@ function tryParseKnownPatterns(text: string): Date | null {
   }
 
   // dd/MM/yyyy or dd-MM-yyyy
-  m = text.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})$/);
+  m = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/);
   if (m) {
     const day = parseInt(m[1], 10);
     const month = parseInt(m[2], 10) - 1;

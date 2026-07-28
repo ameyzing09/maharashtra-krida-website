@@ -40,8 +40,7 @@ export default function InvoiceSettings() {
         setLoading(false);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [showToast]);
 
   function set<K extends keyof InvoiceSettingsType>(key: K, value: InvoiceSettingsType[K]) {
     setSettings((s) => ({ ...s, [key]: value }));

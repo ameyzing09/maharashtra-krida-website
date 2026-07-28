@@ -1,29 +1,35 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EventProps } from '../types';
 import { supabase } from './supabaseClient';
 import { wrapService } from './error';
 
-const toEvent = (docData: any): EventProps | undefined => {
+// Validates a raw `events` row before it's trusted as an EventProps. Takes
+// `unknown` rather than `any` so the typeof checks below are what actually
+// proves the shape — with `any` the compiler accepted the returned object on
+// faith, which defeats the point of having a validator.
+const toEvent = (docData: unknown): EventProps | undefined => {
+  if (typeof docData !== 'object' || docData === null) return undefined;
+  const row = docData as Record<string, unknown>;
   if (
-    typeof docData.name === 'string' &&
-    typeof docData.sport === 'string' &&
-    typeof docData.date === 'string' &&
-    typeof docData.location === 'string' &&
-    typeof docData.imageUrl === 'string' &&
-    typeof docData.flyerUrl === 'string' &&
-    typeof docData.registrationUrl === 'string' &&
-    typeof docData.description === 'string'
+    typeof row.id === 'string' &&
+    typeof row.name === 'string' &&
+    typeof row.sport === 'string' &&
+    typeof row.date === 'string' &&
+    typeof row.location === 'string' &&
+    typeof row.imageUrl === 'string' &&
+    typeof row.flyerUrl === 'string' &&
+    typeof row.registrationUrl === 'string' &&
+    typeof row.description === 'string'
   ) {
     return {
-      id: docData.id,
-      name: docData.name,
-      sport: docData.sport,
-      date: docData.date,
-      location: docData.location,
-      imageUrl: docData.imageUrl,
-      flyerUrl: docData.flyerUrl,
-      registrationUrl: docData.registrationUrl,
-      description: docData.description,
+      id: row.id,
+      name: row.name,
+      sport: row.sport,
+      date: row.date,
+      location: row.location,
+      imageUrl: row.imageUrl,
+      flyerUrl: row.flyerUrl,
+      registrationUrl: row.registrationUrl,
+      description: row.description,
     };
   }
   return undefined;

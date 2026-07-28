@@ -9,6 +9,15 @@ import useTheme from "../hook/useTheme";
 
 type Theme = "light" | "dark";
 
+// Hoisted out of the component: these never depend on props or state, so the
+// navLinks useMemo below can honestly declare [location.pathname] as its only
+// dependency.
+const linkBase =
+  "block px-3 py-2 rounded-xl glass-button-secondary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-lime-300 focus:ring-offset-2";
+const hover = "hover:text-lime-600 dark:hover:text-lime-400";
+const isActive = (pathname: string, path: string) =>
+  pathname === path ? "text-lime-600 dark:text-lime-400" : "text-gray-800 dark:text-white";
+
 const Header: React.FC = () => {
   const location = useLocation();
   const isMenuPage = /\/menu/.test(location.pathname);
@@ -34,21 +43,16 @@ const Header: React.FC = () => {
 
   // theme class toggling handled by ThemeProvider
 
-  const linkBase =
-    "block px-3 py-2 rounded-xl glass-button-secondary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-lime-300 focus:ring-offset-2";
-  const isActive = (path: string) => (location.pathname === path ? "text-lime-600 dark:text-lime-400" : "text-gray-800 dark:text-white");
-  const hover = "hover:text-lime-600 dark:hover:text-lime-400";
-
   const navLinks = useMemo(
     () => (
       <>
-        <Link to="/" className={`${linkBase} ${hover} ${isActive("/")}`} aria-current={location.pathname === "/" ? "page" : undefined}>
+        <Link to="/" className={`${linkBase} ${hover} ${isActive(location.pathname, "/")}`} aria-current={location.pathname === "/" ? "page" : undefined}>
           Home
         </Link>
-        <Link to="/gallery" className={`${linkBase} ${hover} ${isActive("/gallery")}`} aria-current={location.pathname === "/gallery" ? "page" : undefined}>
+        <Link to="/gallery" className={`${linkBase} ${hover} ${isActive(location.pathname, "/gallery")}`} aria-current={location.pathname === "/gallery" ? "page" : undefined}>
           Gallery
         </Link>
-        <Link to="/news" className={`${linkBase} ${hover} ${isActive("/news")}`} aria-current={location.pathname === "/news" ? "page" : undefined}>
+        <Link to="/news" className={`${linkBase} ${hover} ${isActive(location.pathname, "/news")}`} aria-current={location.pathname === "/news" ? "page" : undefined}>
           News
         </Link>
         <Link
