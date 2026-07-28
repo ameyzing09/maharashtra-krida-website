@@ -1,25 +1,9 @@
 // deno-lint-ignore-file no-explicit-any
 import { corsHeaders, isAllowedOrigin } from "../_shared/cors.ts";
 import { generateAndStoreInvoice } from "../_shared/invoice.ts";
+import { requireAdmin } from "../_shared/auth.ts";
 
 const MAX_BODY_BYTES = 2 * 1024;
-
-// `verify_jwt = true` (config.toml) only proves the bearer token was signed
-// by this project — the anon key itself is a validly-signed JWT too, so that
-// alone doesn't prove a real admin session. Resolve the token against GoTrue
-// to confirm it's an actual logged-in user, not just any project JWT.
-async function requireAdmin(req: Request): Promise<boolean> {
-  const auth = req.headers.get("authorization") || "";
-  const token = auth.replace(/^Bearer\s+/i, "").trim();
-  if (!token) return false;
-  const res = await fetch(`${Deno.env.get("SUPABASE_URL")}/auth/v1/user`, {
-    headers: {
-      apikey: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return res.ok;
-}
 
 export async function handleRequest(req: Request): Promise<Response> {
   const origin = req.headers.get("origin");
