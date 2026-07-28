@@ -28,3 +28,12 @@ dist-ssr
 
 # Supabase CLI local cache (project link metadata, pooler URL)
 supabase/.temp
+
+# Razorpay credential profiles pushed by scripts/razorpay-profile.mjs
+.razorpay/
+
+# Env files — only the example is tracked. (*.local above already covers
+# .env.local, but a plain .env or .env.production would otherwise sail through.)
+.env
+.env.*
+!.env.example
