@@ -1,4 +1,5 @@
 import React from "react";
+import { ORGANISATION } from "../constants/organisation";
 
 const Contact: React.FC = () => {
   return (
@@ -13,23 +14,23 @@ const Contact: React.FC = () => {
           <div className="glass-panel p-5">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Address</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-              OM SAI Palace,
-              <br /> Narhe, Sinhagad Road,
-              <br /> Pune 411 041
+              {ORGANISATION.addressLines.map((line) => (
+                <span key={line} className="block">{line}</span>
+              ))}
             </p>
           </div>
 
           <div className="glass-panel p-5">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Call</h2>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
-              Contact Person: <span className="font-medium">Ashwin Panhalkar</span>
+              Contact Person: <span className="font-medium">{ORGANISATION.contactName}</span>
             </p>
-            <a href="tel:+919890171195" className="mt-1 inline-block text-sm text-lime-600 dark:text-lime-400 hover:underline">+91 9890 171 195</a>
+            <a href={ORGANISATION.phoneHref} className="mt-1 inline-block text-sm text-lime-600 dark:text-lime-400 hover:underline">{ORGANISATION.phone}</a>
           </div>
 
           <div className="glass-panel p-5">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Email</h2>
-            <a href="mailto:maharashtrakrida@gmail.com" className="mt-2 inline-block text-sm text-lime-600 dark:text-lime-400 hover:underline">maharashtrakrida@gmail.com</a>
+            <a href={`mailto:${ORGANISATION.email}`} className="mt-2 inline-block text-sm text-lime-600 dark:text-lime-400 hover:underline">{ORGANISATION.email}</a>
             <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">We usually respond within 1–2 business days.</p>
           </div>
         </div>
@@ -46,7 +47,7 @@ const Contact: React.FC = () => {
               const subj = encodeURIComponent(String(fd.get("subject") || "Inquiry"));
               const body = encodeURIComponent(String(fd.get("message") || ""));
               const footer = rawName ? `%0D%0A%0D%0ARegards,%20${encodeURIComponent(rawName)}` : "";
-              window.location.href = `mailto:maharashtrakrida@gmail.com?subject=${subj}&body=${body}${footer}`;
+              window.location.href = `mailto:${ORGANISATION.email}?subject=${subj}&body=${body}${footer}`;
               (e.currentTarget as HTMLFormElement).reset();
             }}
           >

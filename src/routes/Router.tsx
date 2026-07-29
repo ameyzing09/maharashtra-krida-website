@@ -25,6 +25,10 @@ import TournamentAdmin from "../pages/TournamentAdmin";
 import RegistrationsDashboard from "../pages/RegistrationsDashboard";
 import InvoiceSettings from "../pages/InvoiceSettings";
 import RegistrationStatus from "../pages/RegistrationStatus";
+import Terms from "../pages/legal/Terms";
+import Privacy from "../pages/legal/Privacy";
+import Refunds from "../pages/legal/Refunds";
+import ServiceDelivery from "../pages/legal/ServiceDelivery";
 import PageTransition from "../component/PageTransition";
 import TopProgressBar from "../component/TopProgressBar";
 
@@ -44,6 +48,12 @@ const AnimatedRoutes: React.FC = () => {
         <Route path="tournaments" element={<PageTransition><TournamentsPage /></PageTransition>} />
         <Route path="badminton" element={<PageTransition><BadmintonRegister /></PageTransition>} />
         <Route path="registration/status" element={<PageTransition><RegistrationStatus /></PageTransition>} />
+        {/* Policy pages. Public and linked from the footer on every page —
+            Razorpay's merchant verification checks all four are reachable. */}
+        <Route path="terms" element={<PageTransition><Terms /></PageTransition>} />
+        <Route path="privacy" element={<PageTransition><Privacy /></PageTransition>} />
+        <Route path="refunds" element={<PageTransition><Refunds /></PageTransition>} />
+        <Route path="shipping" element={<PageTransition><ServiceDelivery /></PageTransition>} />
         <Route element={<PrivateRoute />}>
           <Route path="menu" element={<PageTransition><Menu /></PageTransition>} />
           <Route path="/menu/content-management" element={<PageTransition><HomepageManagement /></PageTransition>} />

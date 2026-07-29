@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useBadmintonRegistration } from "../../hook/useBadmintonRegistration";
 import { CATEGORY_BY_CODE, formatINR } from "../../constants/badminton";
 
@@ -85,7 +86,34 @@ export default function StepReview() {
         <span>
           I understand that entry fees are <strong>strictly non-refundable</strong> and that once
           registered, entries cannot be cancelled or transferred. Registration is confirmed only on
-          receipt of the entry fees.
+          receipt of the entry fees. I accept the{" "}
+          <Link
+            to="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-lime-600 dark:text-lime-400 hover:underline"
+          >
+            Terms &amp; Conditions
+          </Link>
+          ,{" "}
+          <Link
+            to="/refunds"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-lime-600 dark:text-lime-400 hover:underline"
+          >
+            Refund &amp; Cancellation Policy
+          </Link>{" "}
+          and{" "}
+          <Link
+            to="/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-lime-600 dark:text-lime-400 hover:underline"
+          >
+            Privacy Policy
+          </Link>
+          .
         </span>
       </label>
 
