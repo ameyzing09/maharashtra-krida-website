@@ -4,6 +4,9 @@ import { toServiceError } from "./error";
 const TABLE = "payment_settings";
 
 export type PaymentSettings = {
+  /** Razorpay checkout. Turn off to suspend card payments — the Edge Function
+   *  enforces this too, so it is a real switch and not just a hidden button. */
+  online_enabled: boolean;
   offline_enabled: boolean;
   bank_account_name: string | null;
   bank_account_number: string | null;
@@ -13,6 +16,7 @@ export type PaymentSettings = {
 };
 
 export const DEFAULT_PAYMENT_SETTINGS: PaymentSettings = {
+  online_enabled: true,
   offline_enabled: false,
   bank_account_name: null,
   bank_account_number: null,

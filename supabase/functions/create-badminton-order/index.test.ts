@@ -29,8 +29,17 @@ function post(body: unknown, origin: string = ORIGIN): Request {
 const RAZORPAY_OK = { match: "api.razorpay.com", json: { id: "order_TESTORDER1" } };
 const SUPABASE_OK = { match: "stub.supabase.co", status: 201, text: "" };
 
+// The handler reads payment_settings before doing anything, so this route has
+// to come first (stubFetch takes the first match). Both methods on unless a test
+// says otherwise.
+const settings = (online: boolean, offline: boolean) => ({
+  match: "payment_settings",
+  json: [{ online_enabled: online, offline_enabled: offline }],
+});
+const BOTH_ON = settings(true, true);
+
 Deno.test("online path: charges the server-computed amount and stores the roster", async () => {
-  const fetchStub = stubFetch([RAZORPAY_OK, SUPABASE_OK]);
+  const fetchStub = stubFetch([BOTH_ON, RAZORPAY_OK, SUPABASE_OK]);
   try {
     const res = await handleRequest(
       post({
@@ -72,7 +81,7 @@ Deno.test("online path: charges the server-computed amount and stores the roster
 
 // The whole point of computeAmount living on the server.
 Deno.test("a client-supplied amount cannot lower the charge", async () => {
-  const fetchStub = stubFetch([RAZORPAY_OK, SUPABASE_OK]);
+  const fetchStub = stubFetch([BOTH_ON, RAZORPAY_OK, SUPABASE_OK]);
   try {
     const res = await handleRequest(
       post({
@@ -92,7 +101,7 @@ Deno.test("a client-supplied amount cannot lower the charge", async () => {
 });
 
 Deno.test("offline path: reserves a code and never calls Razorpay", async () => {
-  const fetchStub = stubFetch([RAZORPAY_OK, SUPABASE_OK]);
+  const fetchStub = stubFetch([BOTH_ON, RAZORPAY_OK, SUPABASE_OK]);
   try {
     const res = await handleRequest(
       post({
@@ -118,7 +127,7 @@ Deno.test("offline path: reserves a code and never calls Razorpay", async () => 
 });
 
 Deno.test("validator failures are 400s carrying the message, and touch nothing", async () => {
-  const fetchStub = stubFetch([RAZORPAY_OK, SUPABASE_OK]);
+  const fetchStub = stubFetch([BOTH_ON, RAZORPAY_OK, SUPABASE_OK]);
   try {
     const res = await handleRequest(
       post({ organization, entries: [{ category: "mens_doubles", players: [player] }] })
@@ -134,7 +143,7 @@ Deno.test("validator failures are 400s carrying the message, and touch nothing",
 // Regression for the inherited-key hole: this used to pass the category check
 // and then crash the PLAYER_BOUNDS destructure, i.e. a 500 on crafted input.
 Deno.test("a prototype-key category is a 400, not a 500", async () => {
-  const fetchStub = stubFetch([RAZORPAY_OK, SUPABASE_OK]);
+  const fetchStub = stubFetch([BOTH_ON, RAZORPAY_OK, SUPABASE_OK]);
   try {
     for (const category of ["toString", "constructor"]) {
       const res = await handleRequest(post({ organization, entries: [{ category, players: [] }] }));
@@ -148,7 +157,7 @@ Deno.test("a prototype-key category is a 400, not a 500", async () => {
 });
 
 Deno.test("a disallowed origin is refused before any work happens", async () => {
-  const fetchStub = stubFetch([RAZORPAY_OK, SUPABASE_OK]);
+  const fetchStub = stubFetch([BOTH_ON, RAZORPAY_OK, SUPABASE_OK]);
   try {
     const res = await handleRequest(
       post({ organization, entries: [{ category: "mens_singles", players: [player] }] },
@@ -163,6 +172,7 @@ Deno.test("a disallowed origin is refused before any work happens", async () => 
 
 Deno.test("a Razorpay outage is a 500, and no PENDING row is written", async () => {
   const fetchStub = stubFetch([
+    BOTH_ON,
     { match: "api.razorpay.com", status: 502, text: "upstream boom" },
     SUPABASE_OK,
   ]);
@@ -181,6 +191,7 @@ Deno.test("a Razorpay outage is a 500, and no PENDING row is written", async () 
 // so a database hiccup must not cost the user their payment.
 Deno.test("a failed PENDING insert still returns the order", async () => {
   const fetchStub = stubFetch([
+    BOTH_ON,
     RAZORPAY_OK,
     { match: "stub.supabase.co", status: 500, text: "db down" },
   ]);
@@ -190,6 +201,127 @@ Deno.test("a failed PENDING insert still returns the order", async () => {
     );
     assertEquals(res.status, 200);
     assertEquals((await res.json()).orderId, "order_TESTORDER1");
+  } finally {
+    fetchStub.restore();
+  }
+});
+
+// ── The payment kill switches ──────────────────────────────────────────────
+//
+// These matter more than they look. The switches also exist in the admin UI and
+// on the form, but this function runs with verify_jwt = false behind an origin
+// allowlist that admits non-browser callers — so the server check is the only
+// one that actually stops a determined caller. If these tests pass, "payments
+// are off" is a true statement rather than a hidden button.
+
+Deno.test("online off: a card payment is refused and no Razorpay order is created", async () => {
+  const fetchStub = stubFetch([settings(false, true), RAZORPAY_OK, SUPABASE_OK]);
+  try {
+    const res = await handleRequest(
+      post({ organization, entries: [{ category: "mens_singles", players: [player] }] })
+    );
+    assertEquals(res.status, 503);
+    assert((await res.json()).error.includes("Online payment is temporarily unavailable"));
+    assertEquals(fetchStub.to("api.razorpay.com").length, 0);
+    assertEquals(fetchStub.to("badminton_registrations").length, 0);
+  } finally {
+    fetchStub.restore();
+  }
+});
+
+Deno.test("online off: offline registration still works", async () => {
+  const fetchStub = stubFetch([settings(false, true), RAZORPAY_OK, SUPABASE_OK]);
+  try {
+    const res = await handleRequest(
+      post({
+        organization,
+        entries: [{ category: "mens_singles", players: [player] }],
+        paymentMode: "offline",
+      })
+    );
+    assertEquals(res.status, 200);
+    assertEquals((await res.json()).offline, true);
+    assertEquals(fetchStub.to("api.razorpay.com").length, 0);
+  } finally {
+    fetchStub.restore();
+  }
+});
+
+Deno.test("offline off: a reservation is refused", async () => {
+  const fetchStub = stubFetch([settings(true, false), RAZORPAY_OK, SUPABASE_OK]);
+  try {
+    const res = await handleRequest(
+      post({
+        organization,
+        entries: [{ category: "mens_singles", players: [player] }],
+        paymentMode: "offline",
+      })
+    );
+    assertEquals(res.status, 503);
+    assertEquals(fetchStub.to("badminton_registrations").length, 0);
+  } finally {
+    fetchStub.restore();
+  }
+});
+
+Deno.test("both off: nothing can be registered by any route", async () => {
+  const fetchStub = stubFetch([settings(false, false), RAZORPAY_OK, SUPABASE_OK]);
+  try {
+    for (const paymentMode of [undefined, "offline"]) {
+      const res = await handleRequest(
+        post({ organization, entries: [{ category: "mens_singles", players: [player] }], paymentMode })
+      );
+      assertEquals(res.status, 503);
+    }
+    assertEquals(fetchStub.to("api.razorpay.com").length, 0);
+    assertEquals(fetchStub.to("badminton_registrations").length, 0);
+  } finally {
+    fetchStub.restore();
+  }
+});
+
+// Fail closed, deliberately: if we can't read the switches we can't know that
+// online payments are meant to be suspended, and being certain of that is the
+// entire point of having them.
+Deno.test("an unreadable settings row refuses rather than assuming payments are on", async () => {
+  const fetchStub = stubFetch([
+    { match: "payment_settings", status: 500, text: "boom" },
+    RAZORPAY_OK,
+    SUPABASE_OK,
+  ]);
+  try {
+    const res = await handleRequest(
+      post({ organization, entries: [{ category: "mens_singles", players: [player] }] })
+    );
+    assertEquals(res.status, 500);
+    assertEquals(fetchStub.to("api.razorpay.com").length, 0);
+  } finally {
+    fetchStub.restore();
+  }
+});
+
+// A project that has never saved settings behaves as it did before the switch
+// existed: online on, offline off — matching the column defaults.
+Deno.test("no settings row at all keeps the pre-existing posture", async () => {
+  const fetchStub = stubFetch([
+    { match: "payment_settings", json: [] },
+    RAZORPAY_OK,
+    SUPABASE_OK,
+  ]);
+  try {
+    const online = await handleRequest(
+      post({ organization, entries: [{ category: "mens_singles", players: [player] }] })
+    );
+    assertEquals(online.status, 200);
+
+    const offline = await handleRequest(
+      post({
+        organization,
+        entries: [{ category: "mens_singles", players: [player] }],
+        paymentMode: "offline",
+      })
+    );
+    assertEquals(offline.status, 503);
   } finally {
     fetchStub.restore();
   }

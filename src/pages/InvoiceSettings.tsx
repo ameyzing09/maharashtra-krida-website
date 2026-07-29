@@ -202,25 +202,56 @@ export default function InvoiceSettings() {
         </div>
       </form>
 
-      {/* Offline payment settings */}
+      {/* Payment methods */}
       <h2 className="font-display text-xl font-bold text-gray-900 dark:text-white mt-10 mb-2">
-        Offline Payment (&quot;company will pay separately&quot;)
+        Payment Methods
       </h2>
       <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-        When enabled, registrants can reserve without paying online and settle by bank transfer. These
-        details are shown on their status page so they know where to send the money.
+        Which ways registrants can pay. Both switches are enforced on the server, so turning one off
+        genuinely stops that method rather than only hiding it on the form.
       </p>
 
       <form onSubmit={onSavePay} className="glass-panel p-5 sm:p-6 space-y-5">
-        <label className="flex items-center gap-3 cursor-pointer">
+        <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
-            className="w-4 h-4"
+            className="w-4 h-4 mt-0.5"
+            checked={pay.online_enabled}
+            onChange={(e) => setP("online_enabled", e.target.checked)}
+          />
+          <span>
+            <span className="block text-sm font-semibold text-gray-900 dark:text-white">
+              Online payment — card, UPI, netbanking via Razorpay
+            </span>
+            <span className="block text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+              Turn off to suspend card payments, for example while Razorpay is verifying the website
+              or during a gateway outage. Leave offline enabled below so teams can still register.
+            </span>
+          </span>
+        </label>
+
+        {!pay.online_enabled && !pay.offline_enabled && (
+          <p className="rounded-lg bg-amber-500/10 border border-amber-500/30 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+            Both methods are off — nobody can complete a registration. Enable at least one.
+          </p>
+        )}
+
+        <label className="flex items-start gap-3 cursor-pointer pt-1">
+          <input
+            type="checkbox"
+            className="w-4 h-4 mt-0.5"
             checked={pay.offline_enabled}
             onChange={(e) => setP("offline_enabled", e.target.checked)}
           />
-          <span className="text-sm font-semibold text-gray-900 dark:text-white">
-            Offer &quot;company will pay separately&quot; on the registration form
+          <span>
+            <span className="block text-sm font-semibold text-gray-900 dark:text-white">
+              Offer &quot;company will pay separately&quot; on the registration form
+            </span>
+            <span className="block text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+              Registrants reserve a place, get an MKB- reference code, and settle by bank transfer.
+              The details below appear on their status page. Confirm each one from the registrations
+              dashboard once the money arrives.
+            </span>
           </span>
         </label>
 

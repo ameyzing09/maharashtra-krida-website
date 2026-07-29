@@ -17,19 +17,35 @@ export default function StepPayment() {
   const ready = useRazorpayScript();
   const [loading, setLoading] = useState(false);
   const [method, setMethod] = useState<Method>("online");
+  const [onlineEnabled, setOnlineEnabled] = useState(true);
   const [offlineEnabled, setOfflineEnabled] = useState(false);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
 
   const org = state.organization;
   const totalPaise = state.entries.reduce((sum, e) => sum + CATEGORY_BY_CODE[e.category].fee, 0);
 
   useEffect(() => {
     getPaymentSettings()
-      .then((s) => setOfflineEnabled(!!s.offline_enabled))
-      .catch(() => setOfflineEnabled(false));
+      .then((s) => {
+        setOnlineEnabled(s.online_enabled !== false);
+        setOfflineEnabled(!!s.offline_enabled);
+        // Don't strand someone on a method that's been switched off.
+        if (s.online_enabled === false && s.offline_enabled) setMethod("offline");
+      })
+      .catch(() => {
+        // Can't read the switches: keep the pre-existing posture rather than
+        // blocking registration. The Edge Function is the real gate and will
+        // refuse a suspended method regardless of what the form shows.
+        setOnlineEnabled(true);
+        setOfflineEnabled(false);
+      })
+      .finally(() => setSettingsLoaded(true));
   }, []);
 
+  const nothingAvailable = settingsLoaded && !onlineEnabled && !offlineEnabled;
+
   const pay = async () => {
-    if (!ready || loading) return;
+    if (!ready || loading || !onlineEnabled) return;
     if (!org || state.entries.length === 0) {
       showToast("Registration details are incomplete.", "error");
       return;
@@ -156,7 +172,19 @@ export default function StepPayment() {
         Total payable: <span className="font-semibold text-gray-900 dark:text-white">{formatINR(totalPaise)}</span>
       </p>
 
-      {offlineEnabled ? (
+      {nothingAvailable && (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+          <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+            Registration is temporarily paused
+          </p>
+          <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
+            We can't accept payments right now. Your entries are saved on this device — please try
+            again shortly, or contact {TOURNAMENT.contactName} on {TOURNAMENT.contactPhone}.
+          </p>
+        </div>
+      )}
+
+      {onlineEnabled && offlineEnabled && (
         <div className="flex flex-col sm:flex-row gap-3">
           <button type="button" onClick={() => setMethod("online")} className={optionCls(method === "online")}>
             <p className="font-semibold text-gray-900 dark:text-white">Pay now online</p>
@@ -172,16 +200,29 @@ export default function StepPayment() {
             </p>
           </button>
         </div>
-      ) : (
+      )}
+
+      {onlineEnabled && !offlineEnabled && (
         <p className="text-sm text-gray-600 dark:text-gray-300">
           You'll be redirected to the secure Razorpay checkout to complete the payment.
         </p>
       )}
 
-      {method === "online" ? (
+      {!onlineEnabled && offlineEnabled && (
+        <div className="rounded-xl border border-black/10 dark:border-white/10 p-4">
+          <p className="font-semibold text-gray-900 dark:text-white">Company will pay separately</p>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Online card payment is unavailable at the moment, so reserve your place now and settle by
+            bank transfer. You'll get a reference code immediately and we'll confirm once payment is
+            received.
+          </p>
+        </div>
+      )}
+
+      {nothingAvailable ? null : method === "online" ? (
         <button
           onClick={pay}
-          disabled={!ready || loading}
+          disabled={!ready || loading || !onlineEnabled}
           className="glass-button-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading && <TailSpin color="#ffffff" height={18} width={18} />}
