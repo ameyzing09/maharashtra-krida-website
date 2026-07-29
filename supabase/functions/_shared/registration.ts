@@ -141,6 +141,41 @@ const SB = () => ({
   key: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 });
 
+/** Which payment methods the organiser currently accepts. */
+export type PaymentModes = { onlineEnabled: boolean; offlineEnabled: boolean };
+
+/** Pure, so the fallback posture is testable without a network. */
+export function toPaymentModes(row: Record<string, unknown> | null): PaymentModes {
+  // No settings row has ever been saved: fall back to the column defaults —
+  // online on, offline off — which is how this behaved before the switch existed.
+  if (!row) return { onlineEnabled: true, offlineEnabled: false };
+  return {
+    onlineEnabled: row.online_enabled !== false,
+    offlineEnabled: row.offline_enabled === true,
+  };
+}
+
+/**
+ * Reads the payment switches with the service role.
+ *
+ * Deliberately NOT fail-open. If this lookup fails we cannot know whether
+ * online payments are meant to be suspended, and the whole point of the switch
+ * is being certain they are off during gateway verification — so the caller
+ * refuses the order. The cost of that is near zero in practice: this reads the
+ * same database the registration row is about to be written to, so if it is
+ * unreachable the request was going to fail anyway.
+ */
+export async function fetchPaymentModes(): Promise<PaymentModes> {
+  const { url, key } = SB();
+  const res = await fetch(
+    `${url}/rest/v1/payment_settings?select=online_enabled,offline_enabled&limit=1`,
+    { headers: { apikey: key, Authorization: `Bearer ${key}` } }
+  );
+  if (!res.ok) throw new Error(`payment_settings lookup failed (${res.status})`);
+  const rows = await res.json();
+  return toPaymentModes(Array.isArray(rows) && rows[0] ? rows[0] : null);
+}
+
 /** Inserts a PENDING registration row (service role). `paymentMethod` is
  * "razorpay" for online orders or "offline" for the reserve-and-pay-later
  * flow; `orderId` is the Razorpay order id or the generated MKB- code. */

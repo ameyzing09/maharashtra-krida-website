@@ -2,6 +2,7 @@ import { corsHeaders, isAllowedOrigin } from "../_shared/cors.ts";
 import { CategoryEntry, Organization } from "../_shared/badminton.ts";
 import {
   computeAmount,
+  fetchPaymentModes,
   generateReferenceCode,
   insertPendingRow,
   MAX_BODY_BYTES,
@@ -86,6 +87,29 @@ export async function handleRequest(req: Request): Promise<Response> {
       return new Response(JSON.stringify({ error: parsed.error }), { status: 400, headers });
     }
     const { organization, entries, paymentMode } = parsed;
+
+    // The organiser can suspend either payment method from the admin UI. This
+    // has to be enforced here, not just in the form: this function runs with
+    // verify_jwt = false behind an origin allowlist that admits non-browser
+    // callers, so a hidden button stops nobody. 503 rather than 400 — the
+    // request is fine, the method is just unavailable right now.
+    const modes = await fetchPaymentModes();
+    const wantsOffline = paymentMode === "offline";
+    if (wantsOffline && !modes.offlineEnabled) {
+      return new Response(
+        JSON.stringify({ error: "Offline registration is not available at the moment." }),
+        { status: 503, headers }
+      );
+    }
+    if (!wantsOffline && !modes.onlineEnabled) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "Online payment is temporarily unavailable. Please try again later or contact us to register.",
+        }),
+        { status: 503, headers }
+      );
+    }
 
     // Server is the source of truth for the amount.
     const amount = computeAmount(entries);
