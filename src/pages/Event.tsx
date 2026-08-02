@@ -9,7 +9,6 @@ import useEvents from "../hook/useEvents";
 import usePagination from "../hook/usePagination";
 
 export default function Event() {
-  console.log(calculateEventsPerPage())
   const [eventsPerPage] = useState(calculateEventsPerPage())
 
   const { eventsList, loading , error } = useEvents()
@@ -44,11 +43,22 @@ export default function Event() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
       <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-4">Upcoming Events</h1>
+      {/* key={currentPage} remounts the container on every page change.
+          staggerChildren means the parent drives its children — a child with
+          only `variants` never animates itself. The parent ran that animation
+          once, so cards mounted by a later page stayed at `hidden`, i.e.
+          opacity 0: present, sized, invisible.
+
+          animate rather than whileInView: after clicking a page button the
+          user is at the bottom of the page, so a freshly remounted grid can be
+          above the fold with no intersection to observe, which would reproduce
+          the same blank. This grid sits right under the h1 and is in view on
+          load anyway, so nothing is lost. */}
       <motion.div
+        key={currentPage}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-5"
         initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: "-40px" }}
+        animate="show"
         variants={{
           hidden: { opacity: 1 },
           show: { opacity: 1, transition: { staggerChildren: 0.06 } }
