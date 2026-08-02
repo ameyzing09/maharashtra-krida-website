@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import useEvents from "../hook/useEvents";
 import { parseFlexibleDate, formatDateLong } from "../utils/date";
+import { hasValidRegistration, isExternalUrl } from "../utils/registrationUrl";
 
 const Hero: React.FC = () => {
   const { eventsList } = useEvents();
@@ -19,6 +20,9 @@ const Hero: React.FC = () => {
     if (withTs.length > 0) return withTs.sort((a, b) => b.ts - a.ts)[0].e;
     return eventsList[0];
   }, [eventsList]);
+  const canRegisterInternally =
+    !!nextEvent && hasValidRegistration(nextEvent.registrationUrl) && !isExternalUrl(nextEvent.registrationUrl);
+  const registrationOpeningSoon = !!nextEvent && !hasValidRegistration(nextEvent.registrationUrl);
   return (
     <section className="relative overflow-hidden bg-slate-950">
       {/* Decorative accent layer — static, clipped, no copy */}
@@ -38,7 +42,11 @@ const Hero: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h1 className="font-display font-black tracking-tight text-5xl sm:text-6xl lg:text-7xl text-white">
+            {/* text-4xl at the base size, not text-5xl: "MAHARASHTRA" is one
+                unbreakable word, and at 48px black uppercase it is wider than a
+                phone's content box — which the section's overflow-hidden would
+                clip rather than wrap. */}
+            <h1 className="font-display font-black tracking-tight text-4xl sm:text-6xl lg:text-7xl text-white">
               <span className="uppercase">Maharashtra Krida</span> <br />
               <span className="block mt-2 accent-gradient-text-bright text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">Play, Compete, Celebrate...</span>
             </h1>
@@ -47,14 +55,21 @@ const Hero: React.FC = () => {
             </p>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              {nextEvent && nextEvent.registrationUrl && !/^https?:\/\//i.test(nextEvent.registrationUrl) && !/^\s*(na|n\/a)\s*$/i.test(nextEvent.registrationUrl) && (
+              {canRegisterInternally && (
                 <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
                   <Link
-                    to={nextEvent.registrationUrl}
+                    to={nextEvent!.registrationUrl as string}
                     className="glass-button-primary px-6 py-3 text-base"
                   >
                     Register
                   </Link>
+                </motion.div>
+              )}
+              {registrationOpeningSoon && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="inline-flex">
+                  <span className="inline-flex items-center justify-center rounded-xl border border-amber-400/40 bg-amber-400/10 px-6 py-3 text-base font-semibold text-amber-300">
+                    Registration opening soon
+                  </span>
                 </motion.div>
               )}
               <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
