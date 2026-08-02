@@ -8,6 +8,7 @@ import { createTeam } from "../../../services/teamService";
 import useToast from "../../../hook/useToast";
 import Toast from "../../common/Toast";
 import { TailSpin } from "react-loader-spinner";
+import { errorMessage } from "../../../services/error";
 
 type Props = {
   eventId: ID;
@@ -55,7 +56,10 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
           disabled={creatingMatch}
           className="glass-button-primary w-full px-4 py-2 inline-flex items-center justify-center gap-2 disabled:opacity-60"
           onClick={async () => {
-            if (!teamAId || !teamBId) return;
+            if (!teamAId || !teamBId) {
+              showToast("Select both teams before creating a match.", "error");
+              return;
+            }
             try {
               setCreatingMatch(true);
               const payload: NewMatch = { eventId, teamAId, teamBId, scheduledAt: toEpoch(scheduledAt), venue: venue || undefined, status: "upcoming" };
@@ -63,8 +67,9 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
               showToast("Match created", "success");
               setTeamAId(""); setTeamBId(""); setScheduledAt(""); setVenue("");
               await refreshMatches();
-            } catch {
-              showToast("Failed to create match", "error");
+            } catch (err) {
+              console.error("ScheduleTab: createMatch failed", err);
+              showToast(errorMessage(err), "error");
             } finally {
               setCreatingMatch(false);
             }
@@ -82,13 +87,15 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
         onChange={async (e) => {
           const file = e.target.files?.[0];
           if (!file) return;
-          let parsed: ParsedSchedule[] = [];
+          let parsed: ParsedSchedule[];
           try {
             parsed = await parseScheduleXlsx(file);
             setImportRows(parsed);
             showToast(`Parsed ${parsed.length} rows`, "success");
-          } catch {
-            showToast("Failed to parse Excel", "error");
+          } catch (err) {
+            console.error("ScheduleTab: parseScheduleXlsx failed", err);
+            showToast(`Failed to parse Excel: ${errorMessage(err)}`, "error");
+            return;
           }
           const names = new Set<string>();
           const allowedNames = new Map<string, string>();
@@ -112,6 +119,7 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
               disabled={creatingMissing}
               className="mt-2 glass-button-secondary w-full px-4 py-1.5 text-sm inline-flex items-center justify-center gap-2"
               onClick={async () => {
+                let currentName = "";
                 try {
                   setCreatingMissing(true);
                   const nameToId = new Map<string, string>();
@@ -120,6 +128,7 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
                     if (t.short) nameToId.set(t.short.toLowerCase(), t.id);
                   }
                   for (const name of missingNames) {
+                    currentName = name;
                     const key = name.toLowerCase();
                     let id = nameToId.get(key);
                     if (!id) id = await createTeam({ name });
@@ -139,8 +148,9 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
                   }
                   setMissingNames(Array.from(newMissing));
                   showToast("Missing teams resolved", "success");
-                } catch {
-                  showToast("Failed to resolve missing teams", "error");
+                } catch (err) {
+                  console.error("ScheduleTab: resolve missing teams failed", err);
+                  showToast(`Failed to resolve missing teams (stopped at "${currentName}"): ${errorMessage(err)}`, "error");
                 } finally {
                   setCreatingMissing(false);
                 }
@@ -154,6 +164,7 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
             className="mt-2 glass-button-primary w-full px-4 py-1.5 text-sm disabled:opacity-60 inline-flex items-center justify-center gap-2"
             disabled={missingNames.length > 0 || creatingBulk}
             onClick={async () => {
+              let rowIndex = 0;
               try {
                 setCreatingBulk(true);
                 const ets = await listEventTeams(eventId);
@@ -166,16 +177,19 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
                 for (const r of importRows) {
                   const aId = allowedMap.get(r.teamA.toLowerCase());
                   const bId = allowedMap.get(r.teamB.toLowerCase());
-                  if (!aId || !bId) continue;
-                  const payload: NewMatch = { eventId, teamAId: aId, teamBId: bId, scheduledAt: r.scheduledAt, venue: r.venue, status: r.status };
-                  await createMatch(payload);
+                  if (aId && bId) {
+                    const payload: NewMatch = { eventId, teamAId: aId, teamBId: bId, scheduledAt: r.scheduledAt, venue: r.venue, status: r.status };
+                    await createMatch(payload);
+                  }
+                  rowIndex++;
                 }
                 setImportRows(null);
                 setMissingNames([]);
                 showToast("Matches created", "success");
                 await refreshMatches();
-              } catch {
-                showToast("Failed to create matches", "error");
+              } catch (err) {
+                console.error("ScheduleTab: bulk match import failed", err);
+                showToast(`Failed to import matches at row ${rowIndex + 1}: ${errorMessage(err)}`, "error");
               } finally {
                 setCreatingBulk(false);
               }

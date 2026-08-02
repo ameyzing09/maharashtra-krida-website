@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import PageLoader from "./PageLoader";
 import { uploadImage } from "../services/storageService";
+import { errorMessage } from "../services/error";
+import { validateImageFile } from "../utils/fileValidation";
 import useToast from "../hook/useToast";
 import Toast from "./common/Toast";
 import { addNewsItem } from "../services/newsService";
@@ -24,7 +26,7 @@ export default function NewsForm({ onAdded }: Props) {
         const list = await getEvents();
         setEvents(list);
       } catch (e) {
-        // ignore; dropdown will be empty
+        console.error("NewsForm: failed to load events for dropdown", e);
       } finally {
         setEventsLoading(false);
       }
@@ -39,7 +41,15 @@ export default function NewsForm({ onAdded }: Props) {
     const target = e.target;
     if (target instanceof HTMLInputElement && target.name === "imageFile") {
       const picked = target.files?.[0];
-      if (picked) setFile(picked);
+      if (picked) {
+        const validationError = validateImageFile(picked);
+        if (validationError) {
+          showToast(validationError, "error");
+          target.value = "";
+          return;
+        }
+        setFile(picked);
+      }
       return;
     }
     setForm((f) => ({ ...f, [target.name]: target.value }));
@@ -49,21 +59,35 @@ export default function NewsForm({ onAdded }: Props) {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!form.title.trim() || !form.content?.trim()) {
-      showToast("Title and content are required.", "error");
+    if (!form.title.trim()) {
+      showToast("Title is required.", "error");
       return;
     }
+    if (!form.content?.trim()) {
+      showToast("Content is required.", "error");
+      return;
+    }
+
+    setLoading(true);
+    let imageUrl: string | undefined;
     try {
-      setLoading(true);
-      const imageUrl = file ? await upload(file) : undefined;
+      imageUrl = file ? await upload(file) : undefined;
+    } catch (e) {
+      console.error("NewsForm: image upload failed", e);
+      showToast(errorMessage(e), "error");
+      setLoading(false);
+      return;
+    }
+
+    try {
       await addNewsItem({ title: form.title.trim(), summary: form.summary?.trim() || undefined, content: form.content?.trim(), imageUrl, eventId: form.eventId || undefined });
       showToast("News added.", "success");
       setForm({ title: "" });
       setFile(null);
       onAdded?.();
     } catch (e) {
-      console.error(e);
-      showToast("Failed to add news.", "error");
+      console.error("NewsForm: addNewsItem failed", e);
+      showToast(errorMessage(e), "error");
     } finally {
       setLoading(false);
     }
@@ -111,7 +135,7 @@ export default function NewsForm({ onAdded }: Props) {
           <input name="imageFile" type="file" accept="image/*" onChange={onChange} className="glass-file-input w-full" />
         </div>
         <div className="flex items-center justify-between">
-          <button type="submit" className="glass-button-primary py-2 px-4">Add</button>
+          <button type="submit" disabled={loading} className="glass-button-primary py-2 px-4 disabled:opacity-60">Add</button>
         </div>
       </form>
     </>

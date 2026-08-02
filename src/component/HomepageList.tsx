@@ -7,6 +7,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { calculateEventsPerPage } from '..';
 import useToast from '../hook/useToast';
 import Toast from './common/Toast';
+import { errorMessage } from '../services/error';
 
 const HomepageList: React.FC = () => {
     const [contentPerPage] = useState(calculateEventsPerPage());
@@ -19,7 +20,8 @@ const HomepageList: React.FC = () => {
             await handleDeleteContent(id);
             showToast('Content deleted successfully.', 'success');
         } catch (error) {
-            showToast('Failed to delete content.', 'error');
+            console.error('HomepageList: delete failed', error);
+            showToast(errorMessage(error), 'error');
         }
     };
 

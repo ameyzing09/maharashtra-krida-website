@@ -5,6 +5,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import useToast from "../hook/useToast";
 import Toast from "./common/Toast";
 import { NewsItem, deleteNewsItem, listNews } from "../services/newsService";
+import { errorMessage } from "../services/error";
 import usePagination from "../hook/usePagination";
 import Pagination from "./Pagination";
 import { calculateEventsPerPage } from "..";
@@ -39,7 +40,8 @@ export default function NewsList({ refreshKey }: Props) {
       setItems((list) => list.filter((x) => x.id !== id));
       showToast("News deleted.", "success");
     } catch (e) {
-      showToast("Failed to delete.", "error");
+      console.error("NewsList: delete failed", e);
+      showToast(errorMessage(e), "error");
     }
   };
 

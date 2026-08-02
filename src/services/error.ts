@@ -11,11 +11,13 @@ export function toServiceError(e: unknown, context: string): Error {
   return new Error(`${context}${code}: ${msg}`);
 }
 
-export async function wrapService<T>(promise: Promise<T>, context: string): Promise<T> {
-  try {
-    return await promise;
-  } catch (e) {
-    console.error(context, e);
-    throw toServiceError(e, context);
-  }
+// Extracts a human-readable message from a caught value for display in a
+// toast. Falls through plain-object/string shapes since not every rejection
+// is an Error instance (e.g. a raw string throw or a Supabase-like object).
+export function errorMessage(e: unknown, fallback = "Something went wrong."): string {
+  if (e instanceof Error && e.message) return e.message;
+  const pe = e as { message?: string } | undefined;
+  if (pe?.message) return String(pe.message);
+  if (typeof e === "string" && e) return e;
+  return fallback;
 }

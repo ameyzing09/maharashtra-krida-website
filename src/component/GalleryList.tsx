@@ -8,6 +8,7 @@ import Pagination from "./Pagination";
 import useToast from "../hook/useToast";
 import Toast from "./common/Toast";
 import { GalleryItem, deleteGalleryItem, listGallery } from "../services/galleryService";
+import { errorMessage } from "../services/error";
 
 type Props = { refreshKey?: number };
 
@@ -39,7 +40,8 @@ export default function GalleryList({ refreshKey }: Props) {
       setItems((list) => list.filter((x) => x.id !== id));
       showToast("Item deleted.", "success");
     } catch (e) {
-      showToast("Failed to delete.", "error");
+      console.error("GalleryList: delete failed", e);
+      showToast(errorMessage(e), "error");
     }
   };
 
