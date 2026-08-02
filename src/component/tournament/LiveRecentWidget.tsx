@@ -15,6 +15,18 @@ import { calculateScoreCardsOnHome } from "../../";
 import useToast from "../../hook/useToast";
 import Toast from "../common/Toast";
 import { TailSpin } from "react-loader-spinner";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilter } from "@fortawesome/free-solid-svg-icons";
+
+type Tab = "live" | "upcoming" | "past";
+
+// Rendered twice — as pills on desktop, as a menu on mobile — so the labels
+// live here rather than inline in either one.
+const TABS: [Tab, string][] = [
+  ["live", "Live"],
+  ["upcoming", "Upcoming"],
+  ["past", "Past"],
+];
 
 export default function LiveRecentWidget() {
   const [events, setEvents] = useState<EventProps[]>([]);
@@ -26,8 +38,8 @@ export default function LiveRecentWidget() {
   const [limit, setLimit] = useState<number>(() => calculateScoreCardsOnHome());
   const [loading, setLoading] = useState(true);
   const { toast, showToast } = useToast();
-  type Tab = "live" | "upcoming" | "past";
   const [tab, setTab] = useState<Tab>("live");
+  const [filterOpen, setFilterOpen] = useState(false);
   const [autoSwitchEnabled, setAutoSwitchEnabled] = useState(true);
 
   useEffect(() => {
@@ -92,31 +104,61 @@ export default function LiveRecentWidget() {
   return (
     <MotionSection className="bg-gradient-to-b from-orange-50/70 to-transparent dark:from-slate-900/50 dark:to-transparent">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-      {/* Stacks below `sm`: the heading, the pill group and the link together run
-          to roughly 520px, which does not fit a phone. Left as one row they only
-          shrink, and "View all" ends up broken across two lines. */}
-      <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-3">
-          <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight uppercase text-slate-900 dark:text-slate-100"><span aria-hidden className="mr-3 inline-block h-6 w-1.5 -mb-0.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-600" />Tournaments</h2>
-          <div className="glass-panel-subtle inline-flex rounded-full p-1">
-            {([
-              ["live", "Live"],
-              ["upcoming", "Upcoming"],
-              ["past", "Past"],
-            ] as [Tab, string][]).map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => { setAutoSwitchEnabled(false); setTab(key); }}
-                className={`px-3 py-1.5 text-xs sm:text-sm rounded-full transition-all duration-200 ${
-                  tab === key ? "glass-button-primary rounded-full" : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+      {/* The heading alone is ~240px of a phone's ~330px, so the pill group and
+          the link cannot sit beside it — they collapse to one icon below `sm`,
+          with everything moved into the menu it opens. */}
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight uppercase text-slate-900 dark:text-slate-100"><span aria-hidden className="mr-3 inline-block h-6 w-1.5 -mb-0.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-600" />Tournaments</h2>
+        <div className="hidden glass-panel-subtle rounded-full p-1 sm:inline-flex">
+          {TABS.map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => { setAutoSwitchEnabled(false); setTab(key); }}
+              className={`px-3 py-1.5 text-xs sm:text-sm rounded-full transition-all duration-200 ${
+                tab === key ? "glass-button-primary rounded-full" : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
-        <Link to="/tournaments" className="text-sm link-accent self-start whitespace-nowrap sm:self-auto">View all</Link>
+        <Link to="/tournaments" className="ml-auto hidden whitespace-nowrap text-sm link-accent sm:block">View all</Link>
+        <button
+          type="button"
+          onClick={() => setFilterOpen((v) => !v)}
+          aria-expanded={filterOpen}
+          aria-controls="tournaments-filter"
+          className="glass-panel-subtle ml-auto inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-300 dark:hover:text-white sm:hidden"
+        >
+          <FontAwesomeIcon icon={faFilter} aria-hidden className="h-4 w-4" />
+          <span className="sr-only">Filter tournaments</span>
+        </button>
+      </div>
+
+      {/* Same max-height disclosure the site header uses, so there is no
+          click-outside or focus-trap logic to get wrong. The divider separates
+          the three filter values from the one navigation action. */}
+      <div
+        id="tournaments-filter"
+        className={`overflow-hidden transition-[max-height] duration-300 sm:hidden ${filterOpen ? "max-h-60" : "max-h-0"}`}
+      >
+        <div className="glass-panel-subtle mb-4 rounded-2xl p-2">
+          {TABS.map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => { setAutoSwitchEnabled(false); setTab(key); setFilterOpen(false); }}
+              aria-current={tab === key ? "true" : undefined}
+              className={`block w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${
+                tab === key ? "glass-button-primary" : "text-slate-600 dark:text-slate-300"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+          <div className="my-1 border-t border-slate-200 dark:border-slate-700" />
+          <Link to="/tournaments" className="block rounded-xl px-3 py-2 text-sm link-accent">View all tournaments</Link>
+        </div>
       </div>
       {toast && <Toast message={toast.message} type={toast.type} />}
       {loading ? (
