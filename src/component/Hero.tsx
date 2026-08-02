@@ -20,21 +20,29 @@ const Hero: React.FC = () => {
     return eventsList[0];
   }, [eventsList]);
   return (
-    <section className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24">
+    <section className="relative overflow-hidden bg-slate-950">
+      {/* Decorative accent layer — static, clipped, no copy */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-orange-600/25 blur-3xl" />
+        <div className="absolute top-1/3 -right-24 h-80 w-80 rounded-full bg-amber-500/15 blur-3xl" />
+        <div className="hidden md:block absolute -inset-y-12 right-[14%] w-px rotate-12 bg-gradient-to-b from-transparent via-orange-500/30 to-transparent" />
+        <div className="hidden md:block absolute -inset-y-12 right-[19%] w-px rotate-12 bg-gradient-to-b from-transparent via-amber-400/20 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-orange-500/60 to-transparent" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:py-28">
         <div className="grid items-center gap-8 md:grid-cols-2">
-          {/* Hero content card */}
+          {/* Hero content — borderless on the dark band */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="glass-panel-strong p-6 sm:p-8"
           >
-            <h1 className="font-display font-extrabold tracking-tight text-4xl sm:text-5xl text-slate-900 dark:text-slate-100">
-              Maharashtra Krida <br />
-              <span className="text-slate-500 dark:text-slate-400 text-3xl">Play, Compete, Celebrate...</span>
+            <h1 className="font-display font-black tracking-tight text-5xl sm:text-6xl lg:text-7xl text-white">
+              <span className="uppercase">Maharashtra Krida</span> <br />
+              <span className="block mt-2 accent-gradient-text-bright text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">Play, Compete, Celebrate...</span>
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-prose">
+            <p className="mt-5 text-base sm:text-lg text-slate-300 max-w-prose">
               Join high-energy sports events across Maharashtra with pro-grade management, fair play, and recognition. Register now and be part of the community.
             </p>
 
@@ -52,7 +60,7 @@ const Hero: React.FC = () => {
               <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
                 <Link
                   to="/upcoming-events"
-                  className="glass-button-outline px-6 py-3 text-base"
+                  className="inline-flex items-center justify-center rounded-xl border border-white/25 px-6 py-3 text-base font-semibold text-white transition-colors hover:border-white/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-slate-950"
                 >
                   View Events
                 </Link>
@@ -60,14 +68,14 @@ const Hero: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Event showcase in glass panel */}
-          <motion.div 
-            className="relative hidden md:block" 
-            initial={{ opacity: 0, scale: 0.98 }} 
-            animate={{ opacity: 1, scale: 1 }} 
+          {/* Event showcase in a gradient frame */}
+          <motion.div
+            className="relative hidden md:block rounded-2xl bg-gradient-to-br from-amber-400/70 via-orange-500/40 to-transparent p-px shadow-2xl shadow-orange-950/50"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <div className="glass-panel-strong aspect-[4/3] w-full overflow-hidden relative rounded-2xl group">
+            <div className="aspect-[4/3] w-full overflow-hidden relative rounded-[calc(1rem-1px)] bg-slate-900 group">
               {nextEvent?.imageUrl ? (
                 <img 
                   src={nextEvent.imageUrl} 
@@ -83,13 +91,13 @@ const Hero: React.FC = () => {
               <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-slate-900/80 backdrop-blur px-3 py-2">
                 {nextEvent ? (
                   <div className="text-white text-xs sm:text-sm tracking-wide">
-                    <span className="font-mono text-xs uppercase tracking-wide font-semibold text-slate-200">Next up:</span> {nextEvent.name}
+                    <span className="font-mono text-xs uppercase tracking-wide font-semibold text-amber-300">Next up:</span> {nextEvent.name}
                     {nextEvent.location && <span className="block text-slate-300">{nextEvent.location}</span>}
                     {nextEvent.date && <span className="block text-slate-300">{formatDateLong(nextEvent.date)}</span>}
                   </div>
                 ) : (
                   <div className="text-white text-xs sm:text-sm tracking-wide">
-                    <span className="font-mono text-xs uppercase tracking-wide font-semibold text-slate-200">Next up:</span> Stay tuned for upcoming events
+                    <span className="font-mono text-xs uppercase tracking-wide font-semibold text-amber-300">Next up:</span> Stay tuned for upcoming events
                   </div>
                 )}
               </div>

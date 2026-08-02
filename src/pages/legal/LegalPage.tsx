@@ -62,7 +62,7 @@ export default function LegalPage({ title, intro, children }: Props) {
               Attn: {ORGANISATION.contactName} &middot;{" "}
               <a
                 href={ORGANISATION.phoneHref}
-                className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
+                className="link-accent"
               >
                 {ORGANISATION.phone}
               </a>
@@ -70,7 +70,7 @@ export default function LegalPage({ title, intro, children }: Props) {
             <p>
               <a
                 href={`mailto:${ORGANISATION.email}`}
-                className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
+                className="link-accent"
               >
                 {ORGANISATION.email}
               </a>
@@ -78,7 +78,7 @@ export default function LegalPage({ title, intro, children }: Props) {
           </div>
           <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
             We usually respond within 1–2 business days. See also our{" "}
-            <Link to="/contact" className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">
+            <Link to="/contact" className="link-accent">
               contact page
             </Link>
             .

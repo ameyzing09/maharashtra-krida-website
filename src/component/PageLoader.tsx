@@ -5,7 +5,7 @@ type PageLoaderProps = {
 
 export default function PageLoader({ variant = "center", label }: PageLoaderProps) {
   const spinner = (
-    <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-current border-t-transparent text-slate-900 dark:text-slate-100 align-[-0.125em]"></div>
+    <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-current border-t-transparent text-orange-600 dark:text-amber-400 align-[-0.125em]"></div>
   );
 
   if (variant === "overlay") {

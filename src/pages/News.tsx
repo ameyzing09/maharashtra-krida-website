@@ -55,7 +55,7 @@ export default function NewsPage() {
                   <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 line-clamp-2 break-words">{n.title}</h3>
                   {n.summary && <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 line-clamp-2 break-words">{n.summary}</p>}
                   <div className="mt-2 flex items-center gap-3">
-                    <Link to={href} className="text-sm text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">Read more</Link>
+                    <Link to={href} className="text-sm link-accent">Read more</Link>
                     {n.eventId && eventsById[n.eventId] && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-slate-200 bg-slate-100 font-mono text-xs text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                         Event: {eventsById[n.eventId].name}

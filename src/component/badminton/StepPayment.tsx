@@ -96,7 +96,7 @@ export default function StepPayment() {
           company: org.companyName,
           email: org.officialEmail,
         },
-        theme: { color: "#0F172A" },
+        theme: { color: "#EA580C" },
         handler: function (resp: RazorpaySuccess) {
           sessionStorage.setItem("rzp_success", JSON.stringify({ ...resp, ...payloadForSuccess }));
           clearDraft();

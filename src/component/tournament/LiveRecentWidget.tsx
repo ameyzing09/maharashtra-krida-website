@@ -90,10 +90,11 @@ export default function LiveRecentWidget() {
   }, [events, teams, eventTeams, live, upcoming, recent, limit, tab]);
 
   return (
-    <MotionSection className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+    <MotionSection className="bg-gradient-to-b from-orange-50/70 to-transparent dark:from-slate-900/50 dark:to-transparent">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Tournaments</h2>
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight uppercase text-slate-900 dark:text-slate-100"><span aria-hidden className="mr-3 inline-block h-6 w-1.5 -mb-0.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-600" />Tournaments</h2>
           <div className="glass-panel-subtle inline-flex rounded-full p-1">
             {([
               ["live", "Live"],
@@ -112,7 +113,7 @@ export default function LiveRecentWidget() {
             ))}
           </div>
         </div>
-        <Link to="/tournaments" className="text-sm text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">View all</Link>
+        <Link to="/tournaments" className="text-sm link-accent">View all</Link>
       </div>
       {toast && <Toast message={toast.message} type={toast.type} />}
       {loading ? (
@@ -136,6 +137,7 @@ export default function LiveRecentWidget() {
           ))}
         </MotionGrid>
       )}
+      </div>
     </MotionSection>
   );
 }

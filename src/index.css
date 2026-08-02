@@ -18,4 +18,12 @@
     background: theme('colors.slate.950');
     color: theme('colors.slate.400');
   }
+
+  ::selection {
+    @apply bg-orange-200 text-slate-900;
+  }
+
+  .dark ::selection {
+    @apply bg-orange-500/40 text-white;
+  }
 }

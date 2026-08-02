@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { MotionGrid, MotionItem } from "../component/common/motion";
 
 const menuLinkClass =
-  "glass-panel block w-full px-5 py-4 text-center text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md transition-[border-color,box-shadow]";
+  "glass-panel block w-full px-5 py-4 text-center text-sm font-medium text-slate-700 dark:text-slate-200 hover:border-orange-200 dark:hover:border-orange-400/30 hover:shadow-md transition-[border-color,box-shadow]";
 
 const Menu: React.FC = () => {
   return (

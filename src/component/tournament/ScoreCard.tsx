@@ -46,7 +46,8 @@ export default function ScoreCard({ data }: Props) {
     return letters || name.slice(0, 3).toUpperCase();
   };
   return (
-    <article className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-4">
+    <article className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-4">
+      <div aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-amber-400/0 via-orange-500/70 to-amber-400/0" />
       <header className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 line-clamp-1">{data.tournamentTitle}</h3>
         <StatusPill status={data.status} />
@@ -136,7 +137,7 @@ export default function ScoreCard({ data }: Props) {
             <span>Best Bowler B: {data.score.b.bestBowler ? `${data.score.b.bestBowler.name} (${data.score.b.bestBowler.wickets}w)` : "-"}</span>
           </div>
           {data.score.externalLiveUrl && (
-            <a href={data.score.externalLiveUrl} target="_blank" rel="noopener noreferrer" className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">Live details</a>
+            <a href={data.score.externalLiveUrl} target="_blank" rel="noopener noreferrer" className="link-accent">Live details</a>
           )}
         </div>
       )}

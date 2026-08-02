@@ -60,7 +60,7 @@ export default function NewsDetail() {
   return (
     <section className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-        <Link to="/news" className="text-sm text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">← Back to News</Link>
+        <Link to="/news" className="text-sm link-accent">← Back to News</Link>
         <h1 className="mt-2 font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{item.title}</h1>
         {item.eventId && eventsById[item.eventId] && (
           <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">

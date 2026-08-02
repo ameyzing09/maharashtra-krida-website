@@ -14,12 +14,13 @@ const Contact: React.FC<ContactProps> = ({ embedded = false }) => {
     <MotionSection>
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
         <div className="max-w-3xl mb-8">
-          <Heading className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Contact Us</Heading>
+          <Heading className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100"><span aria-hidden className="mr-3 inline-block h-7 w-1.5 -mb-0.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-600" />Contact Us</Heading>
           <p className="mt-3 text-slate-600 dark:text-slate-400 text-base sm:text-lg">We’d love to hear from you. Reach out for partnerships, event participation or general queries.</p>
         </div>
 
         <MotionGrid className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-3">
-          <MotionItem className="glass-panel p-5 sm:p-6 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md">
+          <MotionItem className="glass-panel p-5 sm:p-6 group relative overflow-hidden hover:border-orange-200 dark:hover:border-orange-400/30 hover:shadow-md">
+            <div aria-hidden className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity" />
             <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Address</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               {ORGANISATION.addressLines.map((line) => (
@@ -28,17 +29,19 @@ const Contact: React.FC<ContactProps> = ({ embedded = false }) => {
             </p>
           </MotionItem>
 
-          <MotionItem className="glass-panel p-5 sm:p-6 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md">
+          <MotionItem className="glass-panel p-5 sm:p-6 group relative overflow-hidden hover:border-orange-200 dark:hover:border-orange-400/30 hover:shadow-md">
+            <div aria-hidden className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity" />
             <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Call</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
               Contact Person: <span className="font-medium">{ORGANISATION.contactName}</span>
             </p>
-            <a href={ORGANISATION.phoneHref} className="mt-1 inline-block text-sm text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">{ORGANISATION.phone}</a>
+            <a href={ORGANISATION.phoneHref} className="mt-1 inline-block text-sm link-accent">{ORGANISATION.phone}</a>
           </MotionItem>
 
-          <MotionItem className="glass-panel p-5 sm:p-6 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md">
+          <MotionItem className="glass-panel p-5 sm:p-6 group relative overflow-hidden hover:border-orange-200 dark:hover:border-orange-400/30 hover:shadow-md">
+            <div aria-hidden className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity" />
             <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Email</h3>
-            <a href={`mailto:${ORGANISATION.email}`} className="mt-2 inline-block text-sm text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">{ORGANISATION.email}</a>
+            <a href={`mailto:${ORGANISATION.email}`} className="mt-2 inline-block text-sm link-accent">{ORGANISATION.email}</a>
             <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">We usually respond within 1–2 business days.</p>
           </MotionItem>
         </MotionGrid>

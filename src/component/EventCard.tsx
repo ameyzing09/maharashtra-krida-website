@@ -29,7 +29,7 @@ const EventCard: React.FC<CardProps> = ({
     <motion.article
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
-      className="w-full h-full flex flex-col glass-panel glass-hover-strong hover:border-slate-300 dark:hover:border-slate-700 group"
+      className="w-full h-full flex flex-col glass-panel glass-hover-strong relative overflow-hidden hover:border-orange-300 dark:hover:border-orange-400/40 group"
     >
       {/* Fixed aspect ratio image container with glass overlay */}
       <div className="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden rounded-t-2xl">
@@ -45,6 +45,7 @@ const EventCard: React.FC<CardProps> = ({
 
       {/* Content area */}
       <div className="flex flex-col h-full p-4 sm:p-5 relative">
+        <div aria-hidden className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-orange-500/15 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="relative z-10 flex flex-col h-full">
           {/* Title and description */}
           <header className="mb-3">
@@ -63,7 +64,7 @@ const EventCard: React.FC<CardProps> = ({
             {sport && (
               <span
                 title={sport}
-                className="glass-pill max-w-[120px] sm:max-w-[140px] whitespace-nowrap overflow-hidden text-ellipsis font-medium"
+                className="glass-pill-accent max-w-[120px] sm:max-w-[140px] whitespace-nowrap overflow-hidden text-ellipsis"
               >
                 {sport}
               </span>

@@ -91,7 +91,7 @@ export default function StepReview() {
             to="/terms"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
+            className="link-accent"
           >
             Terms &amp; Conditions
           </Link>
@@ -100,7 +100,7 @@ export default function StepReview() {
             to="/refunds"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
+            className="link-accent"
           >
             Refund &amp; Cancellation Policy
           </Link>{" "}
@@ -109,7 +109,7 @@ export default function StepReview() {
             to="/privacy"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
+            className="link-accent"
           >
             Privacy Policy
           </Link>

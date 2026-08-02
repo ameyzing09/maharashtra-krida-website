@@ -35,7 +35,7 @@ function StatTile({ label, value }: { label: string; value: string }) {
   return (
     <div className="glass-panel p-4 text-center">
       <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
-      <p className="text-xl font-bold tabular-nums text-slate-900 dark:text-slate-100 mt-1">{value}</p>
+      <p className="text-xl font-bold tabular-nums accent-gradient-text mt-1">{value}</p>
     </div>
   );
 }
@@ -353,7 +353,7 @@ export default function RegistrationsDashboard() {
                       <button
                         disabled={busy}
                         onClick={() => { setPayTarget(r); setPayRef(""); }}
-                        className="text-xs text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400 mr-3"
+                        className="text-xs link-accent mr-3"
                       >
                         Mark Paid
                       </button>
@@ -393,7 +393,7 @@ export default function RegistrationsDashboard() {
                                     <button
                                       disabled={busy}
                                       onClick={() => onDownloadInvoice(r)}
-                                      className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
+                                      className="link-accent"
                                     >
                                       Download
                                     </button>
@@ -409,7 +409,7 @@ export default function RegistrationsDashboard() {
                                   <button
                                     disabled={busy}
                                     onClick={() => onRegenerateInvoice(r)}
-                                    className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
+                                    className="link-accent"
                                   >
                                     Generate Invoice
                                   </button>

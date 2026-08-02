@@ -3,27 +3,27 @@ import { Link } from "react-router-dom";
 import { ORGANISATION } from "../constants/organisation";
 
 const linkClass =
-  "text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors duration-200";
+  "text-sm text-slate-400 hover:text-amber-300 transition-colors duration-200";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="mt-12 border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+    <footer className="mt-12 border-t border-slate-800 bg-slate-950">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="h-8 w-8 rounded-full bg-slate-900 dark:bg-slate-100" aria-hidden="true" />
-              <span className="font-display text-lg font-bold text-slate-900 dark:text-white">Maharashtra Krida</span>
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-600" aria-hidden="true" />
+              <span className="font-display text-lg font-bold text-white">Maharashtra Krida</span>
             </div>
-            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm">
+            <p className="text-sm text-slate-400 max-w-sm">
               Energetic, community-first sports events across Maharashtra. Play, compete, and celebrate with us.
             </p>
           </div>
 
           {/* Quick Links */}
           <nav aria-label="Quick links" className="grid gap-2 content-start">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Quick Links</h3>
+            <h3 className="text-sm font-semibold text-slate-100 mb-2">Quick Links</h3>
             <Link to="/upcoming-events" className={linkClass}>Events</Link>
             <Link to="/badminton" className={linkClass}>Register</Link>
             <Link to="/registration/status" className={linkClass}>Registration Status</Link>
@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
           {/* Legal. Reachable from every page — Razorpay's merchant verification
               expects these four to be linked site-wide, not just findable. */}
           <nav aria-label="Policies" className="grid gap-2 content-start">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Legal</h3>
+            <h3 className="text-sm font-semibold text-slate-100 mb-2">Legal</h3>
             <Link to="/terms" className={linkClass}>Terms &amp; Conditions</Link>
             <Link to="/privacy" className={linkClass}>Privacy Policy</Link>
             <Link to="/refunds" className={linkClass}>Refund &amp; Cancellation</Link>
@@ -44,8 +44,8 @@ const Footer: React.FC = () => {
           {/* Contact. Single-sourced from constants/organisation so this can
               never drift from /contact or the policy pages again. */}
           <div className="grid gap-2 content-start">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Contact</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            <h3 className="text-sm font-semibold text-slate-100 mb-2">Contact</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">
               {ORGANISATION.addressLines.map((line) => (
                 <span key={line} className="block">{line}</span>
               ))}
@@ -55,9 +55,9 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-200 dark:border-slate-800 pt-6">
-          <p className="text-xs text-slate-500 dark:text-slate-400">© {new Date().getFullYear()} {ORGANISATION.legalName}. All rights reserved.</p>
-          <div className="text-xs text-slate-500 dark:text-slate-400">Built with love in Maharashtra.</div>
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-800 pt-6">
+          <p className="text-xs text-slate-500">© {new Date().getFullYear()} {ORGANISATION.legalName}. All rights reserved.</p>
+          <div className="text-xs text-slate-500">Built with love in Maharashtra.</div>
         </div>
       </div>
     </footer>

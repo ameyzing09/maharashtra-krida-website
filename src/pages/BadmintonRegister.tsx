@@ -38,7 +38,8 @@ function Steps() {
 
 function Fact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="glass-panel px-4 py-3 text-center">
+    <div className="glass-panel relative overflow-hidden px-4 py-3 text-center">
+      <div aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-amber-400/0 via-orange-500/70 to-amber-400/0" />
       <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
       <p className="text-sm font-semibold tabular-nums text-slate-900 dark:text-slate-100 mt-0.5">{value}</p>
     </div>
@@ -69,7 +70,7 @@ const BadmintonRegister = () => {
           <span className="glass-pill mt-5 px-4 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
             {TOURNAMENT.edition} · {TOURNAMENT.playingDates}
           </span>
-          <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-3">
+          <h1 className="font-display text-2xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-slate-100 mt-3">
             {TOURNAMENT.title}
           </h1>
           <p className="mt-2 text-slate-600 dark:text-slate-400 text-sm sm:text-base max-w-2xl">
@@ -151,7 +152,7 @@ const BadmintonRegister = () => {
         <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
           For registrations and queries, contact{" "}
           <span className="font-medium text-slate-900 dark:text-slate-100">{TOURNAMENT.contactName}</span> —{" "}
-          <a href={`tel:${TOURNAMENT.contactPhone.replace(/\s/g, "")}`} className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">
+          <a href={`tel:${TOURNAMENT.contactPhone.replace(/\s/g, "")}`} className="link-accent">
             {TOURNAMENT.contactPhone}
           </a>
         </div>

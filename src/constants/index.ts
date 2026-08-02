@@ -1,5 +1,5 @@
-// slate-600 — legible on both light and dark themes (TailSpin can't take dark-mode classes)
-export const SPINNER_COLOR = "#475569";
+// orange-600 — visible on white and slate-950 (TailSpin can't take dark-mode classes)
+export const SPINNER_COLOR = "#EA580C";
 
 export const collections = {
     HOME: 'home',
