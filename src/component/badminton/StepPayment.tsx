@@ -73,11 +73,16 @@ export default function StepPayment() {
         phone: contact,
       };
 
-      // Fallback in case neither the failed nor dismiss handler fires.
-      const safety = window.setTimeout(() => {
-        setLoading(false);
-        showToast("Payment window did not respond. Please try again.", "error");
-      }, 20000);
+      // Last resort: if checkout fires none of handler / payment.failed /
+      // payment.error / ondismiss, the button would sit on "Processing..."
+      // forever. Reset it silently, and generously late. A real payment —
+      // card OTP, or approving a UPI request on a phone — takes minutes, so
+      // any delay short enough to feel "responsive" is short enough to fire
+      // in the middle of one that is going fine. And it must never toast:
+      // when this runs we have no idea whether the payment failed or is
+      // still in progress, so claiming failure is both wrong and an
+      // invitation to pay twice.
+      const safety = window.setTimeout(() => setLoading(false), 15 * 60 * 1000);
 
       const rzp = new window.Razorpay({
         key: keyId,
@@ -98,6 +103,7 @@ export default function StepPayment() {
         },
         theme: { color: "#EA580C" },
         handler: function (resp: RazorpaySuccess) {
+          window.clearTimeout(safety);
           sessionStorage.setItem("rzp_success", JSON.stringify({ ...resp, ...payloadForSuccess }));
           clearDraft();
           window.location.href = "/payment/success";
