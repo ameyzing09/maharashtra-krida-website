@@ -96,7 +96,7 @@ export default function StepPayment() {
           company: org.companyName,
           email: org.officialEmail,
         },
-        theme: { color: "#84cc16" },
+        theme: { color: "#0F172A" },
         handler: function (resp: RazorpaySuccess) {
           sessionStorage.setItem("rzp_success", JSON.stringify({ ...resp, ...payloadForSuccess }));
           clearDraft();
@@ -160,16 +160,16 @@ export default function StepPayment() {
     [
       "flex-1 text-left rounded-xl border p-4 transition-all",
       active
-        ? "border-brand-lime ring-2 ring-brand-lime/40 bg-brand-lime/5"
-        : "border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20",
+        ? "border-slate-900 ring-2 ring-slate-900/20 bg-slate-100 dark:border-slate-100 dark:ring-slate-100/20 dark:bg-slate-800"
+        : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600",
     ].join(" ");
 
   return (
     <div className="space-y-5">
       {toast && <Toast message={toast.message} type={toast.type} />}
 
-      <p className="text-sm text-gray-600 dark:text-gray-300">
-        Total payable: <span className="font-semibold text-gray-900 dark:text-white">{formatINR(totalPaise)}</span>
+      <p className="text-sm text-slate-600 dark:text-slate-400">
+        Total payable: <span className="font-semibold text-slate-900 dark:text-slate-100">{formatINR(totalPaise)}</span>
       </p>
 
       {nothingAvailable && (
@@ -187,14 +187,14 @@ export default function StepPayment() {
       {onlineEnabled && offlineEnabled && (
         <div className="flex flex-col sm:flex-row gap-3">
           <button type="button" onClick={() => setMethod("online")} className={optionCls(method === "online")}>
-            <p className="font-semibold text-gray-900 dark:text-white">Pay now online</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="font-semibold text-slate-900 dark:text-slate-100">Pay now online</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Card, UPI, netbanking or wallet via secure Razorpay checkout. Confirmed instantly.
             </p>
           </button>
           <button type="button" onClick={() => setMethod("offline")} className={optionCls(method === "offline")}>
-            <p className="font-semibold text-gray-900 dark:text-white">Company will pay separately</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="font-semibold text-slate-900 dark:text-slate-100">Company will pay separately</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Reserve now and pay by bank transfer / company account. You'll get a reference code; we confirm once
               payment is received.
             </p>
@@ -203,15 +203,15 @@ export default function StepPayment() {
       )}
 
       {onlineEnabled && !offlineEnabled && (
-        <p className="text-sm text-gray-600 dark:text-gray-300">
+        <p className="text-sm text-slate-600 dark:text-slate-400">
           You'll be redirected to the secure Razorpay checkout to complete the payment.
         </p>
       )}
 
       {!onlineEnabled && offlineEnabled && (
-        <div className="rounded-xl border border-black/10 dark:border-white/10 p-4">
-          <p className="font-semibold text-gray-900 dark:text-white">Company will pay separately</p>
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-4">
+          <p className="font-semibold text-slate-900 dark:text-slate-100">Company will pay separately</p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             Online card payment is unavailable at the moment, so reserve your place now and settle by
             bank transfer. You'll get a reference code immediately and we'll confirm once payment is
             received.
@@ -242,11 +242,11 @@ export default function StepPayment() {
       <div className="flex justify-between mt-6">
         <button
           onClick={() => dispatch({ type: "BACK" })}
-          className="rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-brand-charcoal dark:text-gray-100 font-medium py-2 px-4"
+          className="rounded-full border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium py-2 px-4"
         >
           Back
         </button>
-        <a href="/" onClick={clearDraft} className="text-sm text-gray-500 dark:text-gray-400 underline">
+        <a href="/" onClick={clearDraft} className="text-sm text-slate-500 dark:text-slate-400 underline">
           Start over
         </a>
       </div>

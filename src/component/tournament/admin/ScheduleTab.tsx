@@ -1,3 +1,4 @@
+import { SPINNER_COLOR } from "../../../constants";
 import { useMemo, useState } from "react";
 import type { EventTeam, ID, NewMatch, Team } from "../../../types/tournament";
 import { createMatch } from "../../../services/matchService";
@@ -32,7 +33,7 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
   const toEpoch = (val: string) => (val ? new Date(val).getTime() : Date.now());
 
   return (
-    <div className="rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate p-4 max-w-2xl">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 max-w-2xl">
       {toast && <Toast message={toast.message} type={toast.type} />}
       <h2 className="font-semibold mb-3">Create Fixture</h2>
       <div className="grid gap-2">
@@ -69,7 +70,7 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
             }
           }}
         >
-          {creatingMatch && <TailSpin color="#84cc16" height={16} width={16} />}Create Match
+          {creatingMatch && <TailSpin color={SPINNER_COLOR} height={16} width={16} />}Create Match
         </button>
       </div>
 
@@ -105,7 +106,7 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
 
       {importRows && (
         <div className="mt-3">
-          <p className="text-sm text-gray-700 dark:text-gray-300">Parsed {importRows.length} rows. Missing teams in this event: {missingNames.length}.</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">Parsed {importRows.length} rows. Missing teams in this event: {missingNames.length}.</p>
           {missingNames.length > 0 && (
             <button
               disabled={creatingMissing}
@@ -145,7 +146,7 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
                 }
               }}
             >
-              {creatingMissing && <TailSpin color="#84cc16" height={16} width={16} />}Create missing teams and add to event
+              {creatingMissing && <TailSpin color={SPINNER_COLOR} height={16} width={16} />}Create missing teams and add to event
             </button>
           )}
 
@@ -180,7 +181,7 @@ export default function ScheduleTab({ eventId, teams, eventTeams, refreshMatches
               }
             }}
           >
-            {creatingBulk && <TailSpin color="#84cc16" height={16} width={16} />}Create Matches ({importRows?.length ?? 0})
+            {creatingBulk && <TailSpin color={SPINNER_COLOR} height={16} width={16} />}Create Matches ({importRows?.length ?? 0})
           </button>
         </div>
       )}

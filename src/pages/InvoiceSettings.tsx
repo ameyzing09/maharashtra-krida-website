@@ -17,7 +17,7 @@ import useToast from "../hook/useToast";
 import Toast from "../component/common/Toast";
 
 const input = "glass-input w-full px-3 py-2";
-const label = "text-sm font-medium text-gray-700 dark:text-gray-200 mb-1";
+const label = "text-sm font-medium text-slate-600 dark:text-slate-300 mb-1";
 
 export default function InvoiceSettings() {
   const [settings, setSettings] = useState<InvoiceSettingsType>(DEFAULT_SETTINGS);
@@ -81,13 +81,13 @@ export default function InvoiceSettings() {
   if (loading) return <PageLoader variant="center" label="Loading settings..." />;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl text-brand-charcoal dark:text-gray-200">
+    <div className="container mx-auto px-4 py-8 max-w-2xl text-slate-600 dark:text-slate-400">
       {toast && <Toast message={toast.message} type={toast.type} />}
 
-      <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      <h1 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
         Invoice &amp; Payment Settings
       </h1>
-      <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+      <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
         Controls how registration invoices are generated. By default, invoices are a plain payment
         receipt. Turning on GST mode switches them to a tax invoice using the details below —
         confirm the rate, HSN/SAC code, and GSTIN with your accountant before enabling this for
@@ -102,12 +102,12 @@ export default function InvoiceSettings() {
             checked={settings.gst_enabled}
             onChange={(e) => set("gst_enabled", e.target.checked)}
           />
-          <span className="text-sm font-semibold text-gray-900 dark:text-white">
+          <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             GST mode enabled (generate tax invoices instead of receipts)
           </span>
         </label>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-black/5 dark:border-white/10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
           <div className="flex flex-col">
             <label className={label}>GSTIN</label>
             <input
@@ -153,16 +153,16 @@ export default function InvoiceSettings() {
                 </option>
               ))}
             </select>
-            <p className="text-[11px] text-gray-500 mt-1">
+            <p className="text-[11px] text-slate-500 mt-1">
               Used to decide CGST+SGST (same state as registrant) vs IGST (different state).
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-black/5 dark:border-white/10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
           <div className="flex flex-col">
             <label className={label}>
-              Legal Business Name <span className="text-gray-400 font-normal">(optional)</span>
+              Legal Business Name <span className="text-slate-400 font-normal">(optional)</span>
             </label>
             <input
               className={input}
@@ -173,7 +173,7 @@ export default function InvoiceSettings() {
           </div>
           <div className="flex flex-col">
             <label className={label}>
-              PAN <span className="text-gray-400 font-normal">(optional)</span>
+              PAN <span className="text-slate-400 font-normal">(optional)</span>
             </label>
             <input
               className={input}
@@ -184,7 +184,7 @@ export default function InvoiceSettings() {
           </div>
           <div className="flex flex-col sm:col-span-2">
             <label className={label}>
-              Registered Address <span className="text-gray-400 font-normal">(optional, one line per address line)</span>
+              Registered Address <span className="text-slate-400 font-normal">(optional, one line per address line)</span>
             </label>
             <textarea
               className={`${input} min-h-[80px]`}
@@ -203,10 +203,10 @@ export default function InvoiceSettings() {
       </form>
 
       {/* Payment methods */}
-      <h2 className="font-display text-xl font-bold text-gray-900 dark:text-white mt-10 mb-2">
+      <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-100 mt-10 mb-2">
         Payment Methods
       </h2>
-      <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
         Which ways registrants can pay. Both switches are enforced on the server, so turning one off
         genuinely stops that method rather than only hiding it on the form.
       </p>
@@ -220,10 +220,10 @@ export default function InvoiceSettings() {
             onChange={(e) => setP("online_enabled", e.target.checked)}
           />
           <span>
-            <span className="block text-sm font-semibold text-gray-900 dark:text-white">
+            <span className="block text-sm font-semibold text-slate-900 dark:text-slate-100">
               Online payment — card, UPI, netbanking via Razorpay
             </span>
-            <span className="block text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+            <span className="block text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Turn off to suspend card payments, for example while Razorpay is verifying the website
               or during a gateway outage. Leave offline enabled below so teams can still register.
             </span>
@@ -244,10 +244,10 @@ export default function InvoiceSettings() {
             onChange={(e) => setP("offline_enabled", e.target.checked)}
           />
           <span>
-            <span className="block text-sm font-semibold text-gray-900 dark:text-white">
+            <span className="block text-sm font-semibold text-slate-900 dark:text-slate-100">
               Offer &quot;company will pay separately&quot; on the registration form
             </span>
-            <span className="block text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+            <span className="block text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Registrants reserve a place, get an MKB- reference code, and settle by bank transfer.
               The details below appear on their status page. Confirm each one from the registrations
               dashboard once the money arrives.
@@ -255,7 +255,7 @@ export default function InvoiceSettings() {
           </span>
         </label>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-black/5 dark:border-white/10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
           <div className="flex flex-col">
             <label className={label}>Account Name</label>
             <input
@@ -285,7 +285,7 @@ export default function InvoiceSettings() {
           </div>
           <div className="flex flex-col">
             <label className={label}>
-              UPI ID <span className="text-gray-400 font-normal">(optional)</span>
+              UPI ID <span className="text-slate-400 font-normal">(optional)</span>
             </label>
             <input
               className={input}
@@ -296,7 +296,7 @@ export default function InvoiceSettings() {
           </div>
           <div className="flex flex-col sm:col-span-2">
             <label className={label}>
-              Instructions Note <span className="text-gray-400 font-normal">(optional)</span>
+              Instructions Note <span className="text-slate-400 font-normal">(optional)</span>
             </label>
             <textarea
               className={`${input} min-h-[80px]`}

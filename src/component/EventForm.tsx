@@ -77,12 +77,12 @@ const EventForm = () => {
   return (
     <form
     onSubmit={handleSubmit}
-    className="max-w-lg mx-auto glass-panel-strong text-gray-900 dark:text-white p-8"
+    className="max-w-lg mx-auto glass-panel-strong text-slate-900 dark:text-slate-100 p-8"
   >
-    <h2 className="text-2xl font-semibold text-center mb-6 text-gray-900 dark:text-white drop-shadow-sm">Add New Event</h2>
+    <h2 className="text-2xl font-semibold text-center mb-6 text-slate-900 dark:text-slate-100">Add New Event</h2>
     <div className="mb-4">
       <label
-        className="block text-gray-900 dark:text-white text-sm font-bold mb-2 drop-shadow-sm"
+        className="block text-slate-900 dark:text-slate-100 text-sm font-bold mb-2"
         htmlFor="name"
       >
         Event Name
@@ -99,7 +99,7 @@ const EventForm = () => {
     </div>
     <div className="mb-4">
       <label
-        className="block text-gray-900 dark:text-white text-sm font-bold mb-2 drop-shadow-sm"
+        className="block text-slate-900 dark:text-slate-100 text-sm font-bold mb-2"
         htmlFor="sport"
       >
         Sport Type
@@ -116,7 +116,7 @@ const EventForm = () => {
     </div>
     <div className="mb-4">
       <label
-        className="block text-gray-900 dark:text-white text-sm font-bold mb-2 drop-shadow-sm"
+        className="block text-slate-900 dark:text-slate-100 text-sm font-bold mb-2"
         htmlFor="date"
       >
         Date
@@ -132,7 +132,7 @@ const EventForm = () => {
     </div>
     <div className="mb-4">
       <label
-        className="block text-gray-900 dark:text-white text-sm font-bold mb-2 drop-shadow-sm"
+        className="block text-slate-900 dark:text-slate-100 text-sm font-bold mb-2"
         htmlFor="location"
       >
         Location
@@ -149,7 +149,7 @@ const EventForm = () => {
     </div>
     <div className="mb-4">
       <label
-        className="block text-gray-900 dark:text-white text-sm font-bold mb-2 drop-shadow-sm"
+        className="block text-slate-900 dark:text-slate-100 text-sm font-bold mb-2"
         htmlFor="imageFile"
       >
         Event Image
@@ -163,7 +163,7 @@ const EventForm = () => {
     </div>
     <div className="mb-4">
       <label
-        className="block text-gray-900 dark:text-white text-sm font-bold mb-2 drop-shadow-sm"
+        className="block text-slate-900 dark:text-slate-100 text-sm font-bold mb-2"
         htmlFor="flyerUrl"
       >
         Flyer URL
@@ -177,7 +177,7 @@ const EventForm = () => {
     </div>
     <div className="mb-4">
       <label
-        className="block text-gray-900 dark:text-white text-sm font-bold mb-2 drop-shadow-sm"
+        className="block text-slate-900 dark:text-slate-100 text-sm font-bold mb-2"
         htmlFor="registrationUrl"
       >
         Registration URL
@@ -193,7 +193,7 @@ const EventForm = () => {
     </div>
     <div className="mb-6">
       <label
-        className="block text-gray-900 dark:text-white text-sm font-bold mb-2 drop-shadow-sm"
+        className="block text-slate-900 dark:text-slate-100 text-sm font-bold mb-2"
         htmlFor="description"
       >
         Description
@@ -210,7 +210,7 @@ const EventForm = () => {
     <div className="flex items-center justify-between">
       <button
         type="submit"
-        className="glass-button-primary w-full py-2 px-4 glass-glow-hover"
+        className="glass-button-primary w-full py-2 px-4"
       >
         Add Event
       </button>

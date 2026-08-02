@@ -63,21 +63,21 @@ export default function NewsList({ refreshKey }: Props) {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} />}
-      <div className="container mx-auto text-brand-charcoal dark:text-gray-200">
+      <div className="container mx-auto text-slate-600 dark:text-slate-400">
         <h2 className="text-2xl font-semibold mb-4">News List</h2>
         {pageItems.length === 0 ? (
-          <p className="text-gray-600 dark:text-gray-300">No news added yet.</p>
+          <p className="text-slate-600 dark:text-slate-400">No news added yet.</p>
         ) : (
           <ul className="grid gap-4">
             {pageItems.map((n) => (
-              <li key={n.id} className="p-4 bg-white dark:bg-brand-slate border border-black/5 dark:border-white/10 shadow rounded-lg">
+              <li key={n.id} className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow rounded-lg">
                 <div className="flex items-start gap-3">
                   {n.imageUrl && (
                     <img src={n.imageUrl} alt={n.title} className="h-16 w-24 object-cover rounded flex-shrink-0" />
                   )}
                   <div className="flex-1 min-w-0 overflow-hidden">
-                    <div className="font-bold text-brand-charcoal dark:text-gray-100 break-words line-clamp-1">{n.title}</div>
-                    {n.summary && <div className="mt-0.5 text-sm text-gray-600 dark:text-gray-300 break-words line-clamp-2">{n.summary}</div>}
+                    <div className="font-bold text-slate-900 dark:text-slate-100 break-words line-clamp-1">{n.title}</div>
+                    {n.summary && <div className="mt-0.5 text-sm text-slate-600 dark:text-slate-400 break-words line-clamp-2">{n.summary}</div>}
                   </div>
                   <div className="ml-auto">
                     <button onClick={() => onDelete(n.id)} className="flex items-center justify-center px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">

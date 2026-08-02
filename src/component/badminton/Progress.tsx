@@ -22,10 +22,10 @@ export default function Progress() {
                 className={[
                   "flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full",
                   done
-                    ? "bg-brand-lime text-white"
+                    ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
                     : now
-                    ? "bg-brand-lime/15 text-brand-lime ring-2 ring-brand-lime/60"
-                    : "bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300",
+                    ? "bg-slate-100 text-slate-900 ring-2 ring-slate-900/60 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-100/60"
+                    : "bg-white border border-slate-300 text-slate-500 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-400",
                 ].join(" ")}
                 aria-current={now ? "step" : undefined}
               >
@@ -46,10 +46,10 @@ export default function Progress() {
                 className={[
                   "ml-2 sm:ml-3 text-xs sm:text-sm font-medium whitespace-nowrap",
                   done
-                    ? "text-gray-700 dark:text-gray-200"
+                    ? "text-slate-700 dark:text-slate-200"
                     : now
-                    ? "text-brand-lime"
-                    : "text-gray-500 dark:text-gray-400",
+                    ? "text-slate-900 dark:text-slate-100"
+                    : "text-slate-500 dark:text-slate-400",
                 ].join(" ")}
               >
                 {s.label}
@@ -58,7 +58,7 @@ export default function Progress() {
                 <span
                   className={[
                     "mx-3 sm:mx-4 h-[2px] w-10 sm:w-16 rounded",
-                    idx < currentStep ? "bg-brand-lime" : "bg-black/10 dark:bg-white/10",
+                    idx < currentStep ? "bg-slate-900 dark:bg-slate-100" : "bg-slate-200 dark:bg-slate-800",
                   ].join(" ")}
                   aria-hidden="true"
                 />

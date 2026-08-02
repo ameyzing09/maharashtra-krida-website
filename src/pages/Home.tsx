@@ -11,8 +11,8 @@ const Home: React.FC = () => {
       <Hero />
       <LiveRecentWidget />
       <Highlights />
-      <About />
-      <Contact />
+      <About embedded />
+      <Contact embedded />
     </div>
   );
 };

@@ -32,11 +32,11 @@ const Login = () => {
   return (
     <>
         {toast && <Toast message={toast.message} type={toast.type} />}
-      <div className="min-h-screen flex items-center justify-center bg-brand-paper dark:bg-brand-charcoal py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div className="glass-panel p-8">
             <div>
-              <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+              <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900 dark:text-slate-100">
                 Sign in to your account
               </h2>
             </div>
@@ -44,7 +44,7 @@ const Login = () => {
               <input type="hidden" name="remember" defaultValue="true" />
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="email-address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label htmlFor="email-address" className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                     Email address
                   </label>
                   <input
@@ -60,7 +60,7 @@ const Login = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label htmlFor="password" className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                     Password
                   </label>
                   <input

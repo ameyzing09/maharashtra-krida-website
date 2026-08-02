@@ -31,6 +31,7 @@ import Refunds from "../pages/legal/Refunds";
 import ServiceDelivery from "../pages/legal/ServiceDelivery";
 import PageTransition from "../component/PageTransition";
 import TopProgressBar from "../component/TopProgressBar";
+import Footer from "../component/Footer";
 
 const AnimatedRoutes: React.FC = () => {
   const location = useLocation();
@@ -81,6 +82,7 @@ const Router: React.FC = () => {
         <main>
           <AnimatedRoutes />
         </main>
+        <Footer />
       </div>
     </BrowserRouter>
   );

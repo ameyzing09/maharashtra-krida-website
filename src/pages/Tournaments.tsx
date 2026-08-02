@@ -8,6 +8,7 @@ import type { EventTeam, Match, ScoreCardData, Team } from "../types/tournament"
 import { resolveTeamsForMatch } from "../tournament/resolve";
 import { toScoreCardData } from "../tournament/adapter";
 import ScoreCard from "../component/tournament/ScoreCard";
+import { MotionGrid, MotionItem } from "../component/common/motion";
 
 type Tab = "live" | "upcoming" | "past";
 
@@ -50,10 +51,10 @@ export default function TournamentsPage() {
   }, [matches, events, teams, eventTeams]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white">Tournaments</h1>
-        <div className="inline-flex rounded-full bg-black/5 dark:bg-white/10 p-1">
+        <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Tournaments</h1>
+        <div className="glass-panel-subtle inline-flex rounded-full p-1">
           {([
             ["live", "Live"],
             ["upcoming", "Upcoming"],
@@ -63,7 +64,7 @@ export default function TournamentsPage() {
               key={key}
               onClick={() => setTab(key)}
               className={`px-3 py-1.5 text-sm rounded-full ${
-                tab === key ? "bg-white dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-100 shadow" : "text-gray-700 dark:text-gray-300"
+                tab === key ? "glass-button-primary rounded-full" : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               {label}
@@ -73,13 +74,15 @@ export default function TournamentsPage() {
       </div>
 
       {cards.length === 0 ? (
-        <p className="text-gray-600 dark:text-gray-300">No live matches found.</p>
+        <p className="text-slate-600 dark:text-slate-400">No live matches found.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <MotionGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {cards.map((c) => (
-            <ScoreCard key={c.matchId} data={c} />
+            <MotionItem key={c.matchId} className="h-full">
+              <ScoreCard data={c} />
+            </MotionItem>
           ))}
-        </div>
+        </MotionGrid>
       )}
     </div>
   );

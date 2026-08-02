@@ -20,30 +20,21 @@ const Hero: React.FC = () => {
     return eventsList[0];
   }, [eventsList]);
   return (
-    <section className="relative overflow-hidden min-h-screen flex items-center">
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 glass-bg-gradient dark:glass-bg-gradient-dark" aria-hidden />
-      
-      {/* Additional floating elements for depth */}
-      <div className="absolute inset-0 overflow-hidden" aria-hidden>
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-lime-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-lime-400/5 rounded-full blur-3xl animate-pulse delay-1000" />
-      </div>
-
-      <div className="mx-auto max-w-6xl px-4 py-14 sm:py-20 relative z-10">
+    <section className="relative overflow-hidden border-b border-slate-200 dark:border-slate-800">
+      <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24">
         <div className="grid items-center gap-8 md:grid-cols-2">
-          {/* Hero content in glass panel */}
-          <motion.div 
-            initial={{ opacity: 0, y: 12 }} 
-            animate={{ opacity: 1, y: 0 }} 
+          {/* Hero content card */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             className="glass-panel-strong p-6 sm:p-8"
           >
-            <h1 className="font-display font-extrabold tracking-tight text-3xl sm:text-4xl md:text-5xl text-gray-900 dark:text-white drop-shadow-sm">
-              Maharashtra Krida <br /> 
-              <span className="text-lime-600 dark:text-lime-400 text-3xl">Play, Compete, Celebrate...</span>
+            <h1 className="font-display font-extrabold tracking-tight text-4xl sm:text-5xl text-slate-900 dark:text-slate-100">
+              Maharashtra Krida <br />
+              <span className="text-slate-500 dark:text-slate-400 text-3xl">Play, Compete, Celebrate...</span>
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-gray-700 dark:text-gray-200 max-w-prose drop-shadow-sm">
+            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-prose">
               Join high-energy sports events across Maharashtra with pro-grade management, fair play, and recognition. Register now and be part of the community.
             </p>
 
@@ -52,7 +43,7 @@ const Hero: React.FC = () => {
                 <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
                   <Link
                     to={nextEvent.registrationUrl}
-                    className="glass-button-primary px-6 py-3 text-base glass-glow-hover"
+                    className="glass-button-primary px-6 py-3 text-base"
                   >
                     Register
                   </Link>
@@ -76,7 +67,7 @@ const Hero: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }} 
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <div className="glass-panel-strong aspect-[4/3] w-full overflow-hidden relative group">
+            <div className="glass-panel-strong aspect-[4/3] w-full overflow-hidden relative rounded-2xl group">
               {nextEvent?.imageUrl ? (
                 <img 
                   src={nextEvent.imageUrl} 
@@ -88,17 +79,17 @@ const Hero: React.FC = () => {
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" aria-hidden />
               
-              {/* Glass overlay for event info */}
-              <div className="absolute bottom-4 left-4 right-4 glass-panel-subtle p-3 backdrop-blur-md">
+              {/* Event info overlay */}
+              <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-slate-900/80 backdrop-blur px-3 py-2">
                 {nextEvent ? (
                   <div className="text-white text-xs sm:text-sm tracking-wide">
-                    <span className="font-semibold text-lime-300">Next up:</span> {nextEvent.name}
-                    {nextEvent.location && <span className="block text-gray-300">{nextEvent.location}</span>}
-                    {nextEvent.date && <span className="block text-gray-300">{formatDateLong(nextEvent.date)}</span>}
+                    <span className="font-mono text-xs uppercase tracking-wide font-semibold text-slate-200">Next up:</span> {nextEvent.name}
+                    {nextEvent.location && <span className="block text-slate-300">{nextEvent.location}</span>}
+                    {nextEvent.date && <span className="block text-slate-300">{formatDateLong(nextEvent.date)}</span>}
                   </div>
                 ) : (
                   <div className="text-white text-xs sm:text-sm tracking-wide">
-                    <span className="font-semibold text-lime-300">Next up:</span> Stay tuned for upcoming events
+                    <span className="font-mono text-xs uppercase tracking-wide font-semibold text-slate-200">Next up:</span> Stay tuned for upcoming events
                   </div>
                 )}
               </div>

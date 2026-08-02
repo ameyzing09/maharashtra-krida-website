@@ -1,3 +1,4 @@
+import { SPINNER_COLOR } from "../../../constants";
 import { useState } from "react";
 import type { CricketScore, EventTeam, FootballGoal, ID, Match, MatchStatus, Team, VolleyballSet } from "../../../types/tournament";
 import type { EventProps } from "../../../types";
@@ -95,12 +96,12 @@ export default function MatchesTab({ event, matches, teams, eventTeams, refreshM
           return (
             <div key={m.id} className="glass-panel p-4">
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex items-center gap-2 text-sm text-gray-900 dark:text-white">
+                <div className="flex items-center gap-2 text-sm text-slate-900 dark:text-slate-100">
                   <span className="font-semibold">{resolved.teamA.name}</span>
                   <span className="opacity-60">vs</span>
                   <span className="font-semibold">{resolved.teamB.name}</span>
-                  <span className="mx-2 text-gray-600 dark:text-gray-300">·</span>
-                  <span className="text-gray-600 dark:text-gray-300">{new Date(m.scheduledAt).toLocaleString()}</span>
+                  <span className="mx-2 text-slate-600 dark:text-slate-400">·</span>
+                  <span className="text-slate-600 dark:text-slate-400">{new Date(m.scheduledAt).toLocaleString()}</span>
                   {isCompleted && (
                     <span className="ml-2 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs rounded-full font-medium">
                       Completed
@@ -134,8 +135,8 @@ export default function MatchesTab({ event, matches, teams, eventTeams, refreshM
                 <div className="grid gap-2">
                   {!canEditMatch ? (
                     <div className="glass-panel-subtle p-3">
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Team A Score</div>
-                      <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">Team A Score</div>
+                      <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                         {(() => {
                           const cricket = getCricket(m);
                           return `${cricket.a.runs}/${cricket.a.wickets}/${cricket.a.overs}`;
@@ -158,8 +159,8 @@ export default function MatchesTab({ event, matches, teams, eventTeams, refreshM
                   )}
                   {!canEditMatch ? (
                     <div className="glass-panel-subtle p-3">
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Team B Score</div>
-                      <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">Team B Score</div>
+                      <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                         {(() => {
                           const cricket = getCricket(m);
                           return `${cricket.b.runs}/${cricket.b.wickets}/${cricket.b.overs}`;
@@ -252,8 +253,8 @@ export default function MatchesTab({ event, matches, teams, eventTeams, refreshM
                 <div className="grid gap-2">
                   {!canEditMatch ? (
                     <div className="glass-panel-subtle p-3">
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Final Score</div>
-                      <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">Final Score</div>
+                      <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                         {(() => {
                           const football = getFootball(m);
                           return `${football.aGoals} - ${football.bGoals}`;
@@ -316,8 +317,8 @@ export default function MatchesTab({ event, matches, teams, eventTeams, refreshM
                 <div className="grid gap-2">
                   {!canEditMatch ? (
                     <div className="glass-panel-subtle p-3">
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Set Scores</div>
-                      <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">Set Scores</div>
+                      <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                         {(() => {
                           const volleyball = getVolleyball(m);
                           return volleyball.sets?.map(s => `${s.a}-${s.b}`).join(", ") || "No sets recorded";
@@ -345,8 +346,8 @@ export default function MatchesTab({ event, matches, teams, eventTeams, refreshM
                 <div className="grid grid-cols-2 gap-2">
                   {!canEditMatch ? (
                     <div className="glass-panel-subtle p-3">
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Final Score</div>
-                      <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">Final Score</div>
+                      <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                         {(() => {
                           const other = getOther(m) as { aScore?: number; bScore?: number; note?: string };
                           return `${other.aScore || 0} - ${other.bScore || 0}`;
@@ -408,7 +409,7 @@ export default function MatchesTab({ event, matches, teams, eventTeams, refreshM
                         }
                       }}
                     >
-                      {savingIds.has(m.id) && <TailSpin color="#84cc16" height={16} width={16} />}Save
+                      {savingIds.has(m.id) && <TailSpin color={SPINNER_COLOR} height={16} width={16} />}Save
                     </button>
                     <button
                       onClick={() => cancelEditing(m.id)}
@@ -436,7 +437,7 @@ export default function MatchesTab({ event, matches, teams, eventTeams, refreshM
                       }
                     }}
                   >
-                    {savingIds.has(m.id) && <TailSpin color="#84cc16" height={16} width={16} />}Save
+                    {savingIds.has(m.id) && <TailSpin color={SPINNER_COLOR} height={16} width={16} />}Save
                   </button>
                 ) : null}
               </div>

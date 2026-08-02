@@ -14,30 +14,30 @@ export default function StepReview() {
     <div className="space-y-6">
       {/* Organisation */}
       <div className="glass-panel-subtle p-4">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Organisation</h3>
+        <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">Organisation</h3>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
           <div className="flex justify-between sm:block">
-            <dt className="text-gray-500">Company</dt>
-            <dd className="text-gray-900 dark:text-white font-medium">{org?.companyName}</dd>
+            <dt className="text-slate-500">Company</dt>
+            <dd className="text-slate-900 dark:text-slate-100 font-medium">{org?.companyName}</dd>
           </div>
           <div className="flex justify-between sm:block">
-            <dt className="text-gray-500">Contact</dt>
-            <dd className="text-gray-900 dark:text-white font-medium">{org?.contactPersonName}</dd>
+            <dt className="text-slate-500">Contact</dt>
+            <dd className="text-slate-900 dark:text-slate-100 font-medium">{org?.contactPersonName}</dd>
           </div>
           <div className="flex justify-between sm:block">
-            <dt className="text-gray-500">Official Email</dt>
-            <dd className="text-gray-900 dark:text-white font-medium break-all">{org?.officialEmail}</dd>
+            <dt className="text-slate-500">Official Email</dt>
+            <dd className="text-slate-900 dark:text-slate-100 font-medium break-all">{org?.officialEmail}</dd>
           </div>
           <div className="flex justify-between sm:block">
-            <dt className="text-gray-500">Phone</dt>
-            <dd className="text-gray-900 dark:text-white font-medium">{org?.phone}</dd>
+            <dt className="text-slate-500">Phone</dt>
+            <dd className="text-slate-900 dark:text-slate-100 font-medium">{org?.phone}</dd>
           </div>
         </dl>
       </div>
 
       {/* Entries */}
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+        <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300">
           Entries ({state.entries.length})
         </h3>
         {state.entries.map((e) => {
@@ -45,22 +45,22 @@ export default function StepReview() {
           return (
             <div key={e.id} className="glass-panel-subtle p-3">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {meta.label}
                   {e.teamName ? ` — ${e.teamName}` : ""}
                 </p>
-                <span className="text-sm font-medium text-brand-lime">{formatINR(meta.fee)}</span>
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{formatINR(meta.fee)}</span>
               </div>
               {e.players.length > 0 ? (
                 <ul className="mt-1.5 space-y-0.5">
                   {e.players.map((p, i) => (
-                    <li key={i} className="text-xs text-gray-600 dark:text-gray-300">
+                    <li key={i} className="text-xs text-slate-600 dark:text-slate-400">
                       {p.name} · {p.phone} · {p.officialEmail}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="mt-1.5 text-xs text-gray-600 dark:text-gray-300">
+                <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400">
                   Roster to be shared before the Captains' Meeting.
                 </p>
               )}
@@ -70,13 +70,13 @@ export default function StepReview() {
       </div>
 
       {/* Total */}
-      <div className="flex justify-between items-center border-t border-black/10 dark:border-white/10 pt-3">
-        <span className="text-base font-semibold text-gray-700 dark:text-gray-200">Total payable</span>
-        <span className="text-xl font-bold text-gray-900 dark:text-white">{formatINR(total)}</span>
+      <div className="flex justify-between items-center border-t border-slate-200 dark:border-slate-800 pt-3">
+        <span className="text-base font-semibold text-slate-600 dark:text-slate-300">Total payable</span>
+        <span className="text-xl font-bold text-slate-900 dark:text-slate-100">{formatINR(total)}</span>
       </div>
 
       {/* Agreement */}
-      <label className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+      <label className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
         <input
           type="checkbox"
           className="mt-1"
@@ -91,7 +91,7 @@ export default function StepReview() {
             to="/terms"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-lime-600 dark:text-lime-400 hover:underline"
+            className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
           >
             Terms &amp; Conditions
           </Link>
@@ -100,7 +100,7 @@ export default function StepReview() {
             to="/refunds"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-lime-600 dark:text-lime-400 hover:underline"
+            className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
           >
             Refund &amp; Cancellation Policy
           </Link>{" "}
@@ -109,7 +109,7 @@ export default function StepReview() {
             to="/privacy"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-lime-600 dark:text-lime-400 hover:underline"
+            className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
           >
             Privacy Policy
           </Link>
@@ -122,7 +122,7 @@ export default function StepReview() {
         <button
           type="button"
           onClick={() => dispatch({ type: "BACK" })}
-          className="rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-brand-charcoal dark:text-gray-100 font-medium py-2 px-4"
+          className="rounded-full border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium py-2 px-4"
         >
           Back
         </button>

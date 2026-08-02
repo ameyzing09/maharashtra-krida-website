@@ -53,26 +53,26 @@ export default function GalleryForm({ onAdded }: Props) {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} />}
-      <form onSubmit={onSubmit} className="max-w-lg mx-auto glass-panel-strong text-gray-900 dark:text-white p-6">
-        <h2 className="text-xl font-semibold text-center mb-4 text-gray-900 dark:text-white drop-shadow-sm">Add Gallery Item</h2>
+      <form onSubmit={onSubmit} className="max-w-lg mx-auto glass-panel-strong text-slate-900 dark:text-slate-100 p-6">
+        <h2 className="text-xl font-semibold text-center mb-4 text-slate-900 dark:text-slate-100">Add Gallery Item</h2>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="title">Title (optional)</label>
+          <label className="block text-sm font-semibold mb-1 text-slate-900 dark:text-slate-100" htmlFor="title">Title (optional)</label>
           <input name="title" value={form.title || ""} onChange={onChange} placeholder="Title" className="glass-input w-full py-2 px-3" />
         </div>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="description">Description (optional)</label>
+          <label className="block text-sm font-semibold mb-1 text-slate-900 dark:text-slate-100" htmlFor="description">Description (optional)</label>
           <input name="description" value={form.description || ""} onChange={onChange} placeholder="Short description" className="glass-input w-full py-2 px-3" />
         </div>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="alt">Alt text (accessibility)</label>
+          <label className="block text-sm font-semibold mb-1 text-slate-900 dark:text-slate-100" htmlFor="alt">Alt text (accessibility)</label>
           <input name="alt" value={form.alt || ""} onChange={onChange} placeholder="Image alt text" className="glass-input w-full py-2 px-3" />
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="imageFile">Image</label>
+          <label className="block text-sm font-semibold mb-1 text-slate-900 dark:text-slate-100" htmlFor="imageFile">Image</label>
           <input name="imageFile" type="file" accept="image/*" onChange={onChange} className="glass-file-input w-full" />
         </div>
         <div className="flex items-center justify-between">
-          <button type="submit" className="glass-button-primary py-2 px-4 glass-glow-hover">Add</button>
+          <button type="submit" className="glass-button-primary py-2 px-4">Add</button>
         </div>
       </form>
     </>

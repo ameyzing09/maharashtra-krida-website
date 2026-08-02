@@ -23,8 +23,8 @@ export default function Event() {
   } = usePagination(eventsList, eventsPerPage)
   if (loading) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white mb-4">Upcoming Events</h1>
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+        <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-4">Upcoming Events</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {Array.from({ length: eventsPerPage }).map((_, idx) => (
             <SkeletonLoader key={idx} />
@@ -35,19 +35,20 @@ export default function Event() {
   }
 
   if(error) return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white mb-2">Upcoming Events</h1>
+    <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+      <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-2">Upcoming Events</h1>
       <p className="text-red-600">{error}</p>
     </div>
   )
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white mb-4">Upcoming Events</h1>
+    <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+      <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-4">Upcoming Events</h1>
       <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-5"
         initial="hidden"
-        animate="show"
+        whileInView="show"
+        viewport={{ once: true, margin: "-40px" }}
         variants={{
           hidden: { opacity: 1 },
           show: { opacity: 1, transition: { staggerChildren: 0.06 } }

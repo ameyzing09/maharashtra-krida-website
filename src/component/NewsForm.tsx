@@ -76,14 +76,14 @@ export default function NewsForm({ onAdded }: Props) {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} />}
-      <form onSubmit={onSubmit} className="max-w-lg mx-auto glass-panel-strong text-gray-900 dark:text-white p-6">
-        <h2 className="text-xl font-semibold text-center mb-4 text-gray-900 dark:text-white drop-shadow-sm">Add News</h2>
+      <form onSubmit={onSubmit} className="max-w-lg mx-auto glass-panel-strong text-slate-900 dark:text-slate-100 p-6">
+        <h2 className="text-xl font-semibold text-center mb-4 text-slate-900 dark:text-slate-100">Add News</h2>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="title">Title</label>
+          <label className="block text-sm font-semibold mb-1 text-slate-900 dark:text-slate-100" htmlFor="title">Title</label>
           <input name="title" value={form.title} onChange={onChange} placeholder="Title" className="glass-input w-full py-2 px-3" required />
         </div>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="eventId">Related Event (optional)</label>
+          <label className="block text-sm font-semibold mb-1 text-slate-900 dark:text-slate-100" htmlFor="eventId">Related Event (optional)</label>
           <select
             name="eventId"
             value={form.eventId || ""}
@@ -98,20 +98,20 @@ export default function NewsForm({ onAdded }: Props) {
           </select>
         </div>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="summary">Summary (optional)</label>
+          <label className="block text-sm font-semibold mb-1 text-slate-900 dark:text-slate-100" htmlFor="summary">Summary (optional)</label>
           <input name="summary" value={form.summary || ""} onChange={onChange} placeholder="Short summary" className="glass-input w-full py-2 px-3" />
         </div>
         <div className="mb-3">
-          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="content">Content</label>
+          <label className="block text-sm font-semibold mb-1 text-slate-900 dark:text-slate-100" htmlFor="content">Content</label>
           <textarea name="content" value={form.content || ""} onChange={onChange} placeholder="Full content" rows={6} className="glass-input w-full py-2 px-3" required />
         </div>
         
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-1 text-gray-900 dark:text-white drop-shadow-sm" htmlFor="imageFile">Cover Image (optional)</label>
+          <label className="block text-sm font-semibold mb-1 text-slate-900 dark:text-slate-100" htmlFor="imageFile">Cover Image (optional)</label>
           <input name="imageFile" type="file" accept="image/*" onChange={onChange} className="glass-file-input w-full" />
         </div>
         <div className="flex items-center justify-between">
-          <button type="submit" className="glass-button-primary py-2 px-4 glass-glow-hover">Add</button>
+          <button type="submit" className="glass-button-primary py-2 px-4">Add</button>
         </div>
       </form>
     </>

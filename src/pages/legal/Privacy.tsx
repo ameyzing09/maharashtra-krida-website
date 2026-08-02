@@ -126,7 +126,7 @@ export default function Privacy() {
           Email{" "}
           <a
             href={`mailto:${ORGANISATION.email}`}
-            className="text-lime-600 dark:text-lime-400 hover:underline"
+            className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
           >
             {ORGANISATION.email}
           </a>{" "}
@@ -145,7 +145,7 @@ export default function Privacy() {
         <p>
           We may update this policy; the date it was last changed is shown at the top of this
           page. See also our{" "}
-          <Link to="/terms" className="text-lime-600 dark:text-lime-400 hover:underline">
+          <Link to="/terms" className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">
             Terms &amp; Conditions
           </Link>
           .

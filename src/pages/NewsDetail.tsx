@@ -37,44 +37,44 @@ export default function NewsDetail() {
 
   if (loading) {
     return (
-      <section className="mx-auto max-w-3xl px-4 py-8">
+      <section className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
         <PageLoader variant="center" label="Loading news..." />
       </section>
     );
   }
   if (error) {
     return (
-      <section className="mx-auto max-w-3xl px-4 py-8">
+      <section className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
         <p className="text-red-600">{error}</p>
       </section>
     );
   }
   if (!item) {
     return (
-      <section className="mx-auto max-w-3xl px-4 py-8">
-        <p className="text-gray-600 dark:text-gray-300">News not found.</p>
+      <section className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
+        <p className="text-slate-600 dark:text-slate-400">News not found.</p>
       </section>
     );
   }
 
   return (
-    <section className="mx-auto max-w-3xl px-4 py-8">
+    <section className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-        <Link to="/news" className="text-sm text-brand-lime hover:underline">← Back to News</Link>
-        <h1 className="mt-2 font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white">{item.title}</h1>
+        <Link to="/news" className="text-sm text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">← Back to News</Link>
+        <h1 className="mt-2 font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{item.title}</h1>
         {item.eventId && eventsById[item.eventId] && (
-          <div className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+          <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             Related event: <span className="font-medium">{eventsById[item.eventId].name}</span>
           </div>
         )}
       </motion.div>
       {item.imageUrl && (
-        <motion.div className="mt-4 aspect-[4/3] w-full relative rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}>
+        <motion.div className="mt-4 aspect-[4/3] w-full relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}>
           <img src={item.imageUrl} alt={item.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
         </motion.div>
       )}
       {item.summary && (
-        <motion.p className="mt-4 text-base text-gray-700 dark:text-gray-300 whitespace-pre-line" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+        <motion.p className="mt-4 text-base text-slate-600 dark:text-slate-400 whitespace-pre-line" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
           {item.summary}
         </motion.p>
       )}

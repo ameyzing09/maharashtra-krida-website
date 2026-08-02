@@ -4,7 +4,7 @@ import HomepageList from "../component/HomepageList";
 const HomepageManagement = () => {
   
   return (
-    <div className="container mx-auto px-4 py-8 text-brand-charcoal dark:text-gray-200">
+    <div className="container mx-auto px-4 py-8 text-slate-600 dark:text-slate-400">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold">Sports Management</h1>
       </div>
@@ -13,11 +13,11 @@ const HomepageManagement = () => {
         view existing events.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white dark:bg-brand-slate rounded-lg shadow-md p-6 border border-black/5 dark:border-white/10">
+        <div className="glass-panel p-6">
           <h2 className="text-xl font-semibold mb-4">Add Content</h2>
           <HomepageForm />
         </div>
-        <div className="bg-white dark:bg-brand-slate rounded-lg shadow-md p-6 border border-black/5 dark:border-white/10">
+        <div className="glass-panel p-6">
           <h2 className="text-xl font-semibold mb-4">View Content</h2>
           <HomepageList />
         </div>

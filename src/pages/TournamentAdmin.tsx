@@ -43,11 +43,11 @@ export default function TournamentAdmin() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white">Tournament Admin</h1>
+        <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Tournament Admin</h1>
         <select
           value={eventId}
           onChange={(e) => setEventId(e.target.value)}
-          className="rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-brand-slate text-brand-charcoal dark:text-gray-100 px-3 py-2"
+          className="glass-input text-sm px-3 py-2"
         >
           {events.map((ev) => (
             <option key={ev.id} value={ev.id}>
@@ -57,7 +57,7 @@ export default function TournamentAdmin() {
         </select>
       </div>
 
-      <div className="inline-flex rounded-full bg-black/5 dark:bg-white/10 p-1 mb-4">
+      <div className="glass-panel-subtle inline-flex rounded-full p-1 mb-4">
         {([
           ["teams", "Teams"],
           ["schedule", "Schedule"],
@@ -69,7 +69,7 @@ export default function TournamentAdmin() {
             whileHover={{ y: tab === key ? 0 : -1 }}
             whileTap={{ scale: tab === key ? 1 : 0.98 }}
             className={`px-3 py-1.5 text-sm rounded-full ${
-              tab === key ? "bg-white dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-100 shadow" : "text-gray-700 dark:text-gray-300"
+              tab === key ? "glass-button-primary rounded-full" : "text-slate-600 dark:text-slate-400"
             }`}
           >
             {label}

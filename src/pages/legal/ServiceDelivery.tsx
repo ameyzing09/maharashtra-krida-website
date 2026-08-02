@@ -77,7 +77,7 @@ export default function ServiceDelivery() {
         <p>
           Schedules and venues can change; we notify the registered contact person when they
           do. See the{" "}
-          <Link to="/terms" className="text-lime-600 dark:text-lime-400 hover:underline">
+          <Link to="/terms" className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">
             Terms &amp; Conditions
           </Link>
           .
@@ -90,14 +90,14 @@ export default function ServiceDelivery() {
           Check the{" "}
           <Link
             to="/registration/status"
-            className="text-lime-600 dark:text-lime-400 hover:underline"
+            className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
           >
             registration status page
           </Link>{" "}
           first, then email{" "}
           <a
             href={`mailto:${ORGANISATION.email}`}
-            className="text-lime-600 dark:text-lime-400 hover:underline"
+            className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400"
           >
             {ORGANISATION.email}
           </a>{" "}
@@ -106,7 +106,7 @@ export default function ServiceDelivery() {
         </p>
         <p>
           Refunds are governed by the{" "}
-          <Link to="/refunds" className="text-lime-600 dark:text-lime-400 hover:underline">
+          <Link to="/refunds" className="text-slate-900 dark:text-slate-100 font-medium underline underline-offset-4 decoration-slate-300 hover:decoration-slate-500 dark:decoration-slate-600 dark:hover:decoration-slate-400">
             Refund &amp; Cancellation Policy
           </Link>
           .
