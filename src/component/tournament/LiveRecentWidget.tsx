@@ -111,14 +111,17 @@ export default function LiveRecentWidget() {
         <div className="flex items-center justify-center py-10">
           <TailSpin color={SPINNER_COLOR} height={40} width={40} />
         </div>
-      ) : cards.length === 0 ? (
+      ) : /* MotionGrid below carries key={tab}: it staggers its children, so it
+             drives them, and cards mounted by a later tab would stay at opacity
+             0 unless the container remounts. */
+      cards.length === 0 ? (
         <p className="text-sm text-slate-600 dark:text-slate-400">
           {tab === "live" && "No live matches currently."}
           {tab === "upcoming" && "No upcoming matches."}
           {tab === "past" && "No past matches."}
         </p>
       ) : (
-        <MotionGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MotionGrid key={tab} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {cards.map((c) => (
             <MotionItem key={c.matchId} whileHover={{ y: -4 }} className="h-full">
               <Link to="/tournaments" className="block h-full">

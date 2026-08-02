@@ -61,10 +61,13 @@ export default function TournamentsPage() {
         <TabFilter value={tab} onChange={setTab} />
       </div>
 
+      {/* MotionGrid carries key={tab} below: it staggers its children, which
+          means it drives them, so cards mounted by a later filter would stay at
+          opacity 0 unless the container remounts. Same in LiveRecentWidget. */}
       {cards.length === 0 ? (
         <p className="text-slate-600 dark:text-slate-400">No live matches found.</p>
       ) : (
-        <MotionGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <MotionGrid key={tab} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {cards.map((c) => (
             <MotionItem key={c.matchId} className="h-full">
               <ScoreCard data={c} />
