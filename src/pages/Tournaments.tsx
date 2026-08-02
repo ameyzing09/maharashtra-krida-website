@@ -52,7 +52,12 @@ export default function TournamentsPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-      <div className="flex items-center justify-between mb-4">
+      {/* flex-wrap, not nowrap: the title and the pill group come to ~400px,
+          more than a phone's ~330px. Without wrapping this row widened the
+          whole document, so the header and footer scrolled sideways with it.
+          Unlike the homepage widget the tabs stay visible here — filtering is
+          what this page is for. */}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Tournaments</h1>
         <div className="glass-panel-subtle inline-flex rounded-full p-1">
           {([
@@ -63,7 +68,7 @@ export default function TournamentsPage() {
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`px-3 py-1.5 text-sm rounded-full ${
+              className={`px-3 py-1.5 text-xs sm:text-sm rounded-full ${
                 tab === key ? "glass-button-primary rounded-full" : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
