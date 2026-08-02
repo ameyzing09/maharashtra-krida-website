@@ -92,8 +92,11 @@ export default function LiveRecentWidget() {
   return (
     <MotionSection className="bg-gradient-to-b from-orange-50/70 to-transparent dark:from-slate-900/50 dark:to-transparent">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
+      {/* Stacks below `sm`: the heading, the pill group and the link together run
+          to roughly 520px, which does not fit a phone. Left as one row they only
+          shrink, and "View all" ends up broken across two lines. */}
+      <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-3">
           <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight uppercase text-slate-900 dark:text-slate-100"><span aria-hidden className="mr-3 inline-block h-6 w-1.5 -mb-0.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-600" />Tournaments</h2>
           <div className="glass-panel-subtle inline-flex rounded-full p-1">
             {([
@@ -113,7 +116,7 @@ export default function LiveRecentWidget() {
             ))}
           </div>
         </div>
-        <Link to="/tournaments" className="text-sm link-accent">View all</Link>
+        <Link to="/tournaments" className="text-sm link-accent self-start whitespace-nowrap sm:self-auto">View all</Link>
       </div>
       {toast && <Toast message={toast.message} type={toast.type} />}
       {loading ? (
