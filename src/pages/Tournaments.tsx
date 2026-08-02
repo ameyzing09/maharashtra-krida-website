@@ -8,9 +8,8 @@ import type { EventTeam, Match, ScoreCardData, Team } from "../types/tournament"
 import { resolveTeamsForMatch } from "../tournament/resolve";
 import { toScoreCardData } from "../tournament/adapter";
 import ScoreCard from "../component/tournament/ScoreCard";
+import TabFilter, { type Tab } from "../component/tournament/TabFilter";
 import { MotionGrid, MotionItem } from "../component/common/motion";
-
-type Tab = "live" | "upcoming" | "past";
 
 export default function TournamentsPage() {
   const [tab, setTab] = useState<Tab>("live");
@@ -52,25 +51,14 @@ export default function TournamentsPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-      <div className="flex items-center justify-between mb-4">
+      {/* Title plus the pill group came to ~400px against a phone's ~330px, and
+          this container does not clip — so the row widened the whole document
+          and the header and footer scrolled sideways with it. TabFilter
+          collapses to an icon below `sm`. No menu footer: this page is where
+          "View all tournaments" would have gone. */}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3">
         <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Tournaments</h1>
-        <div className="glass-panel-subtle inline-flex rounded-full p-1">
-          {([
-            ["live", "Live"],
-            ["upcoming", "Upcoming"],
-            ["past", "Past"],
-          ] as [Tab, string][]).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => setTab(key)}
-              className={`px-3 py-1.5 text-sm rounded-full ${
-                tab === key ? "glass-button-primary rounded-full" : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <TabFilter value={tab} onChange={setTab} />
       </div>
 
       {cards.length === 0 ? (

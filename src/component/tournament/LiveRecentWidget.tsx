@@ -15,6 +15,7 @@ import { calculateScoreCardsOnHome } from "../../";
 import useToast from "../../hook/useToast";
 import Toast from "../common/Toast";
 import { TailSpin } from "react-loader-spinner";
+import TabFilter, { type Tab } from "./TabFilter";
 
 export default function LiveRecentWidget() {
   const [events, setEvents] = useState<EventProps[]>([]);
@@ -26,7 +27,6 @@ export default function LiveRecentWidget() {
   const [limit, setLimit] = useState<number>(() => calculateScoreCardsOnHome());
   const [loading, setLoading] = useState(true);
   const { toast, showToast } = useToast();
-  type Tab = "live" | "upcoming" | "past";
   const [tab, setTab] = useState<Tab>("live");
   const [autoSwitchEnabled, setAutoSwitchEnabled] = useState(true);
 
@@ -92,28 +92,19 @@ export default function LiveRecentWidget() {
   return (
     <MotionSection className="bg-gradient-to-b from-orange-50/70 to-transparent dark:from-slate-900/50 dark:to-transparent">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight uppercase text-slate-900 dark:text-slate-100"><span aria-hidden className="mr-3 inline-block h-6 w-1.5 -mb-0.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-600" />Tournaments</h2>
-          <div className="glass-panel-subtle inline-flex rounded-full p-1">
-            {([
-              ["live", "Live"],
-              ["upcoming", "Upcoming"],
-              ["past", "Past"],
-            ] as [Tab, string][]).map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => { setAutoSwitchEnabled(false); setTab(key); }}
-                className={`px-3 py-1.5 text-xs sm:text-sm rounded-full transition-all duration-200 ${
-                  tab === key ? "glass-button-primary rounded-full" : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-        <Link to="/tournaments" className="text-sm link-accent">View all</Link>
+      {/* The heading alone is ~240px of a phone's ~330px, so the filter and the
+          link cannot sit beside it — below `sm` TabFilter collapses to one icon
+          and takes the link into the menu it opens. */}
+      <div className="mb-4 flex flex-wrap items-center gap-x-3">
+        <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight uppercase text-slate-900 dark:text-slate-100"><span aria-hidden className="mr-3 inline-block h-6 w-1.5 -mb-0.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-600" />Tournaments</h2>
+        <TabFilter
+          value={tab}
+          onChange={(next) => { setAutoSwitchEnabled(false); setTab(next); }}
+          menuFooter={
+            <Link to="/tournaments" className="block rounded-xl px-3 py-2 text-sm link-accent">View all tournaments</Link>
+          }
+        />
+        <Link to="/tournaments" className="ml-auto hidden whitespace-nowrap text-sm link-accent sm:block">View all</Link>
       </div>
       {toast && <Toast message={toast.message} type={toast.type} />}
       {loading ? (
