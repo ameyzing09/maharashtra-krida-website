@@ -63,21 +63,21 @@ export default function GalleryList({ refreshKey }: Props) {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} />}
-      <div className="container mx-auto text-brand-charcoal dark:text-gray-200">
+      <div className="container mx-auto text-slate-600 dark:text-slate-400">
         <h2 className="text-2xl font-semibold mb-4">Gallery Items</h2>
         {pageItems.length === 0 ? (
-          <p className="text-gray-600 dark:text-gray-300">No items yet.</p>
+          <p className="text-slate-600 dark:text-slate-400">No items yet.</p>
         ) : (
           <ul className="grid gap-4">
             {pageItems.map((it) => (
-              <li key={it.id} className="p-4 bg-white dark:bg-brand-slate border border-black/5 dark:border-white/10 shadow rounded-lg">
+              <li key={it.id} className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow rounded-lg">
                 <div className="flex items-center gap-3">
                   {it.imageUrl && (
                     <img src={it.imageUrl} alt={it.alt || it.title || "Gallery"} className="h-16 w-24 object-cover rounded" />
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="font-bold truncate">{it.title || "Untitled"}</div>
-                    {it.description && <div className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{it.description}</div>}
+                    {it.description && <div className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">{it.description}</div>}
                   </div>
                   <div className="ml-auto">
                     <button onClick={() => onDelete(it.id)} className="flex items-center justify-center px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">

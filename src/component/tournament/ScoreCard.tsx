@@ -1,4 +1,4 @@
-﻿import type { ScoreCardData } from "../../types/tournament";
+import type { ScoreCardData } from "../../types/tournament";
 import { formatDateTimePretty } from "../../utils/date";
 
 type Props = { data: ScoreCardData };
@@ -9,11 +9,11 @@ function TeamBadge({ name, short, logoUrl }: { name: string; short?: string; log
       {logoUrl ? (
         <img src={logoUrl} alt={name} className="h-8 w-8 rounded-full object-cover" />
       ) : (
-        <div className="h-8 w-8 rounded-full bg-black/5 dark:bg-white/10" />
+        <div className="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800" />
       )}
       <div className="flex flex-col leading-tight">
-        <span className="text-sm font-semibold text-brand-charcoal dark:text-gray-100">{name}</span>
-        {short && <span className="text-xs text-gray-600 dark:text-gray-400">{short}</span>}
+        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{name}</span>
+        {short && <span className="text-xs text-slate-500 dark:text-slate-400">{short}</span>}
       </div>
     </div>
   );
@@ -21,12 +21,17 @@ function TeamBadge({ name, short, logoUrl }: { name: string; short?: string; log
 
 function StatusPill({ status }: { status: ScoreCardData["status"] }) {
   const map: Record<ScoreCardData["status"], string> = {
-    upcoming: "bg-blue-500",
-    live: "bg-red-500",
-    completed: "bg-green-600",
-    cancelled: "bg-gray-500",
+    upcoming: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-900",
+    live: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-900",
+    completed: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-900",
+    cancelled: "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
   };
-  return <span className={`px-2 py-0.5 rounded-full text-white text-[11px] ${map[status]}`}>{status.toUpperCase()}</span>;
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-mono text-[11px] ${map[status]}`}>
+      {status === "live" && <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" aria-hidden />}
+      {status.toUpperCase()}
+    </span>
+  );
 }
 
 export default function ScoreCard({ data }: Props) {
@@ -41,9 +46,10 @@ export default function ScoreCard({ data }: Props) {
     return letters || name.slice(0, 3).toUpperCase();
   };
   return (
-    <article className="rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-brand-slate shadow-soft p-4">
+    <article className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-4">
+      <div aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-amber-400/0 via-orange-500/70 to-amber-400/0" />
       <header className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-semibold text-brand-charcoal dark:text-gray-100 line-clamp-1">{data.tournamentTitle}</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 line-clamp-1">{data.tournamentTitle}</h3>
         <StatusPill status={data.status} />
       </header>
 
@@ -53,21 +59,21 @@ export default function ScoreCard({ data }: Props) {
             {data.teamA.logoUrl ? (
               <img src={data.teamA.logoUrl} alt={data.teamA.name} className="h-5 w-5 rounded object-cover" />
             ) : (
-              <div className="h-5 w-5 rounded bg-black/5 dark:bg-white/10" />
+              <div className="h-5 w-5 rounded bg-slate-100 dark:bg-slate-800" />
             )}
-            <span className="text-sm text-brand-charcoal dark:text-gray-100">{abbr(data.teamA.name, data.teamA.short)}</span>
+            <span className="text-sm text-slate-900 dark:text-slate-100">{abbr(data.teamA.name, data.teamA.short)}</span>
           </div>
-          <div className="text-xl font-bold text-brand-charcoal dark:text-gray-100">
+          <div className="text-xl font-bold tabular-nums text-slate-900 dark:text-slate-100">
             {typeof data.score?.aGoals === "number" && typeof data.score?.bGoals === "number"
               ? `${data.score.aGoals} - ${data.score.bGoals}`
               : "-"}
           </div>
           <div className="flex items-center gap-2 justify-end">
-            <span className="text-sm text-brand-charcoal dark:text-gray-100">{abbr(data.teamB.name, data.teamB.short)}</span>
+            <span className="text-sm text-slate-900 dark:text-slate-100">{abbr(data.teamB.name, data.teamB.short)}</span>
             {data.teamB.logoUrl ? (
               <img src={data.teamB.logoUrl} alt={data.teamB.name} className="h-5 w-5 rounded object-cover" />
             ) : (
-              <div className="h-5 w-5 rounded bg-black/5 dark:bg-white/10" />
+              <div className="h-5 w-5 rounded bg-slate-100 dark:bg-slate-800" />
             )}
           </div>
         </div>
@@ -76,22 +82,22 @@ export default function ScoreCard({ data }: Props) {
           <TeamBadge {...data.teamA} />
           <div className="text-center min-w-[90px]">
           {data.kind === "cricket" && (
-            <div className="text-sm text-brand-charcoal dark:text-gray-100">
-              <div className="font-semibold">
-                {data.score ? `${data.score.a.runs}/${data.score.a.wickets} â€¢ ${data.score.a.overs} ov` : "-"}
+            <div className="text-sm text-slate-900 dark:text-slate-100">
+              <div className="font-semibold tabular-nums">
+                {data.score ? `${data.score.a.runs}/${data.score.a.wickets} • ${data.score.a.overs} ov` : "-"}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-300">
-                {data.score ? `${data.score.b.runs}/${data.score.b.wickets} â€¢ ${data.score.b.overs} ov` : "-"}
+              <div className="text-xs tabular-nums text-slate-500 dark:text-slate-400">
+                {data.score ? `${data.score.b.runs}/${data.score.b.wickets} • ${data.score.b.overs} ov` : "-"}
               </div>
             </div>
           )}
           {data.kind === "volleyball" && (
-            <div className="text-sm font-semibold text-brand-charcoal dark:text-gray-100">
+            <div className="text-sm font-semibold tabular-nums text-slate-900 dark:text-slate-100">
               {data.score ? `${data.score.sets.reduce((a, s) => a + (s.a > s.b ? 1 : 0), 0)} - ${data.score.sets.reduce((a, s) => a + (s.b > s.a ? 1 : 0), 0)}` : "-"}
             </div>
           )}
           {data.kind === "other" && (
-            <div className="text-lg font-bold text-brand-charcoal dark:text-gray-100">
+            <div className="text-lg font-bold tabular-nums text-slate-900 dark:text-slate-100">
               {data.score ? `${data.score.aScore ?? "-"} - ${data.score.bScore ?? "-"}` : "-"}
             </div>
           )}
@@ -100,20 +106,20 @@ export default function ScoreCard({ data }: Props) {
       </div>
       )}
 
-      <footer className="mt-3 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+      <footer className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
         <span>{formatDateTimePretty(data.scheduledAt)}</span>
         {data.venue && <span className="truncate max-w-[50%] text-right">{data.venue}</span>}
       </footer>
 
       {/* Details by sport */}
       {data.kind === "cricket" && data.score && (
-        <div className="mt-3 grid grid-cols-1 gap-2 text-xs text-gray-700 dark:text-gray-300">
+        <div className="mt-3 grid grid-cols-1 gap-2 text-xs text-slate-600 dark:text-slate-400">
           <div className="flex justify-between gap-2">
             <div className="flex-1">
               {data.score.a.topBatters?.slice(0, 2).map((b, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <span>{b.name}</span>
-                  <span className="font-medium">{b.runs}</span>
+                  <span className="font-medium tabular-nums">{b.runs}</span>
                 </div>
               ))}
             </div>
@@ -121,7 +127,7 @@ export default function ScoreCard({ data }: Props) {
               {data.score.b.topBatters?.slice(0, 2).map((b, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <span>{b.name}</span>
-                  <span className="font-medium">{b.runs}</span>
+                  <span className="font-medium tabular-nums">{b.runs}</span>
                 </div>
               ))}
             </div>
@@ -131,7 +137,7 @@ export default function ScoreCard({ data }: Props) {
             <span>Best Bowler B: {data.score.b.bestBowler ? `${data.score.b.bestBowler.name} (${data.score.b.bestBowler.wickets}w)` : "-"}</span>
           </div>
           {data.score.externalLiveUrl && (
-            <a href={data.score.externalLiveUrl} target="_blank" rel="noopener noreferrer" className="text-brand-lime underline">Live details</a>
+            <a href={data.score.externalLiveUrl} target="_blank" rel="noopener noreferrer" className="link-accent">Live details</a>
           )}
         </div>
       )}
@@ -139,13 +145,12 @@ export default function ScoreCard({ data }: Props) {
       {/* Football goal-by-goal details hidden on compact cards for readability */}
 
       {data.kind === "volleyball" && data.score && (
-        <div className="mt-3 text-xs text-gray-700 dark:text-gray-300 flex flex-wrap gap-1">
+        <div className="mt-3 text-xs text-slate-600 dark:text-slate-400 flex flex-wrap gap-1">
           {data.score.sets.map((s, i) => (
-            <span key={i} className="px-2 py-0.5 rounded bg-black/5 dark:bg-white/10">Set {i + 1}: {s.a}-{s.b}</span>
+            <span key={i} className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 font-mono dark:border-slate-700 dark:bg-slate-800">Set {i + 1}: {s.a}-{s.b}</span>
           ))}
         </div>
       )}
     </article>
   );
 }
-

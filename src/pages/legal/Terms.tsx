@@ -30,7 +30,7 @@ export default function Terms() {
       <Section heading="Entry fees and confirmation">
         <p>
           Fees are quoted and charged in Indian Rupees, and are shown in full on the{" "}
-          <Link to="/badminton" className="text-lime-600 dark:text-lime-400 hover:underline">
+          <Link to="/badminton" className="link-accent">
             registration page
           </Link>{" "}
           before you pay. For {TOURNAMENT.title} they are:
@@ -50,7 +50,7 @@ export default function Terms() {
         </p>
         <p>
           Entry fees are non-refundable. See the{" "}
-          <Link to="/refunds" className="text-lime-600 dark:text-lime-400 hover:underline">
+          <Link to="/refunds" className="link-accent">
             Refund &amp; Cancellation Policy
           </Link>
           .
@@ -110,11 +110,11 @@ export default function Terms() {
       <Section heading="Your information">
         <p>
           What we collect and why is set out in the{" "}
-          <Link to="/privacy" className="text-lime-600 dark:text-lime-400 hover:underline">
+          <Link to="/privacy" className="link-accent">
             Privacy Policy
           </Link>
           . How your entry is delivered to you is set out in the{" "}
-          <Link to="/shipping" className="text-lime-600 dark:text-lime-400 hover:underline">
+          <Link to="/shipping" className="link-accent">
             Shipping &amp; Delivery Policy
           </Link>
           .

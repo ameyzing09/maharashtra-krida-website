@@ -18,14 +18,14 @@ type SortKey = "created_at" | "company" | "total_paise" | "status";
 type SortDir = "asc" | "desc";
 
 const STATUS_STYLES: Record<RegistrationStatus, string> = {
-  PAID: "bg-lime-500/15 text-lime-700 dark:text-lime-400 ring-1 ring-lime-500/40",
-  PENDING: "bg-amber-500/15 text-amber-700 dark:text-amber-400 ring-1 ring-amber-500/40",
-  CANCELLED: "bg-red-500/10 text-red-600 dark:text-red-400 ring-1 ring-red-500/30",
+  PAID: "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-900",
+  PENDING: "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-900",
+  CANCELLED: "bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-900",
 };
 
 function StatusBadge({ status }: { status: RegistrationStatus }) {
   return (
-    <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${STATUS_STYLES[status]}`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full font-mono text-[11px] ${STATUS_STYLES[status]}`}>
       {status}
     </span>
   );
@@ -34,8 +34,8 @@ function StatusBadge({ status }: { status: RegistrationStatus }) {
 function StatTile({ label, value }: { label: string; value: string }) {
   return (
     <div className="glass-panel p-4 text-center">
-      <p className="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">{label}</p>
-      <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{value}</p>
+      <p className="font-mono text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="text-xl font-bold tabular-nums accent-gradient-text mt-1">{value}</p>
     </div>
   );
 }
@@ -222,18 +222,18 @@ export default function RegistrationsDashboard() {
   if (loading) return <PageLoader variant="center" label="Loading registrations..." />;
 
   return (
-    <div className="container mx-auto px-4 py-8 text-brand-charcoal dark:text-gray-200">
+    <div className="container mx-auto px-4 py-8 text-slate-600 dark:text-slate-400">
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
           Badminton Registrations
         </h1>
         <div className="flex gap-2">
-          <button onClick={() => exportCSV(filtered)} className="glass-button-secondary px-4 py-2 text-sm text-gray-800 dark:text-white">
+          <button onClick={() => exportCSV(filtered)} className="glass-button-secondary px-4 py-2 text-sm text-slate-700 dark:text-slate-200">
             Export CSV
           </button>
-          <button onClick={() => exportExcel(filtered)} className="glass-button-secondary px-4 py-2 text-sm text-gray-800 dark:text-white">
+          <button onClick={() => exportExcel(filtered)} className="glass-button-secondary px-4 py-2 text-sm text-slate-700 dark:text-slate-200">
             Export Excel
           </button>
           <button onClick={load} className="glass-button-outline px-4 py-2 text-sm">
@@ -288,7 +288,7 @@ export default function RegistrationsDashboard() {
             onChange={(e) => setFromDate(e.target.value)}
             aria-label="From date"
           />
-          <span className="text-gray-400 hidden sm:inline">–</span>
+          <span className="text-slate-400 hidden sm:inline">–</span>
           <input
             type="date"
             className="glass-input px-2 py-2 w-full sm:w-auto"
@@ -303,7 +303,7 @@ export default function RegistrationsDashboard() {
       <div className="glass-panel overflow-x-auto">
         <table className="w-full text-sm min-w-[760px]">
           <thead>
-            <tr className="text-left text-gray-500 dark:text-gray-400 border-b border-black/10 dark:border-white/10">
+            <tr className="text-left text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
               <th className="px-4 py-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("created_at")}>
                 Date{arrow("created_at")}
               </th>
@@ -323,7 +323,7 @@ export default function RegistrationsDashboard() {
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
                   No registrations match the current filters.
                 </td>
               </tr>
@@ -333,27 +333,27 @@ export default function RegistrationsDashboard() {
                 <tr
                   key={r.id}
                   onClick={() => setExpanded((x) => (x === r.id ? null : r.id))}
-                  className="border-b border-black/5 dark:border-white/5 hover:bg-black/[.03] dark:hover:bg-white/[.04] cursor-pointer"
+                  className="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer"
                 >
                   <td className="px-4 py-3 whitespace-nowrap">{new Date(r.created_at).toLocaleDateString("en-IN")}</td>
                   <td className="px-4 py-3">
-                    <p className="font-medium text-gray-900 dark:text-white">{r.company}</p>
-                    <p className="text-xs text-gray-500">{r.contact_person || r.official_email}</p>
+                    <p className="font-medium text-slate-900 dark:text-slate-100">{r.company}</p>
+                    <p className="text-xs text-slate-500">{r.contact_person || r.official_email}</p>
                   </td>
-                  <td className="px-4 py-3 text-xs text-gray-600 dark:text-gray-300 max-w-[220px] truncate">
+                  <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-400 max-w-[220px] truncate">
                     {r.categories_summary || "—"}
                   </td>
                   <td className="px-4 py-3 text-right font-semibold whitespace-nowrap">{formatINR(r.total_paise)}</td>
                   <td className="px-4 py-3">
                     <StatusBadge status={r.status} />
-                    <p className="text-[10px] text-gray-500 mt-0.5">{r.payment_method === "offline" ? "offline" : "razorpay"}</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5">{r.payment_method === "offline" ? "offline" : "razorpay"}</p>
                   </td>
                   <td className="px-4 py-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                     {r.status === "PENDING" && (
                       <button
                         disabled={busy}
                         onClick={() => { setPayTarget(r); setPayRef(""); }}
-                        className="text-xs text-lime-700 dark:text-lime-400 hover:underline mr-3"
+                        className="text-xs link-accent mr-3"
                       >
                         Mark Paid
                       </button>
@@ -368,7 +368,7 @@ export default function RegistrationsDashboard() {
                 <AnimatePresence initial={false}>
                   {expanded === r.id && (
                     <tr key={`${r.id}-detail`}>
-                      <td colSpan={6} className="px-4 pb-4 pt-0 bg-black/[.02] dark:bg-white/[.03]">
+                      <td colSpan={6} className="px-4 pb-4 pt-0 bg-slate-50 dark:bg-slate-800/40">
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
@@ -377,30 +377,30 @@ export default function RegistrationsDashboard() {
                         >
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 text-xs">
                             <div className="space-y-1">
-                              <p><span className="text-gray-500">Official email:</span> {r.official_email}</p>
-                              <p><span className="text-gray-500">Phone:</span> {r.phone}</p>
-                              {r.personal_email && <p><span className="text-gray-500">Personal email:</span> {r.personal_email}</p>}
-                              <p><span className="text-gray-500">Order:</span> {r.order_id}</p>
-                              {r.payment_id && <p><span className="text-gray-500">Payment:</span> {r.payment_id}</p>}
-                              {r.payment_note && <p><span className="text-gray-500">Payment ref:</span> {r.payment_note}</p>}
-                              {r.paid_at && <p><span className="text-gray-500">Paid at:</span> {new Date(r.paid_at).toLocaleString("en-IN")}</p>}
+                              <p><span className="text-slate-500">Official email:</span> {r.official_email}</p>
+                              <p><span className="text-slate-500">Phone:</span> {r.phone}</p>
+                              {r.personal_email && <p><span className="text-slate-500">Personal email:</span> {r.personal_email}</p>}
+                              <p><span className="text-slate-500">Order:</span> {r.order_id}</p>
+                              {r.payment_id && <p><span className="text-slate-500">Payment:</span> {r.payment_id}</p>}
+                              {r.payment_note && <p><span className="text-slate-500">Payment ref:</span> {r.payment_note}</p>}
+                              {r.paid_at && <p><span className="text-slate-500">Paid at:</span> {new Date(r.paid_at).toLocaleString("en-IN")}</p>}
 
                               <div className="pt-2 flex items-center gap-3">
                                 {r.invoice_number ? (
                                   <>
-                                    <span className="text-gray-500">Invoice:</span>
+                                    <span className="text-slate-500">Invoice:</span>
                                     <span>{r.invoice_number}</span>
                                     <button
                                       disabled={busy}
                                       onClick={() => onDownloadInvoice(r)}
-                                      className="text-lime-700 dark:text-lime-400 hover:underline"
+                                      className="link-accent"
                                     >
                                       Download
                                     </button>
                                     <button
                                       disabled={busy}
                                       onClick={() => onRegenerateInvoice(r)}
-                                      className="text-gray-500 hover:underline"
+                                      className="text-slate-500 hover:underline"
                                     >
                                       Regenerate
                                     </button>
@@ -409,24 +409,24 @@ export default function RegistrationsDashboard() {
                                   <button
                                     disabled={busy}
                                     onClick={() => onRegenerateInvoice(r)}
-                                    className="text-lime-700 dark:text-lime-400 hover:underline"
+                                    className="link-accent"
                                   >
                                     Generate Invoice
                                   </button>
                                 ) : (
-                                  <span className="text-gray-500">Invoice available once paid</span>
+                                  <span className="text-slate-500">Invoice available once paid</span>
                                 )}
                               </div>
                             </div>
                             <div className="space-y-2">
                               {r.entries.map((e) => (
                                 <div key={e.id} className="glass-panel-subtle p-2">
-                                  <p className="font-semibold text-gray-900 dark:text-white">
+                                  <p className="font-semibold text-slate-900 dark:text-slate-100">
                                     {CATEGORY_BY_CODE[e.category]?.label ?? e.category}
                                     {e.teamName ? ` — ${e.teamName}` : ""}
                                   </p>
                                   {e.players.length > 0 && (
-                                    <ul className="mt-1 space-y-0.5 text-gray-600 dark:text-gray-300">
+                                    <ul className="mt-1 space-y-0.5 text-slate-600 dark:text-slate-400">
                                       {e.players.map((p, i) => (
                                         <li key={i}>{p.name} · {p.phone} · {p.officialEmail}{p.designation ? ` · ${p.designation}` : ""}</li>
                                       ))}
@@ -447,7 +447,7 @@ export default function RegistrationsDashboard() {
         </table>
       </div>
 
-      <p className="text-xs text-gray-500 mt-3">
+      <p className="text-xs text-slate-500 mt-3">
         Showing {filtered.length} of {rows.length} registrations. Click a row for full details.
       </p>
 
@@ -465,14 +465,14 @@ export default function RegistrationsDashboard() {
               initial={{ scale: 0.95, y: 10 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 10 }}
-              className="glass-panel-strong w-full max-w-md p-6 bg-white/90 dark:bg-brand-slate/95"
+              className="glass-panel-strong w-full max-w-md p-6 "
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Mark as Paid (offline)</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Mark as Paid (offline)</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                 {payTarget.company} — {formatINR(payTarget.total_paise)}
               </p>
-              <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mt-4 mb-1">
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mt-4 mb-1">
                 Payment reference (NEFT / UTR / cheque no.)
               </label>
               <input
@@ -486,7 +486,7 @@ export default function RegistrationsDashboard() {
                 <button
                   disabled={busy}
                   onClick={() => setPayTarget(null)}
-                  className="glass-button-secondary px-5 py-2 text-gray-800 dark:text-white"
+                  className="glass-button-secondary px-5 py-2 text-slate-700 dark:text-slate-200"
                 >
                   Close
                 </button>

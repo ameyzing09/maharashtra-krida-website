@@ -19,8 +19,8 @@ type Props = {
 export function Section({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
     <section className="mt-6 first:mt-0">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{heading}</h2>
-      <div className="mt-2 space-y-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{heading}</h2>
+      <div className="mt-2 space-y-3 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
         {children}
       </div>
     </section>
@@ -39,13 +39,13 @@ export function List({ items }: { items: React.ReactNode[] }) {
 
 export default function LegalPage({ title, intro, children }: Props) {
   return (
-    <section className="bg-brand-paper dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200">
+    <section className="text-slate-600 dark:text-slate-400">
       <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-brand-charcoal dark:text-white">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
           {title}
         </h1>
-        <p className="mt-3 text-gray-700 dark:text-gray-300 text-base">{intro}</p>
-        <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+        <p className="mt-3 text-slate-600 dark:text-slate-400 text-base">{intro}</p>
+        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
           Last updated: {ORGANISATION.policiesLastUpdated}
         </p>
 
@@ -54,15 +54,15 @@ export default function LegalPage({ title, intro, children }: Props) {
         {/* Every policy page ends with a working way to reach a human — Razorpay
             checks that contact details are present and consistent site-wide. */}
         <div className="mt-6 glass-panel p-5 sm:p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Contact us</h2>
-          <div className="mt-2 space-y-1 text-sm text-gray-700 dark:text-gray-300">
-            <p className="font-medium text-gray-900 dark:text-white">{ORGANISATION.legalName}</p>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Contact us</h2>
+          <div className="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-400">
+            <p className="font-medium text-slate-900 dark:text-slate-100">{ORGANISATION.legalName}</p>
             <p>{ADDRESS_INLINE}</p>
             <p>
               Attn: {ORGANISATION.contactName} &middot;{" "}
               <a
                 href={ORGANISATION.phoneHref}
-                className="text-lime-600 dark:text-lime-400 hover:underline"
+                className="link-accent"
               >
                 {ORGANISATION.phone}
               </a>
@@ -70,15 +70,15 @@ export default function LegalPage({ title, intro, children }: Props) {
             <p>
               <a
                 href={`mailto:${ORGANISATION.email}`}
-                className="text-lime-600 dark:text-lime-400 hover:underline"
+                className="link-accent"
               >
                 {ORGANISATION.email}
               </a>
             </p>
           </div>
-          <p className="mt-3 text-xs text-gray-600 dark:text-gray-400">
+          <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
             We usually respond within 1–2 business days. See also our{" "}
-            <Link to="/contact" className="text-lime-600 dark:text-lime-400 hover:underline">
+            <Link to="/contact" className="link-accent">
               contact page
             </Link>
             .

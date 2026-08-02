@@ -28,7 +28,7 @@ export default function TopProgressBar() {
             animate={{ width: "80%" }}
             exit={{ width: "100%", opacity: 0 }}
             transition={{ duration: 0.45, ease: "easeOut" }}
-            className="h-0.5 bg-lime-500"
+            className="h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600"
           />
         )}
       </AnimatePresence>

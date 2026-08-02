@@ -25,7 +25,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const input = "glass-input w-full px-3 py-2";
-const labelCls = "text-sm font-medium text-gray-700 dark:text-gray-200 mb-1";
+const labelCls = "text-sm font-medium text-slate-600 dark:text-slate-300 mb-1";
 
 export default function StepOrganization() {
   const { state, dispatch } = useBadmintonRegistration();
@@ -87,7 +87,7 @@ export default function StepOrganization() {
       <div className="flex flex-col">
         <label className={labelCls}>Official Email</label>
         <input className={input} type="email" placeholder="you@company.com" {...register("officialEmail")} />
-        <p className="text-[11px] text-gray-500 mt-1">
+        <p className="text-[11px] text-slate-500 mt-1">
           Work email only. Personal domains (gmail, yahoo, etc.) are not allowed.
         </p>
         {errors.officialEmail && (
@@ -97,7 +97,7 @@ export default function StepOrganization() {
 
       <div className="flex flex-col">
         <label className={labelCls}>
-          Personal Email <span className="text-gray-400 font-normal">(optional)</span>
+          Personal Email <span className="text-slate-400 font-normal">(optional)</span>
         </label>
         <input className={input} type="email" placeholder="you@example.com" {...register("personalEmail")} />
         {errors.personalEmail && (

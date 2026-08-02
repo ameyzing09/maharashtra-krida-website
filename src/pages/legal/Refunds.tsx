@@ -46,7 +46,7 @@ export default function Refunds() {
           A change of venue, schedule, format or draw is not a cancellation, and does not
           create a right to a refund. Nor does a walkover, a withdrawal, a no-show, or
           disqualification for breach of the{" "}
-          <Link to="/terms" className="text-lime-600 dark:text-lime-400 hover:underline">
+          <Link to="/terms" className="link-accent">
             tournament terms
           </Link>
           .
@@ -81,7 +81,7 @@ export default function Refunds() {
           Email{" "}
           <a
             href={`mailto:${ORGANISATION.email}`}
-            className="text-lime-600 dark:text-lime-400 hover:underline"
+            className="link-accent"
           >
             {ORGANISATION.email}
           </a>{" "}

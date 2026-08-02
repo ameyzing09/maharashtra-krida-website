@@ -1,43 +1,54 @@
 import React from "react";
 import { ORGANISATION } from "../constants/organisation";
+import { MotionSection, MotionGrid, MotionItem } from "../component/common/motion";
 
-const Contact: React.FC = () => {
+type ContactProps = {
+  /* When rendered inside another page (e.g. Home), demote the page heading to
+     an h2 so the document keeps a single h1. */
+  embedded?: boolean;
+};
+
+const Contact: React.FC<ContactProps> = ({ embedded = false }) => {
+  const Heading = embedded ? "h2" : "h1";
   return (
-    <section className="bg-brand-paper dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200">
+    <MotionSection>
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
         <div className="max-w-3xl mb-8">
-          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-brand-charcoal dark:text-white">Contact Us</h1>
-          <p className="mt-3 text-gray-700 dark:text-gray-300 text-base sm:text-lg">We’d love to hear from you. Reach out for partnerships, event participation or general queries.</p>
+          <Heading className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100"><span aria-hidden className="mr-3 inline-block h-7 w-1.5 -mb-0.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-600" />Contact Us</Heading>
+          <p className="mt-3 text-slate-600 dark:text-slate-400 text-base sm:text-lg">We’d love to hear from you. Reach out for partnerships, event participation or general queries.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div className="glass-panel p-5">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Address</h2>
-            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <MotionGrid className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-3">
+          <MotionItem className="glass-panel p-5 sm:p-6 group relative overflow-hidden hover:border-orange-200 dark:hover:border-orange-400/30 hover:shadow-md">
+            <div aria-hidden className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Address</h3>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               {ORGANISATION.addressLines.map((line) => (
                 <span key={line} className="block">{line}</span>
               ))}
             </p>
-          </div>
+          </MotionItem>
 
-          <div className="glass-panel p-5">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Call</h2>
-            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+          <MotionItem className="glass-panel p-5 sm:p-6 group relative overflow-hidden hover:border-orange-200 dark:hover:border-orange-400/30 hover:shadow-md">
+            <div aria-hidden className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Call</h3>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
               Contact Person: <span className="font-medium">{ORGANISATION.contactName}</span>
             </p>
-            <a href={ORGANISATION.phoneHref} className="mt-1 inline-block text-sm text-lime-600 dark:text-lime-400 hover:underline">{ORGANISATION.phone}</a>
-          </div>
+            <a href={ORGANISATION.phoneHref} className="mt-1 inline-block text-sm link-accent">{ORGANISATION.phone}</a>
+          </MotionItem>
 
-          <div className="glass-panel p-5">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Email</h2>
-            <a href={`mailto:${ORGANISATION.email}`} className="mt-2 inline-block text-sm text-lime-600 dark:text-lime-400 hover:underline">{ORGANISATION.email}</a>
-            <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">We usually respond within 1–2 business days.</p>
-          </div>
-        </div>
+          <MotionItem className="glass-panel p-5 sm:p-6 group relative overflow-hidden hover:border-orange-200 dark:hover:border-orange-400/30 hover:shadow-md">
+            <div aria-hidden className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Email</h3>
+            <a href={`mailto:${ORGANISATION.email}`} className="mt-2 inline-block text-sm link-accent">{ORGANISATION.email}</a>
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">We usually respond within 1–2 business days.</p>
+          </MotionItem>
+        </MotionGrid>
 
-        <div className="mt-8 glass-panel p-5">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Send us a message</h2>
-          <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">Prefer email? Fill this out and your mail client will open with pre-filled details.</p>
+        <div className="mt-4 sm:mt-5 glass-panel p-5 sm:p-6">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Send us a message</h3>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Prefer email? Fill this out and your mail client will open with pre-filled details.</p>
           <form
             className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4"
             onSubmit={(e) => {
@@ -61,7 +72,7 @@ const Contact: React.FC = () => {
           </form>
         </div>
       </div>
-    </section>
+    </MotionSection>
   );
 };
 

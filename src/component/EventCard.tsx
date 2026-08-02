@@ -27,9 +27,9 @@ const EventCard: React.FC<CardProps> = ({
   
   return (
     <motion.article
-      whileHover={{ y: -4, scale: 1.02 }}
+      whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
-      className="w-full h-full flex flex-col glass-panel glass-hover-strong group"
+      className="w-full h-full flex flex-col glass-panel glass-hover-strong relative overflow-hidden hover:border-orange-300 dark:hover:border-orange-400/40 group"
     >
       {/* Fixed aspect ratio image container with glass overlay */}
       <div className="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden rounded-t-2xl">
@@ -39,26 +39,21 @@ const EventCard: React.FC<CardProps> = ({
           alt={`${name} event image`}
           loading="lazy"
         />
-        {/* Glass gradient overlay */}
+        {/* Gradient overlay for image legibility */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-        {/* Subtle glass effect on image */}
-        <div className="absolute inset-0 backdrop-blur-[0.5px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      {/* Content area with glassmorphic styling */}
+      {/* Content area */}
       <div className="flex flex-col h-full p-4 sm:p-5 relative">
-        {/* Subtle background blur for content area */}
-        <div className="absolute inset-0 backdrop-blur-sm bg-white/5 dark:bg-black/5 rounded-b-2xl" />
-        
-        {/* Content with proper z-index */}
+        <div aria-hidden className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-orange-500/15 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="relative z-10 flex flex-col h-full">
           {/* Title and description */}
           <header className="mb-3">
-            <h3 className="font-display font-bold text-base sm:text-lg text-gray-900 dark:text-white mb-2 line-clamp-2 leading-tight drop-shadow-sm">
+            <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-slate-100 mb-2 line-clamp-2 leading-tight">
               {name}
             </h3>
             {description && (
-              <p className="text-gray-700 dark:text-gray-200 text-sm line-clamp-2 leading-relaxed drop-shadow-sm">
+              <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2 leading-relaxed">
                 {description}
               </p>
             )}
@@ -69,7 +64,7 @@ const EventCard: React.FC<CardProps> = ({
             {sport && (
               <span
                 title={sport}
-                className="glass-pill max-w-[120px] sm:max-w-[140px] whitespace-nowrap overflow-hidden text-ellipsis font-medium"
+                className="glass-pill-accent max-w-[120px] sm:max-w-[140px] whitespace-nowrap overflow-hidden text-ellipsis"
               >
                 {sport}
               </span>
@@ -115,7 +110,7 @@ const EventCard: React.FC<CardProps> = ({
                     href={registrationUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="glass-button-primary py-2 px-4 text-sm glass-glow-hover"
+                    className="glass-button-primary py-2 px-4 text-sm"
                     aria-label={`Register for ${name}`}
                   >
                     Register Now
@@ -123,7 +118,7 @@ const EventCard: React.FC<CardProps> = ({
                 ) : (
                   <Link
                     to={registrationUrl}
-                    className="glass-button-primary py-2 px-4 text-sm glass-glow-hover"
+                    className="glass-button-primary py-2 px-4 text-sm"
                     aria-label={`Register for ${name}`}
                   >
                     Register Now

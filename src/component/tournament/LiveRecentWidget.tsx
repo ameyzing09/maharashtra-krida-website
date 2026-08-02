@@ -1,3 +1,5 @@
+import { SPINNER_COLOR } from "../../constants";
+import { MotionSection, MotionGrid, MotionItem } from "../common/motion";
 import { useEffect, useMemo, useState } from "react";
 import { listLive, listRecentCompleted, listMatchesByStatus } from "../../services/matchService";
 import { getEvents } from "../../services/eventService";
@@ -88,10 +90,11 @@ export default function LiveRecentWidget() {
   }, [events, teams, eventTeams, live, upcoming, recent, limit, tab]);
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-8">
+    <MotionSection className="bg-gradient-to-b from-orange-50/70 to-transparent dark:from-slate-900/50 dark:to-transparent">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <h2 className="font-display text-2xl sm:text-3xl font-bold text-brand-charcoal dark:text-white">Tournaments</h2>
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight uppercase text-slate-900 dark:text-slate-100"><span aria-hidden className="mr-3 inline-block h-6 w-1.5 -mb-0.5 rounded-full bg-gradient-to-b from-amber-400 to-orange-600" />Tournaments</h2>
           <div className="glass-panel-subtle inline-flex rounded-full p-1">
             {([
               ["live", "Live"],
@@ -102,7 +105,7 @@ export default function LiveRecentWidget() {
                 key={key}
                 onClick={() => { setAutoSwitchEnabled(false); setTab(key); }}
                 className={`px-3 py-1.5 text-xs sm:text-sm rounded-full transition-all duration-200 ${
-                  tab === key ? "glass-button-primary" : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                  tab === key ? "glass-button-primary rounded-full" : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 {label}
@@ -110,28 +113,31 @@ export default function LiveRecentWidget() {
             ))}
           </div>
         </div>
-        <Link to="/tournaments" className="text-sm text-lime-600 dark:text-lime-400 hover:underline">View all</Link>
+        <Link to="/tournaments" className="text-sm link-accent">View all</Link>
       </div>
       {toast && <Toast message={toast.message} type={toast.type} />}
       {loading ? (
         <div className="flex items-center justify-center py-10">
-          <TailSpin color="#84cc16" height={40} width={40} />
+          <TailSpin color={SPINNER_COLOR} height={40} width={40} />
         </div>
       ) : cards.length === 0 ? (
-        <p className="text-sm text-gray-600 dark:text-gray-300">
+        <p className="text-sm text-slate-600 dark:text-slate-400">
           {tab === "live" && "No live matches currently."}
           {tab === "upcoming" && "No upcoming matches."}
           {tab === "past" && "No past matches."}
         </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MotionGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {cards.map((c) => (
-            <Link key={c.matchId} to="/tournaments" className="block">
-              <ScoreCard data={c} />
-            </Link>
+            <MotionItem key={c.matchId} whileHover={{ y: -4 }} className="h-full">
+              <Link to="/tournaments" className="block h-full">
+                <ScoreCard data={c} />
+              </Link>
+            </MotionItem>
           ))}
-        </div>
+        </MotionGrid>
       )}
-    </section>
+      </div>
+    </MotionSection>
   );
 }

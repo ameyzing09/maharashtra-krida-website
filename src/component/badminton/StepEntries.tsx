@@ -11,7 +11,7 @@ import {
 import { CategoryEntry, Player } from "../../types/badminton";
 
 const input = "glass-input w-full px-3 py-2";
-const labelCls = "text-xs font-medium text-gray-600 dark:text-gray-300 mb-1";
+const labelCls = "text-xs font-medium text-slate-600 dark:text-slate-400 mb-1";
 
 const PERSONAL_DOMAIN = /gmail|yahoo|outlook|hotmail/i;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -142,7 +142,7 @@ export default function StepEntries() {
       <AnimatePresence initial={false}>
         {state.entries.length > 0 && (
           <motion.div key="entries-list" className="space-y-2" {...(reduceMotion ? {} : { layout: true })}>
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+            <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300">
               Your entries ({state.entries.length})
             </h3>
             <AnimatePresence initial={false}>
@@ -155,32 +155,32 @@ export default function StepEntries() {
                     className="glass-panel-subtle p-4 flex items-start justify-between gap-4"
                   >
                     <div className="min-w-0 space-y-1.5">
-                      <p className="text-base font-semibold text-gray-900 dark:text-white leading-snug">
+                      <p className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-snug">
                         {em.label}
                       </p>
                       {e.teamName && (
-                        <p className="text-sm text-gray-700 dark:text-gray-200">
-                          <span className="text-gray-500 dark:text-gray-400">Team:</span>{" "}
+                        <p className="text-sm text-slate-600 dark:text-slate-300">
+                          <span className="text-slate-500 dark:text-slate-400">Team:</span>{" "}
                           <span className="font-medium">{e.teamName}</span>
                         </p>
                       )}
                       {e.players.length > 0 ? (
                         <ul className="space-y-0.5">
                           {e.players.map((p, i) => (
-                            <li key={i} className="text-sm text-gray-600 dark:text-gray-300 break-words">
+                            <li key={i} className="text-sm text-slate-600 dark:text-slate-400 break-words">
                               {p.name}
-                              <span className="text-gray-400 dark:text-gray-500"> · {p.phone}</span>
+                              <span className="text-slate-400 dark:text-slate-500"> · {p.phone}</span>
                             </li>
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
                           Roster shared before the Captains' Meeting.
                         </p>
                       )}
                     </div>
                     <div className="flex flex-col items-end gap-2 shrink-0">
-                      <span className="text-base font-bold text-brand-lime">{formatINR(em.fee)}</span>
+                      <span className="text-base font-bold text-slate-900 dark:text-slate-100">{formatINR(em.fee)}</span>
                       <button
                         type="button"
                         onClick={() => dispatch({ type: "REMOVE_ENTRY", payload: e.id })}
@@ -195,8 +195,8 @@ export default function StepEntries() {
               })}
             </AnimatePresence>
             <div className="flex justify-between items-center pt-1">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Subtotal</span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">{formatINR(total)}</span>
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Subtotal</span>
+              <span className="text-lg font-bold text-slate-900 dark:text-slate-100">{formatINR(total)}</span>
             </div>
           </motion.div>
         )}
@@ -204,7 +204,7 @@ export default function StepEntries() {
 
       {/* Category cards */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">
+        <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-3">
           {state.entries.length > 0 ? "Add another category" : "Choose a category"}
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -219,12 +219,12 @@ export default function StepEntries() {
                 {...(reduceMotion ? {} : { whileHover: { y: -2 }, whileTap: { scale: 0.97 } })}
                 className={[
                   "glass-panel p-3 sm:p-4 text-left transition-all duration-200 glass-hover cursor-pointer",
-                  active ? "ring-2 ring-brand-lime shadow-lg" : "",
+                  active ? "ring-2 ring-slate-900 dark:ring-slate-100 shadow-lg" : "",
                 ].join(" ")}
               >
-                <p className="text-sm font-semibold text-gray-900 dark:text-white leading-snug">{c.label}</p>
-                <p className="text-brand-lime font-bold text-base mt-1">{formatINR(c.fee)}</p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 leading-snug">{c.label}</p>
+                <p className="text-slate-900 dark:text-slate-100 font-bold text-base mt-1">{formatINR(c.fee)}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                   {Array.isArray(c.players) ? `${c.players[0]}–${c.players[1]} players` : c.players === 1 ? "1 player" : `${c.players} players`}
                   {" · "}
                   {c.unit}
@@ -233,7 +233,7 @@ export default function StepEntries() {
             );
           })}
         </div>
-        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">
           Add as many categories as you like — corporate teams and individual entries can be
           combined in a single registration.
         </p>
@@ -245,18 +245,18 @@ export default function StepEntries() {
           <motion.div key={selected} {...formAnim} className="overflow-hidden">
             <div className="glass-panel p-4 space-y-4">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {meta.label} — {formatINR(meta.fee)}
                 </h3>
                 <button
                   type="button"
                   onClick={closeForm}
-                  className="text-xs text-gray-500 dark:text-gray-400 hover:underline shrink-0"
+                  className="text-xs text-slate-500 dark:text-slate-400 hover:underline shrink-0"
                 >
                   Cancel
                 </button>
               </div>
-              {meta.note && <p className="text-[11px] text-gray-500 -mt-2">{meta.note}</p>}
+              {meta.note && <p className="text-[11px] text-slate-500 -mt-2">{meta.note}</p>}
 
               {!meta.collectsPlayers ? (
                 <div className="flex flex-col">
@@ -292,10 +292,10 @@ export default function StepEntries() {
                     {players.map((p, idx) => (
                       <div
                         key={idx}
-                        className="rounded-xl border border-black/5 dark:border-white/10 p-3 space-y-3"
+                        className="rounded-xl border border-slate-200 dark:border-slate-800 p-3 space-y-3"
                       >
                         {players.length > 1 && (
-                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">
+                          <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                             Player {idx + 1}
                           </span>
                         )}
@@ -335,7 +335,7 @@ export default function StepEntries() {
                           </div>
                           <div className="flex-1 flex flex-col">
                             <label className={labelCls}>
-                              Designation <span className="text-gray-400 font-normal">(optional)</span>
+                              Designation <span className="text-slate-400 font-normal">(optional)</span>
                             </label>
                             <input
                               className={input}
@@ -364,7 +364,7 @@ export default function StepEntries() {
                 <button
                   type="button"
                   onClick={closeForm}
-                  className="glass-button-secondary w-full sm:w-auto px-6 py-2.5 text-gray-800 dark:text-white"
+                  className="glass-button-secondary w-full sm:w-auto px-6 py-2.5 text-slate-700 dark:text-slate-200"
                 >
                   Cancel
                 </button>
@@ -379,7 +379,7 @@ export default function StepEntries() {
         <button
           type="button"
           onClick={() => dispatch({ type: "BACK" })}
-          className="w-full sm:w-auto rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-brand-charcoal dark:text-gray-100 font-medium py-2.5 px-6"
+          className="w-full sm:w-auto rounded-full border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium py-2.5 px-6"
         >
           Back
         </button>

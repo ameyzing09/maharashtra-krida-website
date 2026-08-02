@@ -28,7 +28,7 @@ const MenuHeader: React.FC = () => {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} />}
-      <div className="px-4 py-3 shadow-md bg-white dark:bg-brand-charcoal text-brand-charcoal dark:text-gray-200 border-b border-black/5 dark:border-white/10">
+      <div className="px-4 py-3 shadow-md bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
         <div className="container mx-auto flex justify-between items-center">
           {/* <h2 className="text-lg font-bold">{title}</h2> */}
           <button
