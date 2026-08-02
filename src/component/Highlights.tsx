@@ -34,6 +34,12 @@ export default function Highlights() {
     );
   }
 
+  const hasContent = content && content.length > 0;
+  const hasNews = news && news.length > 0;
+  if (!hasContent && !hasNews) {
+    return null;
+  }
+
   return (
     <MotionSection className="relative overflow-hidden bg-slate-950">
       <div className="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-orange-600/15 blur-3xl" aria-hidden />
