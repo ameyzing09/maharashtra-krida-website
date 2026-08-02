@@ -82,16 +82,23 @@ const EventCard: React.FC<CardProps> = ({
             )}
           </div>
 
-          {/* CTA row - pushed to bottom */}
+          {/* CTA row - pushed to bottom.
+              flex-wrap rather than `flex-col sm:flex-row`: this card's width
+              comes from the grid in Event.tsx (1 / md:2 / lg:3 columns), not
+              from the viewport, so it is *widest* at 640-767px and narrowest
+              from md up. Any sm:/md: guess here is wrong at some column count
+              — at md the two controls came to ~322px against ~318px of card,
+              and both labels wrapped mid-phrase over four pixels. Let the row
+              wrap and the labels stay whole. */}
           <div className="mt-auto">
-            <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+            <div className="flex flex-wrap gap-2 sm:justify-end">
               {/* Always show View Flyer if available */}
               {flyerUrl && (
                 <a
                   href={flyerUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="glass-button-outline py-2 px-4 text-sm"
+                  className="glass-button-outline whitespace-nowrap py-2 px-4 text-sm"
                   aria-label={`View flyer for ${name}`}
                 >
                   View Flyer
@@ -105,7 +112,7 @@ const EventCard: React.FC<CardProps> = ({
                     href={registrationUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="glass-button-primary py-2 px-4 text-sm"
+                    className="glass-button-primary whitespace-nowrap py-2 px-4 text-sm"
                     aria-label={`Register for ${name}`}
                   >
                     Register Now
@@ -113,14 +120,14 @@ const EventCard: React.FC<CardProps> = ({
                 ) : (
                   <Link
                     to={registrationUrl as string}
-                    className="glass-button-primary py-2 px-4 text-sm"
+                    className="glass-button-primary whitespace-nowrap py-2 px-4 text-sm"
                     aria-label={`Register for ${name}`}
                   >
                     Register Now
                   </Link>
                 )
               ) : (
-                <span className="inline-flex items-center justify-center rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-300">
+                <span className="inline-flex items-center justify-center whitespace-nowrap rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-300">
                   Registration opening soon
                 </span>
               )}
