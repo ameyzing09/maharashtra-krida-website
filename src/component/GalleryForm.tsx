@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { uploadImage } from "../services/storageService";
+import { errorMessage } from "../services/error";
+import { validateImageFile } from "../utils/fileValidation";
 import PageLoader from "./PageLoader";
 import useToast from "../hook/useToast";
 import Toast from "./common/Toast";
@@ -16,7 +18,16 @@ export default function GalleryForm({ onAdded }: Props) {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
     if (name === "imageFile") {
-      if (files?.[0]) setFile(files[0]);
+      if (files?.[0]) {
+        const picked = files[0];
+        const validationError = validateImageFile(picked);
+        if (validationError) {
+          showToast(validationError, "error");
+          e.target.value = "";
+          return;
+        }
+        setFile(picked);
+      }
     } else {
       setForm((f) => ({ ...f, [name]: value }));
     }
@@ -30,17 +41,27 @@ export default function GalleryForm({ onAdded }: Props) {
       showToast("Please choose an image.", "error");
       return;
     }
+
+    setLoading(true);
+    let imageUrl: string;
     try {
-      setLoading(true);
-      const imageUrl = await upload(file);
+      imageUrl = await upload(file);
+    } catch (err) {
+      console.error("GalleryForm: image upload failed", err);
+      showToast(errorMessage(err), "error");
+      setLoading(false);
+      return;
+    }
+
+    try {
       await addGalleryItem({ imageUrl, title: form.title?.trim() || undefined, description: form.description?.trim() || undefined, alt: form.alt?.trim() || undefined });
       showToast("Gallery item added.", "success");
       setForm({});
       setFile(null);
       onAdded?.();
     } catch (err) {
-      console.error(err);
-      showToast("Failed to add item.", "error");
+      console.error("GalleryForm: addGalleryItem failed", err);
+      showToast(errorMessage(err), "error");
     } finally {
       setLoading(false);
     }
@@ -72,7 +93,7 @@ export default function GalleryForm({ onAdded }: Props) {
           <input name="imageFile" type="file" accept="image/*" onChange={onChange} className="glass-file-input w-full" />
         </div>
         <div className="flex items-center justify-between">
-          <button type="submit" className="glass-button-primary py-2 px-4">Add</button>
+          <button type="submit" disabled={loading} className="glass-button-primary py-2 px-4 disabled:opacity-60">Add</button>
         </div>
       </form>
     </>

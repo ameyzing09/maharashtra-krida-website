@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { addEvent } from "../services/eventService";
 import { uploadImage } from "../services/storageService";
+import { errorMessage } from "../services/error";
+import { validateImageFile, validateUploadFile } from "../utils/fileValidation";
 import PageLoader from "./PageLoader";
 import useEvents from "../hook/useEvents";
 
@@ -26,7 +28,15 @@ const EventForm = () => {
     const { name, files } = e.target;
     if (name === "imageFile" || name === "flyerFile") {
       if (files && files[0]) {
-        name === "imageFile" ? setImageFile(files[0]) : setFlyerFile(files[0]);
+        const file = files[0];
+        const validationError =
+          name === "imageFile" ? validateImageFile(file) : validateUploadFile(file, ["image/", "application/pdf"]);
+        if (validationError) {
+          toast.error(validationError);
+          e.target.value = "";
+          return;
+        }
+        name === "imageFile" ? setImageFile(file) : setFlyerFile(file);
       }
     } else {
       setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,38 +45,51 @@ const EventForm = () => {
 
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (imageFile && flyerFile) {
-      try {
-        setLoading(true);
-        const uploadFilesPromises = [uploadImage(imageFile, "images"), uploadImage(flyerFile, "flyers")];
-        const [imageUrl, flyerUrl] = await Promise.all(uploadFilesPromises);
-        await addEvent({
-          ...formData,
-          imageUrl,
-          flyerUrl,
-        });
-        toast.success("Event added successfully.");
-        setFormData({
-          name: "",
-          sport: "",
-          date: "",
-          location: "",
-          imageUrl: "",
-          flyerUrl: "",
-          registrationUrl: "",
-          description: "",
-        });
-        setImageFile(null);
-        setFlyerFile(null);
-        handleEventChange();
-      } catch (error) {
-        console.error("Error adding document: ", error);
-        toast.error("Failed to add event.");
-      } finally {
-        setLoading(false);
-      }
-    } else {
+    if (!imageFile) {
       toast.error("Please upload an image file.");
+      return;
+    }
+
+    setLoading(true);
+    let imageUrl: string;
+    let flyerUrl: string;
+    try {
+      [imageUrl, flyerUrl] = await Promise.all([
+        uploadImage(imageFile, "images"),
+        flyerFile ? uploadImage(flyerFile, "flyers") : Promise.resolve(""),
+      ]);
+    } catch (error) {
+      console.error("EventForm: image/flyer upload failed", error);
+      toast.error(errorMessage(error));
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await addEvent({
+        ...formData,
+        imageUrl,
+        flyerUrl,
+      });
+      toast.success("Event added successfully.");
+      setFormData({
+        name: "",
+        sport: "",
+        date: "",
+        location: "",
+        imageUrl: "",
+        flyerUrl: "",
+        registrationUrl: "",
+        description: "",
+      });
+      setImageFile(null);
+      setFlyerFile(null);
+      handleEventChange();
+    } catch (error) {
+      console.error("EventForm: addEvent failed", error);
+      toast.error(errorMessage(error));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -157,6 +180,7 @@ const EventForm = () => {
       <input
         type="file"
         name="imageFile"
+        accept="image/*"
         onChange={handleChange}
         className="glass-file-input w-full"
       />
@@ -166,11 +190,12 @@ const EventForm = () => {
         className="block text-slate-900 dark:text-slate-100 text-sm font-bold mb-2"
         htmlFor="flyerUrl"
       >
-        Flyer URL
+        Flyer URL (optional)
       </label>
       <input
         type="file"
         name="flyerFile"
+        accept="image/*,application/pdf"
         onChange={handleChange}
         className="glass-file-input w-full"
       />
@@ -180,14 +205,14 @@ const EventForm = () => {
         className="block text-slate-900 dark:text-slate-100 text-sm font-bold mb-2"
         htmlFor="registrationUrl"
       >
-        Registration URL
+        Registration URL (optional)
       </label>
       <input
         type="text"
         name="registrationUrl"
         value={formData.registrationUrl}
         onChange={handleChange}
-        placeholder="Registration URL"
+        placeholder="Leave blank to show &quot;Registration opening soon&quot;"
         className="glass-input w-full py-2 px-3"
       />
     </div>
@@ -210,7 +235,8 @@ const EventForm = () => {
     <div className="flex items-center justify-between">
       <button
         type="submit"
-        className="glass-button-primary w-full py-2 px-4"
+        disabled={loading}
+        className="glass-button-primary w-full py-2 px-4 disabled:opacity-60"
       >
         Add Event
       </button>

@@ -1,6 +1,6 @@
 import { EventProps } from '../types';
 import { supabase } from './supabaseClient';
-import { wrapService } from './error';
+import { toServiceError } from './error';
 
 // Validates a raw `events` row before it's trusted as an EventProps. Takes
 // `unknown` rather than `any` so the typeof checks below are what actually
@@ -35,36 +35,36 @@ const toEvent = (docData: unknown): EventProps | undefined => {
   return undefined;
 };
 
-export const getEvents = async () =>
-  wrapService<EventProps[]>(
-    (async () => {
-      const { data, error } = await supabase.from('events').select('*');
-      if (error) throw error;
-      const events: EventProps[] = [];
-      (data ?? []).forEach((row) => {
-        const event = toEvent(row);
-        if (event) events.push(event);
-      });
-      return events;
-    })(),
-    'Failed to fetch events'
-  );
+export const getEvents = async (): Promise<EventProps[]> => {
+  try {
+    const { data, error } = await supabase.from('events').select('*');
+    if (error) throw error;
+    const events: EventProps[] = [];
+    (data ?? []).forEach((row) => {
+      const event = toEvent(row);
+      if (event) events.push(event);
+    });
+    return events;
+  } catch (e) {
+    throw toServiceError(e, 'Failed to fetch events');
+  }
+};
 
-export const addEvent = async (event: Omit<EventProps, 'id'>) =>
-  wrapService<string>(
-    (async () => {
-      const { data, error } = await supabase.from('events').insert(event).select('id').single();
-      if (error) throw error;
-      return data.id as string;
-    })(),
-    'Failed to add event'
-  );
+export const addEvent = async (event: Omit<EventProps, 'id'>): Promise<string> => {
+  try {
+    const { data, error } = await supabase.from('events').insert(event).select('id').single();
+    if (error) throw error;
+    return data.id as string;
+  } catch (e) {
+    throw toServiceError(e, 'Failed to add event');
+  }
+};
 
-export const deleteEvent = async (id: string) =>
-  wrapService<void>(
-    (async () => {
-      const { error } = await supabase.from('events').delete().eq('id', id);
-      if (error) throw error;
-    })(),
-    'Failed to delete event'
-  );
+export const deleteEvent = async (id: string): Promise<void> => {
+  try {
+    const { error } = await supabase.from('events').delete().eq('id', id);
+    if (error) throw error;
+  } catch (e) {
+    throw toServiceError(e, 'Failed to delete event');
+  }
+};

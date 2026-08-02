@@ -7,6 +7,7 @@ import { parseTeamsXlsx, type ParsedTeamRow } from "../../../tournament/importer
 import useToast from "../../../hook/useToast";
 import Toast from "../../common/Toast";
 import { TailSpin } from "react-loader-spinner";
+import { errorMessage } from "../../../services/error";
 
 type Props = {
   teams: Team[];
@@ -31,6 +32,7 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
   const [creating, setCreating] = useState(false);
   const [teamActionId, setTeamActionId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+  const [savingOverride, setSavingOverride] = useState(false);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -48,15 +50,19 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
               disabled={creating}
               className="glass-button-primary w-full px-4 py-2 inline-flex items-center justify-center gap-2 disabled:opacity-60"
               onClick={async () => {
-                if (!name.trim()) return;
+                if (!name.trim()) {
+                  showToast("Team name is required.", "error");
+                  return;
+                }
                 try {
                   setCreating(true);
                   await createTeam({ name, short: short || undefined, logoUrl: logoUrl || undefined });
                   showToast("Team created", "success");
                   setName(""); setShort(""); setLogoUrl("");
                   await refreshTeams();
-                } catch {
-                  showToast("Failed to create team", "error");
+                } catch (err) {
+                  console.error("TeamsTab: createTeam failed", err);
+                  showToast(errorMessage(err), "error");
                 } finally {
                   setCreating(false);
                 }
@@ -82,8 +88,9 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
                       await updateTeam(t.id, { name: t.name });
                       showToast("Team updated", "success");
                       await refreshTeams();
-                    } catch {
-                      showToast("Failed to update team", "error");
+                    } catch (err) {
+                      console.error("TeamsTab: updateTeam failed", err);
+                      showToast(errorMessage(err), "error");
                     } finally {
                       setTeamActionId(null);
                     }
@@ -100,8 +107,9 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
                       await deleteTeam(t.id);
                       showToast("Team deleted", "success");
                       await refreshTeams();
-                    } catch {
-                      showToast("Failed to delete team", "error");
+                    } catch (err) {
+                      console.error("TeamsTab: deleteTeam failed", err);
+                      showToast(errorMessage(err), "error");
                     } finally {
                       setTeamActionId(null);
                     }
@@ -127,8 +135,9 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
               const rows = await parseTeamsXlsx(file);
               setImportTeamRows(rows);
               showToast(`Parsed ${rows.length} rows`, "success");
-            } catch {
-              showToast("Failed to parse Excel", "error");
+            } catch (err) {
+              console.error("TeamsTab: parseTeamsXlsx failed", err);
+              showToast(`Failed to parse Excel: ${errorMessage(err)}`, "error");
             } finally {
               setImporting(false);
             }
@@ -154,32 +163,41 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
                       byKey.set(t.name.toLowerCase(), t);
                       if (t.short) byKey.set(t.short.toLowerCase(), t);
                     }
-                    for (const row of importTeamRows) {
-                      const keyName = row.name.toLowerCase();
-                      const keyShort = row.short?.toLowerCase();
-                      let t = byKey.get(keyName) || (keyShort ? byKey.get(keyShort) : undefined);
-                      if (!t) {
-                        const id = await createTeam({ name: row.name, short: row.short, logoUrl: row.logoUrl });
-                        t = { id, name: row.name, short: row.short, logoUrl: row.logoUrl };
-                        byKey.set(keyName, t);
-                        if (keyShort) byKey.set(keyShort, t);
-                      } else {
-                        // update short/logo if provided (optional)
-                        const patch: Partial<{ name: string; short?: string; logoUrl?: string }> = {};
-                        if (row.short && row.short !== t.short) patch.short = row.short;
-                        if (row.logoUrl && row.logoUrl !== t.logoUrl) patch.logoUrl = row.logoUrl;
-                        if (Object.keys(patch).length) await updateTeam(t.id, patch);
+                    let rowIndex = 0;
+                    try {
+                      for (const row of importTeamRows) {
+                        const keyName = row.name.toLowerCase();
+                        const keyShort = row.short?.toLowerCase();
+                        let t = byKey.get(keyName) || (keyShort ? byKey.get(keyShort) : undefined);
+                        if (!t) {
+                          const id = await createTeam({ name: row.name, short: row.short, logoUrl: row.logoUrl });
+                          t = { id, name: row.name, short: row.short, logoUrl: row.logoUrl };
+                          byKey.set(keyName, t);
+                          if (keyShort) byKey.set(keyShort, t);
+                        } else {
+                          // update short/logo if provided (optional)
+                          const patch: Partial<{ name: string; short?: string; logoUrl?: string }> = {};
+                          if (row.short && row.short !== t.short) patch.short = row.short;
+                          if (row.logoUrl && row.logoUrl !== t.logoUrl) patch.logoUrl = row.logoUrl;
+                          if (Object.keys(patch).length) await updateTeam(t.id, patch);
+                        }
+                        if (alsoAddToEvent && t) {
+                          await upsertEventTeam({ eventId, teamId: t.id, short: row.short, logoOverride: row.logoUrl, group: row.group, seed: row.seed });
+                        }
+                        rowIndex++;
                       }
-                      if (alsoAddToEvent && t) {
-                        await upsertEventTeam({ eventId, teamId: t.id, short: row.short, logoOverride: row.logoUrl, group: row.group, seed: row.seed });
-                      }
+                    } catch (err) {
+                      console.error("TeamsTab: bulk team import failed", err);
+                      showToast(
+                        `Import failed at row ${rowIndex + 1} ("${importTeamRows[rowIndex]?.name ?? "?"}") after ${rowIndex} succeeded: ${errorMessage(err)}`,
+                        "error"
+                      );
+                      return;
                     }
                     setImportTeamRows(null);
                     showToast("Teams imported", "success");
                     await refreshTeams();
                     if (alsoAddToEvent) await refreshEventTeams();
-                  } catch {
-                    showToast("Failed to import teams", "error");
                   } finally {
                     setImporting(false);
                   }
@@ -215,15 +233,28 @@ export default function TeamsTab({ teams, refreshTeams, eventId, refreshEventTea
           </div>
           <div className="flex gap-2">
             <button
-              className="glass-button-primary flex-1 px-4 py-2"
+              disabled={savingOverride}
+              className="glass-button-primary flex-1 px-4 py-2 inline-flex items-center justify-center gap-2 disabled:opacity-60"
               onClick={async () => {
-                if (!selectedTeamId) return;
-                await upsertEventTeam({ eventId, teamId: selectedTeamId, short: ovShort || undefined, logoOverride: ovLogo || undefined, seed: seed ? Number(seed) : undefined, group: group || undefined });
-                setSelectedTeamId(""); setOvShort(""); setOvLogo(""); setSeed(""); setGroup("");
-                await refreshEventTeams();
+                if (!selectedTeamId) {
+                  showToast("Select a team first.", "error");
+                  return;
+                }
+                try {
+                  setSavingOverride(true);
+                  await upsertEventTeam({ eventId, teamId: selectedTeamId, short: ovShort || undefined, logoOverride: ovLogo || undefined, seed: seed ? Number(seed) : undefined, group: group || undefined });
+                  showToast("Team override saved", "success");
+                  setSelectedTeamId(""); setOvShort(""); setOvLogo(""); setSeed(""); setGroup("");
+                  await refreshEventTeams();
+                } catch (err) {
+                  console.error("TeamsTab: upsertEventTeam (override) failed", err);
+                  showToast(errorMessage(err), "error");
+                } finally {
+                  setSavingOverride(false);
+                }
               }}
             >
-              Add / Update
+              {savingOverride && <TailSpin color={SPINNER_COLOR} height={16} width={16} />}Add / Update
             </button>
           </div>
         </div>

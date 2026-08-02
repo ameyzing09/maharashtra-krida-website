@@ -7,6 +7,7 @@ import { updateMatch } from "../../../services/matchService";
 import useToast from "../../../hook/useToast";
 import Toast from "../../common/Toast";
 import { TailSpin } from "react-loader-spinner";
+import { errorMessage } from "../../../services/error";
 
 type Props = {
   event: EventProps;
@@ -403,7 +404,7 @@ export default function MatchesTab({ event, matches, teams, eventTeams, refreshM
                           cancelEditing(m.id);
                         } catch(error) {
                           console.error("Error updating match:", error);
-                          showToast("Failed to update match", "error");
+                          showToast(errorMessage(error), "error");
                         } finally {
                           setSavingIds((s) => { const n = new Set(s); n.delete(m.id); return n; });
                         }
@@ -431,7 +432,7 @@ export default function MatchesTab({ event, matches, teams, eventTeams, refreshM
                         await refreshMatches();
                       } catch(error) {
                         console.error("Error updating match:", error);
-                        showToast("Failed to update match", "error");
+                        showToast(errorMessage(error), "error");
                       } finally {
                         setSavingIds((s) => { const n = new Set(s); n.delete(m.id); return n; });
                       }

@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { SliderImageInput } from "../types";
 import useHomepageContent from "../hook/useHomepage";
 import { uploadImage } from "../services/storageService";
+import { errorMessage } from "../services/error";
+import { validateImageFile } from "../utils/fileValidation";
 import { TailSpin } from "react-loader-spinner";
 import Toast from "./common/Toast";
 import useToast from "../hook/useToast";
@@ -18,6 +20,7 @@ const HomepageForm: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateId, setUpdateId] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const { toast, showToast } = useToast();
 
@@ -25,7 +28,14 @@ const HomepageForm: React.FC = () => {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
+      const file = event.target.files[0];
+      const validationError = validateImageFile(file);
+      if (validationError) {
+        showToast(validationError, "error");
+        event.target.value = "";
+        return;
+      }
+      setSelectedFile(file);
     }
   };
 
@@ -42,22 +52,37 @@ const HomepageForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (selectedFile) {
-      try {
-        const imageUrl = await uploadFiles(selectedFile, "sliderImages");
-        showToast("Image uploaded successfully.", "success");
-        const completeData = { ...formData, imageUrl };
-        if (isUpdating && updateId) {
-          await handleUpdateContent(updateId, completeData);
-        } else {
-          await handleAddContent(completeData);
-          showToast("Content added successfully.", "success");
-        }
-        resetForm();
-      } catch (error) {
-        console.error("Error handling the form submission:", error);
-        showToast("Failed to add content.", "error");
+    if (!selectedFile) {
+      showToast("Please choose an image.", "error");
+      return;
+    }
+
+    setSubmitting(true);
+    let imageUrl: string;
+    try {
+      imageUrl = await uploadFiles(selectedFile, "sliderImages");
+    } catch (error) {
+      console.error("HomepageForm: image upload failed", error);
+      showToast(errorMessage(error), "error");
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+      const completeData = { ...formData, imageUrl };
+      if (isUpdating && updateId) {
+        await handleUpdateContent(updateId, completeData);
+        showToast("Content updated successfully.", "success");
+      } else {
+        await handleAddContent(completeData);
+        showToast("Content added successfully.", "success");
       }
+      resetForm();
+    } catch (error) {
+      console.error("HomepageForm: save failed", error);
+      showToast(errorMessage(error), "error");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -90,10 +115,10 @@ const HomepageForm: React.FC = () => {
         <label className="block text-slate-600 dark:text-slate-300 text-sm font-bold mb-2" htmlFor="imageFile">
           Image
         </label>
-        <input type="file" name="imageFile" onChange={handleFileChange} className="glass-file-input w-full" required />
+        <input type="file" name="imageFile" accept="image/*" onChange={handleFileChange} className="glass-file-input w-full" required />
       </div>
       <div className="flex items-center justify-between">
-        <button type="submit" className="glass-button-primary font-bold py-2 px-4">
+        <button type="submit" disabled={submitting} className="glass-button-primary font-bold py-2 px-4 disabled:opacity-60">
           Add Content
         </button>
       </div>
